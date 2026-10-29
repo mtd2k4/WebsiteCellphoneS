@@ -1,0 +1,747 @@
+@model WebsiteBanDienThoai.Models.RepairBooking
+@{
+    ViewData["Title"] = "Đặt Lịch Sửa Chữa & Bảo Hành - Điện Thoại Vui | CellphoneS Care";
+    var userDevices = ViewBag.UserDevices as List<WebsiteBanDienThoai.Models.ViewModels.WarrantyItemViewModel> ?? new();
+    var branches = ViewBag.Branches as List<string> ?? new();
+    var services = ViewBag.Services as Dictionary<string, (decimal Price, string Time, string Icon)> ?? new();
+}
+
+<div class="container py-4">
+    <!-- BREADCRUMB & HERO BANNER -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Account" asp-action="Profile" class="text-decoration-none text-muted">Hội viên Smember</a></li>
+            <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Đặt Lịch Sửa Chữa & Bảo Hành</li>
+        </ol>
+    </nav>
+
+    <!-- HEADER CARD -->
+    <div class="card border-0 rounded-4 overflow-hidden shadow-sm mb-4" style="background: linear-gradient(135deg, #d70018 0%, #b91c1c 60%, #991b1b 100%);">
+        <div class="p-4 p-md-5 text-white position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-white rounded-pill small fw-bold mb-3 shadow-sm" style="color: #d70018;">
+                        <i class="bi bi-shield-fill-check text-danger"></i>
+                        <span class="text-danger fw-bold">TRUNG TÂM BẢO HÀNH CHÍNH HÃNG & ĐIỆN THOẠI VUI ASP</span>
+                    </div>
+                    <h2 class="fw-bolder mb-2 text-white">ĐẶT LỊCH SỬA CHỮA & BẢO HÀNH THIẾT BỊ</h2>
+                    <p class="lead small mb-3" style="color: rgba(255, 255, 255, 0.92); font-size: 14.5px;">
+                        Đặt lịch trước để được tiếp nhận ngay không cần chờ đợi. Linh kiện chính hãng 100%, kỹ thuật viên tay nghề cao, xem trực tiếp - lấy liền trong 15-60 phút.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3 small" style="color: rgba(255, 255, 255, 0.95);">
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-clock-history text-warning fs-5"></i>
+                            <span>Tiết kiệm 30 phút chờ</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-shield-check text-warning fs-5"></i>
+                            <span>Bảo hành 6 - 24 tháng</span>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi bi-gem text-warning fs-5"></i>
+                            <span>Giảm thêm đến 10% cho Smember</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
+                    <div class="d-inline-block p-3 rounded-4 text-start" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3);">
+                        <div class="small" style="color: rgba(255, 255, 255, 0.85);">Hotline hỗ trợ kỹ thuật:</div>
+                        <a href="tel:18002064" class="fs-4 fw-bolder text-white text-decoration-none d-block">
+                            <i class="bi bi-telephone-fill text-warning me-2"></i>1800.2064
+                        </a>
+                        <small style="color: rgba(255, 255, 255, 0.85); font-size: 11px;">(Miễn cước từ 8h00 - 21h00 hàng ngày)</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN FORM & SIDEBAR SUMMARY -->
+    <form asp-action="Booking" method="post" id="repairBookingForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="UserId" />
+        <input type="hidden" asp-for="OrderCode" />
+
+        <div class="row g-4">
+            <!-- CỘT TRÁI: CÁC BƯỚC ĐIỀN THÔNG TIN -->
+            <div class="col-lg-8">
+                
+                <!-- BƯỚC 1: CHỌN THIẾT BỊ CẦN SỬA CHỮA -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="badge bg-danger rounded-circle p-2 px-3 fw-bold">1</span>
+                            <h5 class="fw-bold m-0 text-dark">Thông Tin Thiết Bị Cần Sửa Chữa</h5>
+                        </div>
+                        @if (Model.HasWarranty)
+                        {
+                            <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">
+                                <i class="bi bi-check-circle-fill me-1"></i> Máy bảo hành CellphoneS
+                            </span>
+                        }
+                    </div>
+
+                    <div class="card-body p-4">
+                        <!-- Nếu có thiết bị đã mua tại CellphoneS -->
+                        @if (userDevices.Any())
+                        {
+                            <div class="mb-4">
+                                <label class="form-label small fw-bold text-muted mb-2">
+                                    <i class="bi bi-stars text-danger me-1"></i> Chọn nhanh thiết bị đã mua tại CellphoneS:
+                                </label>
+                                <div class="row g-2">
+                                    @foreach (var dev in userDevices)
+                                    {
+                                        var isSelected = (Model.SerialNumber == dev.SerialNumber || Model.DeviceName == dev.ProductName);
+                                        <div class="col-sm-6">
+                                            <div class="p-2 border rounded-3 device-select-card cursor-pointer @(isSelected ? "border-danger bg-danger-subtle bg-opacity-10" : "bg-light")" 
+                                                 onclick="selectRegisteredDevice('@dev.ProductName', '@dev.SerialNumber', '@dev.OrderCode', true)"
+                                                 style="cursor: pointer; transition: all 0.2s;">
+                                                <div class="d-flex align-items-center gap-2">
+                                                    <img src="@(dev.ImageUrl ?? "https://via.placeholder.com/48")" alt="@dev.ProductName" style="width: 44px; height: 44px; object-fit: contain;" class="bg-white rounded p-1 border" />
+                                                    <div class="overflow-hidden">
+                                                        <div class="fw-bold text-dark text-truncate small">@dev.ProductName</div>
+                                                        <small class="text-muted font-monospace d-block" style="font-size: 11px;">@dev.SerialNumber</small>
+                                                        <span class="badge bg-success" style="font-size: 10px;">Bảo hành CellphoneS</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+
+                        <!-- Loại thiết bị -->
+                        <div class="mb-3">
+                            <label class="form-label small fw-bold text-dark">Loại thiết bị <span class="text-danger">*</span></label>
+                            <div class="d-flex flex-wrap gap-2" id="deviceTypePills">
+                                @foreach (var dt in new[] { "Điện thoại", "Laptop", "Máy tính bảng", "Đồng hồ thông minh", "Tai nghe", "Khác" })
+                                {
+                                    <button type="button" class="btn btn-sm @(Model.DeviceType == dt ? "btn-danger fw-bold" : "btn-outline-secondary") rounded-pill device-type-btn" data-type="@dt">
+                                        @dt
+                                    </button>
+                                }
+                            </div>
+                            <input type="hidden" asp-for="DeviceType" id="inputDeviceType" />
+                            <span asp-validation-for="DeviceType" class="text-danger small"></span>
+                        </div>
+
+                        <div class="row g-3">
+                            <!-- Model / Tên máy -->
+                            <div class="col-md-7">
+                                <label class="form-label small fw-bold text-dark">Model / Tên thiết bị <span class="text-danger">*</span></label>
+                                <input asp-for="DeviceName" id="inputDeviceName" class="form-control" placeholder="Ví dụ: iPhone 15 Pro Max, Galaxy S24 Ultra..." required />
+                                <span asp-validation-for="DeviceName" class="text-danger small"></span>
+                            </div>
+
+                            <!-- IMEI / Serial Number -->
+                            <div class="col-md-5">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <label class="form-label small fw-bold text-dark m-0">Số IMEI / Serial <small class="text-muted font-normal">(nếu có)</small></label>
+                                    <span id="imeiCheckingSpinner" class="spinner-border spinner-border-sm text-danger" style="display: none;" role="status"></span>
+                                </div>
+                                <div class="input-group">
+                                    <input asp-for="SerialNumber" id="inputSerialNumber" class="form-control font-monospace" placeholder="IMEI hoặc Serial..." autocomplete="off" />
+                                    <button type="button" class="btn btn-outline-danger btn-sm px-3" id="btnCheckImei" title="Kiểm tra bảo hành ngay">
+                                        <i class="bi bi-shield-check me-1"></i>Kiểm tra
+                                    </button>
+                                </div>
+                                <small class="text-muted d-block mt-1" style="font-size: 11px;">Bấm <code>*#06#</code> trên máy để xem IMEI. Nhập để tự động kiểm tra bảo hành.</small>
+                            </div>
+                        </div>
+
+                        <!-- KHUNG HIỂN THỊ KẾT QUẢ KIỂM TRA BẢO HÀNH THEO IMEI -->
+                        <div id="imeiWarrantyResult" class="mt-3" style="display: none;"></div>
+
+                        <!-- Checkbox thiết bị mua tại CellphoneS -->
+                        <div class="form-check mt-3 p-3 bg-light rounded-3 border transition-all" id="warrantyCheckboxContainer">
+                            <input class="form-check-input ms-0 me-2" type="checkbox" asp-for="HasWarranty" id="checkHasWarranty" />
+                            <label class="form-check-label small fw-semibold text-dark d-inline-flex align-items-center gap-2 flex-wrap" for="checkHasWarranty">
+                                <span>Thiết bị này được mua tại CellphoneS và còn trong thời hạn bảo hành chính hãng</span>
+                                <span id="warrantyStatusPill" class="badge bg-secondary" style="display: none;"></span>
+                            </label>
+                            <small class="text-muted d-block mt-1 ps-4" style="font-size: 11px;">
+                                * Nếu thiết bị còn bảo hành hợp lệ, quý khách sẽ được tiếp nhận kiểm tra và thay thế linh kiện miễn phí theo chính sách của hãng.
+                            </small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BƯỚC 2: CHỌN DỊCH VỤ SỬA CHỮA & MÔ TẢ LỖI -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2 px-3 fw-bold">2</span>
+                        <h5 class="fw-bold m-0 text-dark">Dịch Vụ Sửa Chữa & Triệu Chứng Lỗi</h5>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <label class="form-label small fw-bold text-dark mb-2">Chọn dịch vụ cần thực hiện <span class="text-danger">*</span></label>
+                        <input type="hidden" asp-for="ServiceType" id="inputServiceType" />
+
+                        <div class="row g-2 mb-3">
+                            @foreach (var s in services)
+                            {
+                                var isSelected = Model.ServiceType == s.Key;
+                                <div class="col-md-6">
+                                    <div class="service-card p-3 border rounded-3 h-100 cursor-pointer d-flex flex-column justify-content-between @(isSelected ? "border-danger bg-danger-subtle bg-opacity-10 shadow-sm" : "bg-white")"
+                                         data-service="@s.Key" data-price="@s.Value.Price" data-time="@s.Value.Time"
+                                         onclick="selectService(this, '@s.Key', @s.Value.Price, '@s.Value.Time')"
+                                         style="cursor: pointer; transition: all 0.2s;">
+                                        <div class="d-flex align-items-center gap-2 mb-2">
+                                            <div class="rounded-circle p-2 bg-danger bg-opacity-10 text-danger">
+                                                <i class="bi @s.Value.Icon fs-5"></i>
+                                            </div>
+                                            <span class="fw-bold text-dark small">@s.Key</span>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center border-top pt-2 small">
+                                            <span class="text-muted"><i class="bi bi-clock me-1"></i>@s.Value.Time</span>
+                                            <strong class="text-danger">@(s.Value.Price > 0 ? $"{s.Value.Price:N0}₫" : "Miễn phí")</strong>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Mô tả tình trạng lỗi -->
+                        <div class="mb-2">
+                            <label class="form-label small fw-bold text-dark">Mô tả triệu chứng hư hỏng của máy <small class="text-muted fw-normal">(tùy chọn)</small></label>
+                            <textarea asp-for="IssueDescription" class="form-control" rows="3" placeholder="Ví dụ: Máy rơi cấn góc, màn hình bị sọc xanh; hoặc pin dùng được 1 tiếng là sập nguồn..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BƯỚC 3: CHỌN ĐỊA ĐIỂM & THỜI GIAN TIẾP NHẬN -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2 px-3 fw-bold">3</span>
+                        <h5 class="fw-bold m-0 text-dark">Địa Điểm Cửa Hàng & Thời Gian Hẹn</h5>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <!-- Tỉnh / Thành phố -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-5">
+                                <label class="form-label small fw-bold text-dark">Tỉnh / Thành phố <span class="text-danger">*</span></label>
+                                <select asp-for="City" id="selectCity" class="form-select" onchange="filterBranchesByCity()">
+                                    <option value="Hồ Chí Minh" selected="@(Model.City == "Hồ Chí Minh")">TP. Hồ Chí Minh</option>
+                                    <option value="Hà Nội" selected="@(Model.City == "Hà Nội")">Hà Nội</option>
+                                    <option value="Đà Nẵng" selected="@(Model.City == "Đà Nẵng")">Đà Nẵng</option>
+                                    <option value="Cần Thơ" selected="@(Model.City == "Cần Thơ")">Cần Thơ</option>
+                                </select>
+                            </div>
+
+                            <!-- Chi nhánh tiếp nhận -->
+                            <div class="col-md-7">
+                                <label class="form-label small fw-bold text-dark">Chi nhánh Điện Thoại Vui tiếp nhận <span class="text-danger">*</span></label>
+                                <select asp-for="StoreBranch" id="selectStoreBranch" class="form-select" required onchange="updateSummaryBranch()">
+                                    @foreach (var b in branches)
+                                    {
+                                        <option value="@b" selected="@(Model.StoreBranch == b)">@b</option>
+                                    }
+                                </select>
+                                <span asp-validation-for="StoreBranch" class="text-danger small"></span>
+                            </div>
+                        </div>
+
+                        <!-- Ngày hẹn & Khung giờ -->
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <label class="form-label small fw-bold text-dark">Ngày mang máy đến <span class="text-danger">*</span></label>
+                                <input type="date" asp-for="BookingDate" id="inputBookingDate" class="form-control" 
+                                       min="@DateTime.UtcNow.ToString("yyyy-MM-dd")" 
+                                       value="@Model.BookingDate.ToString("yyyy-MM-dd")" 
+                                       onchange="updateSummaryDate()" required />
+                            </div>
+
+                            <div class="col-md-7">
+                                <label class="form-label small fw-bold text-dark">Khung giờ tiếp nhận <span class="text-danger">*</span></label>
+                                <input type="hidden" asp-for="TimeSlot" id="inputTimeSlot" />
+                                <div class="d-flex flex-wrap gap-2" id="timeSlotContainer">
+                                    @foreach (var slot in new[] { "08:30 - 10:00", "10:00 - 11:30", "11:30 - 13:00", "13:30 - 15:00", "15:00 - 16:30", "16:30 - 18:00", "18:00 - 19:30", "19:30 - 21:00" })
+                                    {
+                                        <button type="button" class="btn btn-sm @(Model.TimeSlot == slot ? "btn-danger fw-bold" : "btn-outline-secondary") rounded-pill time-slot-btn" data-slot="@slot">
+                                            @slot
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BƯỚC 4: THÔNG TIN LIÊN HỆ CỦA KHÁCH HÀNG -->
+                <div class="card border-0 shadow-sm rounded-4 mb-4">
+                    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2 px-3 fw-bold">4</span>
+                        <h5 class="fw-bold m-0 text-dark">Thông Tin Người Đặt Lịch</h5>
+                    </div>
+
+                    <div class="card-body p-4">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-dark">Họ và tên <span class="text-danger">*</span></label>
+                                <input asp-for="CustomerName" id="inputCustomerName" class="form-control" placeholder="Nguyễn Văn A" required oninput="updateSummaryCustomer()" />
+                                <span asp-validation-for="CustomerName" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold text-dark">Số điện thoại nhận tin xác nhận <span class="text-danger">*</span></label>
+                                <input asp-for="PhoneNumber" id="inputPhoneNumber" class="form-control" placeholder="0901234567" required oninput="updateSummaryCustomer()" />
+                                <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label small fw-bold text-dark">Email nhận phiếu hẹn <small class="text-muted fw-normal">(tùy chọn)</small></label>
+                                <input asp-for="Email" class="form-control" placeholder="email@example.com" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- CỘT PHẢI: BẢNG TỔNG QUAN PHIẾU HẸN (STICKY SUMMARY) -->
+            <div class="col-lg-4">
+                <div class="sticky-top" style="top: 85px; z-index: 10;">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-3">
+                        <div class="card-header bg-danger text-white py-3 text-center">
+                            <h6 class="fw-bold m-0 text-uppercase letter-spacing-1">
+                                <i class="bi bi-calendar2-check-fill me-2"></i> Phiếu Đặt Hẹn Sửa Chữa
+                            </h6>
+                            <small class="text-white-50">Hệ thống Điện Thoại Vui - CellphoneS</small>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <!-- Thiết bị -->
+                            <div class="mb-3 pb-3 border-bottom">
+                                <span class="text-muted small d-block">Thiết bị sửa chữa:</span>
+                                <h6 class="fw-bold text-dark mb-1" id="summaryDevice">@(string.IsNullOrWhiteSpace(Model.DeviceName) ? "Chưa nhập tên máy" : Model.DeviceName)</h6>
+                                <span class="badge bg-secondary-subtle text-dark border small" id="summaryType">@Model.DeviceType</span>
+                                <span class="badge bg-success small" id="summaryWarrantyBadge" style="@(Model.HasWarranty ? "" : "display:none;")">Còn bảo hành</span>
+                            </div>
+
+                            <!-- Dịch vụ -->
+                            <div class="mb-3 pb-3 border-bottom">
+                                <span class="text-muted small d-block">Dịch vụ yêu cầu:</span>
+                                <div class="fw-bold text-danger" id="summaryService">@Model.ServiceType</div>
+                                <small class="text-muted" id="summaryTime"><i class="bi bi-stopwatch me-1"></i>Dự kiến: 15 - 30 phút</small>
+                            </div>
+
+                            <!-- Chi nhánh -->
+                            <div class="mb-3 pb-3 border-bottom">
+                                <span class="text-muted small d-block">Địa điểm tiếp nhận:</span>
+                                <div class="small fw-bold text-dark" id="summaryBranch">@Model.StoreBranch</div>
+                            </div>
+
+                            <!-- Thời gian -->
+                            <div class="mb-3 pb-3 border-bottom">
+                                <div class="row g-2 small">
+                                    <div class="col-6">
+                                        <span class="text-muted d-block">Ngày hẹn:</span>
+                                        <strong class="text-dark" id="summaryDate">@Model.BookingDate.ToString("dd/MM/yyyy")</strong>
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-muted d-block">Khung giờ:</span>
+                                        <strong class="text-danger" id="summarySlot">@Model.TimeSlot</strong>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Chi phí ước tính -->
+                            <div class="p-3 bg-light rounded-3 border mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="small fw-semibold text-muted">Chi phí ước tính:</span>
+                                    <span class="fs-5 fw-bolder text-danger" id="summaryCost">
+                                        @(Model.HasWarranty ? "0₫ (Bảo hành)" : (Model.EstimatedCost > 0 ? $"{Model.EstimatedCost:N0}₫" : "Khám miễn phí"))
+                                    </span>
+                                </div>
+                                <small class="text-muted d-block mt-1" style="font-size: 11px;">
+                                    * Chi phí chính xác sẽ được kỹ thuật viên báo rõ sau khi kiểm tra trực tiếp máy trước khi tiến hành sửa chữa.
+                                </small>
+                            </div>
+
+                            <!-- Nút Xác nhận -->
+                            <button type="submit" class="btn btn-danger btn-lg w-100 fw-bold shadow-sm py-3 mb-2 d-flex align-items-center justify-content-center gap-2">
+                                <i class="bi bi-check2-circle fs-5"></i>
+                                <span>XÁC NHẬN ĐẶT LỊCH NGAY</span>
+                            </button>
+
+                            <div class="text-center">
+                                <small class="text-muted" style="font-size: 11px;">
+                                    <i class="bi bi-shield-check text-success me-1"></i> Cam kết không phát sinh chi phí nếu không sửa
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- LỢI ÍCH KHI ĐẶT LỊCH TRƯỚC -->
+                    <div class="card border-0 shadow-sm rounded-4 p-3 bg-white">
+                        <h6 class="fw-bold text-dark small mb-2"><i class="bi bi-check-all text-danger me-1"></i> Quyền lợi khi đặt lịch trước:</h6>
+                        <ul class="list-unstyled small text-muted m-0 ps-1" style="font-size: 12px; line-height: 1.8;">
+                            <li><i class="bi bi-check text-success me-1 fw-bold"></i>Ưu tiên phục vụ ngay khi đến chi nhánh</li>
+                            <li><i class="bi bi-check text-success me-1 fw-bold"></i>Kỹ thuật viên giữ sẵn linh kiện chính hãng</li>
+                            <li><i class="bi bi-check text-success me-1 fw-bold"></i>Kiểm tra & sấy khô / vệ sinh máy miễn phí</li>
+                            <li><i class="bi bi-check text-success me-1 fw-bold"></i>Hoàn tiền 100% nếu không hài lòng dịch vụ</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // Chọn loại thiết bị qua Pills
+        document.querySelectorAll('.device-type-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.device-type-btn').forEach(b => {
+                    b.classList.remove('btn-danger', 'fw-bold');
+                    b.classList.add('btn-outline-secondary');
+                });
+                this.classList.remove('btn-outline-secondary');
+                this.classList.add('btn-danger', 'fw-bold');
+
+                const type = this.dataset.type;
+                document.getElementById('inputDeviceType').value = type;
+                document.getElementById('summaryType').innerText = type;
+            });
+        });
+
+        // Chọn khung giờ qua Pills
+        document.querySelectorAll('.time-slot-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.time-slot-btn').forEach(b => {
+                    b.classList.remove('btn-danger', 'fw-bold');
+                    b.classList.add('btn-outline-secondary');
+                });
+                this.classList.remove('btn-outline-secondary');
+                this.classList.add('btn-danger', 'fw-bold');
+
+                const slot = this.dataset.slot;
+                document.getElementById('inputTimeSlot').value = slot;
+                document.getElementById('summarySlot').innerText = slot;
+            });
+        });
+
+        // Chọn dịch vụ
+        function selectService(el, name, price, time) {
+            document.querySelectorAll('.service-card').forEach(c => {
+                c.classList.remove('border-danger', 'bg-danger-subtle', 'bg-opacity-10', 'shadow-sm');
+                c.classList.add('bg-white');
+            });
+            el.classList.remove('bg-white');
+            el.classList.add('border-danger', 'bg-danger-subtle', 'bg-opacity-10', 'shadow-sm');
+
+            document.getElementById('inputServiceType').value = name;
+            document.getElementById('summaryService').innerText = name;
+            document.getElementById('summaryTime').innerHTML = '<i class="bi bi-stopwatch me-1"></i>Dự kiến: ' + time;
+
+            updateCostDisplay(price);
+        }
+
+        // Chọn nhanh máy từ danh sách thiết bị đã mua tại CellphoneS
+        function selectRegisteredDevice(name, imei, orderCode, isWarranty) {
+            document.getElementById('inputDeviceName').value = name;
+            document.getElementById('inputSerialNumber').value = imei;
+            document.getElementById('OrderCode').value = orderCode || '';
+            document.getElementById('summaryDevice').innerText = name;
+
+            // Tự động kiểm tra bảo hành cho IMEI này
+            checkImeiWarranty(imei);
+        }
+
+        // Live check bảo hành theo IMEI
+        let imeiDebounceTimer = null;
+
+        async function checkImeiWarranty(imei) {
+            const resultBox = document.getElementById('imeiWarrantyResult');
+            const spinner = document.getElementById('imeiCheckingSpinner');
+            const checkHasWarranty = document.getElementById('checkHasWarranty');
+            const statusPill = document.getElementById('warrantyStatusPill');
+            const checkboxContainer = document.getElementById('warrantyCheckboxContainer');
+
+            if (!imei || !imei.trim()) {
+                resultBox.style.display = 'none';
+                resultBox.innerHTML = '';
+                if (statusPill) statusPill.style.display = 'none';
+                if (checkboxContainer) {
+                    checkboxContainer.className = 'form-check mt-3 p-3 bg-light rounded-3 border transition-all';
+                }
+                return;
+            }
+
+            const cleanImei = imei.trim();
+            if (spinner) spinner.style.display = 'inline-block';
+
+            try {
+                const response = await fetch(`/Repair/CheckWarrantyByImei?imei=${encodeURIComponent(cleanImei)}`);
+                const data = await response.json();
+
+                resultBox.style.display = 'block';
+
+                if (data.found && data.hasWarranty) {
+                    // 1. CÒN HẠN BẢO HÀNH CHÍNH HÃNG
+                    resultBox.innerHTML = `
+                        <div class="alert alert-success border-success rounded-3 p-3 shadow-xs mb-0">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-success text-white p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                                    <i class="bi bi-shield-fill-check fs-5"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
+                                        <div class="fw-bold text-success fs-6">
+                                            <i class="bi bi-check-circle-fill me-1"></i> XÁC NHẬN: THIẾT BỊ CÒN HẠN BẢO HÀNH CHÍNH HÃNG
+                                        </div>
+                                        <span class="badge bg-success font-monospace px-2 py-1 fs-6">${data.warrantyCode}</span>
+                                    </div>
+                                    <div class="small text-dark mb-1">
+                                        Thiết bị: <strong>${data.productName}</strong> ${data.variantInfo ? `<span class="badge bg-light text-dark border ms-1">${data.variantInfo}</span>` : ''}
+                                    </div>
+                                    <div class="small text-muted mb-2">
+                                        <span>Gói bảo hành: <strong>${data.package}</strong></span> • 
+                                        <span>Hạn bảo hành đến: <strong class="text-success">${data.endDate}</strong> (Còn <strong>${data.remainingDays}</strong> ngày)</span>
+                                    </div>
+                                    <div class="small text-success fw-bold p-2 bg-white bg-opacity-75 rounded border border-success-subtle">
+                                        <i class="bi bi-gift-fill me-1 text-danger"></i> Quyền lợi đặc quyền: Miễn phí 100% tiền công thẩm định & thay thế linh kiện lỗi chính hãng.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Tự động tích chọn checkbox bảo hành
+                    checkHasWarranty.checked = true;
+                    if (statusPill) {
+                        statusPill.className = 'badge bg-success';
+                        statusPill.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Đã xác thực: Còn bảo hành';
+                        statusPill.style.display = 'inline-block';
+                    }
+                    if (checkboxContainer) {
+                        checkboxContainer.className = 'form-check mt-3 p-3 bg-success-subtle border-success rounded-3 border transition-all';
+                    }
+
+                    // Tự động điền tên máy nếu ô tên máy đang trống
+                    const inputDeviceName = document.getElementById('inputDeviceName');
+                    if (inputDeviceName && (!inputDeviceName.value || inputDeviceName.value.trim() === '')) {
+                        inputDeviceName.value = data.productName;
+                        document.getElementById('summaryDevice').innerText = data.productName;
+                    }
+
+                    // Cập nhật thông tin phiếu bảo hành vào tóm tắt bên phải
+                    document.getElementById('summaryWarrantyBadge').style.display = 'inline-block';
+                    document.getElementById('summaryWarrantyBadge').className = 'badge bg-success';
+                    document.getElementById('summaryWarrantyBadge').innerHTML = '<i class="bi bi-shield-check me-1"></i>Còn bảo hành';
+                    document.getElementById('summaryCost').innerText = '0₫ (Bảo hành)';
+
+                } else if (data.found && !data.hasWarranty) {
+                    // 2. ĐÃ HẾT HẠN BẢO HÀNH (hoặc BỊ HỦY)
+                    resultBox.innerHTML = `
+                        <div class="alert alert-danger border-danger rounded-3 p-3 shadow-xs mb-0">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="rounded-circle bg-danger text-white p-2 d-flex align-items-center justify-content-center flex-shrink-0" style="width: 38px; height: 38px;">
+                                    <i class="bi bi-shield-slash-fill fs-5"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
+                                        <div class="fw-bold text-danger fs-6">
+                                            <i class="bi bi-x-circle-fill me-1"></i> THIẾT BỊ ĐÃ HẾT HẠN BẢO HÀNH
+                                        </div>
+                                        <span class="badge bg-secondary font-monospace px-2 py-1">${data.warrantyCode}</span>
+                                    </div>
+                                    <div class="small text-dark mb-1">
+                                        Thiết bị: <strong>${data.productName}</strong> - Phiếu bảo hành đã hết hạn từ ngày <strong class="text-danger">${data.endDate}</strong>.
+                                    </div>
+                                    <div class="small text-muted">
+                                        <i class="bi bi-info-circle me-1"></i> Thiết bị không còn trong thời hạn bảo hành miễn phí. CellphoneS Care & Điện Thoại Vui tiếp nhận theo diện sửa chữa dịch vụ tính phí theo bảng giá tiêu chuẩn.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Hủy tích chọn checkbox bảo hành
+                    checkHasWarranty.checked = false;
+                    if (statusPill) {
+                        statusPill.className = 'badge bg-secondary';
+                        statusPill.innerHTML = '<i class="bi bi-x-circle-fill me-1"></i>Đã hết hạn bảo hành';
+                        statusPill.style.display = 'inline-block';
+                    }
+                    if (checkboxContainer) {
+                        checkboxContainer.className = 'form-check mt-3 p-3 bg-light rounded-3 border transition-all';
+                    }
+
+                    // Khôi phục giá dịch vụ tiêu chuẩn
+                    document.getElementById('summaryWarrantyBadge').style.display = 'inline-block';
+                    document.getElementById('summaryWarrantyBadge').className = 'badge bg-secondary';
+                    document.getElementById('summaryWarrantyBadge').innerText = 'Hết hạn bảo hành';
+
+                    const activeCard = document.querySelector('.service-card.border-danger');
+                    if (activeCard) {
+                        const price = parseFloat(activeCard.dataset.price) || 0;
+                        updateCostDisplay(price);
+                    } else {
+                        updateCostDisplay(0);
+                    }
+
+                } else {
+                    // 3. KHÔNG TÌM THẤY PHIẾU BẢO HÀNH
+                    resultBox.innerHTML = `
+                        <div class="alert alert-warning border-warning rounded-3 p-3 shadow-xs mb-0">
+                            <div class="d-flex align-items-start gap-2">
+                                <i class="bi bi-exclamation-triangle-fill text-warning fs-5 flex-shrink-0"></i>
+                                <div>
+                                    <div class="fw-bold text-dark small mb-1">Không tìm thấy thông tin bảo hành tại CellphoneS cho số IMEI này</div>
+                                    <div class="small text-muted">
+                                        Thiết bị có thể mua tại đơn vị khác hoặc chưa được kích hoạt bảo hành điện tử. Trung tâm tiếp nhận sửa chữa theo diện dịch vụ tính phí với linh kiện chính hãng 100%.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    // Hủy tích chọn checkbox
+                    checkHasWarranty.checked = false;
+                    if (statusPill) {
+                        statusPill.className = 'badge bg-warning text-dark';
+                        statusPill.innerHTML = '<i class="bi bi-question-circle-fill me-1"></i>Không có bảo hành';
+                        statusPill.style.display = 'inline-block';
+                    }
+                    if (checkboxContainer) {
+                        checkboxContainer.className = 'form-check mt-3 p-3 bg-light rounded-3 border transition-all';
+                    }
+
+                    document.getElementById('summaryWarrantyBadge').style.display = 'none';
+                    const activeCard = document.querySelector('.service-card.border-danger');
+                    if (activeCard) {
+                        const price = parseFloat(activeCard.dataset.price) || 0;
+                        updateCostDisplay(price);
+                    }
+                }
+            } catch (err) {
+                console.error("Lỗi khi kiểm tra bảo hành theo IMEI:", err);
+            } finally {
+                if (spinner) spinner.style.display = 'none';
+            }
+        }
+
+        // Bắt sự kiện gõ phím và thay đổi trên ô IMEI
+        const inputImei = document.getElementById('inputSerialNumber');
+        if (inputImei) {
+            inputImei.addEventListener('input', function () {
+                clearTimeout(imeiDebounceTimer);
+                const val = this.value.trim();
+                if (val.length >= 6) {
+                    imeiDebounceTimer = setTimeout(() => {
+                        checkImeiWarranty(val);
+                    }, 400);
+                } else if (val.length === 0) {
+                    checkImeiWarranty('');
+                }
+            });
+
+            inputImei.addEventListener('change', function () {
+                clearTimeout(imeiDebounceTimer);
+                checkImeiWarranty(this.value.trim());
+            });
+        }
+
+        // Bấm nút "Kiểm tra" cạnh ô IMEI
+        const btnCheckImei = document.getElementById('btnCheckImei');
+        if (btnCheckImei) {
+            btnCheckImei.addEventListener('click', function () {
+                clearTimeout(imeiDebounceTimer);
+                checkImeiWarranty(inputImei ? inputImei.value.trim() : '');
+            });
+        }
+
+        // Toggle checkbox bảo hành thủ công
+        document.getElementById('checkHasWarranty').addEventListener('change', function () {
+            const isWarranty = this.checked;
+            document.getElementById('summaryWarrantyBadge').style.display = isWarranty ? 'inline-block' : 'none';
+            if (isWarranty) {
+                document.getElementById('summaryCost').innerText = '0₫ (Bảo hành)';
+            } else {
+                // Khôi phục giá dịch vụ đã chọn
+                const activeCard = document.querySelector('.service-card.border-danger');
+                if (activeCard) {
+                    const price = parseFloat(activeCard.dataset.price) || 0;
+                    updateCostDisplay(price);
+                }
+            }
+        });
+
+        // Cập nhật chi phí ước tính
+        function updateCostDisplay(price) {
+            const isWarranty = document.getElementById('checkHasWarranty').checked;
+            if (isWarranty) {
+                document.getElementById('summaryCost').innerText = '0₫ (Bảo hành)';
+            } else if (price > 0) {
+                document.getElementById('summaryCost').innerText = new Intl.NumberFormat('vi-VN').format(price) + '₫';
+            } else {
+                document.getElementById('summaryCost').innerText = 'Khám miễn phí';
+            }
+        }
+
+        // Đồng bộ chi nhánh
+        function updateSummaryBranch() {
+            const branch = document.getElementById('selectStoreBranch').value;
+            document.getElementById('summaryBranch').innerText = branch;
+        }
+
+        // Đồng bộ ngày hẹn
+        function updateSummaryDate() {
+            const rawDate = document.getElementById('inputBookingDate').value;
+            if (rawDate) {
+                const parts = rawDate.split('-');
+                if (parts.length === 3) {
+                    document.getElementById('summaryDate').innerText = `${parts[2]}/${parts[1]}/${parts[0]}`;
+                }
+            }
+        }
+
+        // Đồng bộ tên thiết bị khi gõ tay
+        document.getElementById('inputDeviceName').addEventListener('input', function () {
+            document.getElementById('summaryDevice').innerText = this.value.trim() || 'Chưa nhập tên máy';
+        });
+
+        // Lọc chi nhánh theo thành phố
+        function filterBranchesByCity() {
+            const city = document.getElementById('selectCity').value;
+            const selectBranch = document.getElementById('selectStoreBranch');
+            const options = selectBranch.querySelectorAll('option');
+
+            let firstMatch = null;
+            options.forEach(opt => {
+                if (opt.value.includes(city) || (city === 'Hồ Chí Minh' && opt.value.includes('TP.HCM'))) {
+                    opt.style.display = '';
+                    if (!firstMatch) firstMatch = opt;
+                } else {
+                    opt.style.display = 'none';
+                }
+            });
+
+            if (firstMatch) {
+                selectBranch.value = firstMatch.value;
+                updateSummaryBranch();
+            }
+        }
+
+        // Khởi tạo ban đầu
+        document.addEventListener('DOMContentLoaded', function () {
+            filterBranchesByCity();
+            updateSummaryDate();
+            updateSummaryBranch();
+
+            // Nếu ô IMEI đã có sẵn giá trị, tự động kiểm tra luôn!
+            const initImei = document.getElementById('inputSerialNumber')?.value?.trim();
+            if (initImei) {
+                checkImeiWarranty(initImei);
+            }
+        });
+    </script>
+}

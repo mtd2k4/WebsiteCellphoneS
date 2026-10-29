@@ -1,0 +1,91 @@
+@model WebsiteBanDienThoai.Models.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Đăng Ký Hội Viên Smember - CellphoneS";
+}
+
+<div class="container py-5" style="max-width: 540px;">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+        <!-- Header CellphoneS Red -->
+        <div class="bg-danger text-white text-center py-4 px-3" style="background: linear-gradient(135deg, #d70018 0%, #b30014 100%);">
+            <div class="d-inline-flex align-items-center justify-content-center bg-white text-danger rounded-circle mb-2 shadow" style="width: 56px; height: 56px; font-size: 26px;">
+                <i class="bi bi-person-plus-fill"></i>
+            </div>
+            <h4 class="fw-bold mb-1">Đăng Ký Tài Khoản Smember</h4>
+            <p class="small text-white-50 m-0">Tặng ngay <strong>50 điểm thưởng</strong> và ưu đãi giảm giá độc quyền</p>
+        </div>
+
+        <div class="card-body p-4">
+            <form asp-action="Register" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+                <div class="mb-3">
+                    <label asp-for="FullName" class="form-label small fw-bold">Họ và tên: <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-person-vcard"></i></span>
+                        <input asp-for="FullName" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" required />
+                    </div>
+                    <span asp-validation-for="FullName" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="PhoneNumber" class="form-label small fw-bold">Số điện thoại tích điểm Smember: <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-phone"></i></span>
+                        <input asp-for="PhoneNumber" class="form-control" placeholder="Ví dụ: 0912345678" required />
+                    </div>
+                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label small fw-bold">Địa chỉ Email: <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                        <input asp-for="Email" type="email" class="form-control" placeholder="Ví dụ: nguyenvana@gmail.com" required />
+                    </div>
+                    <span asp-validation-for="Email" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label small fw-bold">Mật khẩu: <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+                        <input asp-for="Password" type="password" id="reg-password" class="form-control" placeholder="Tối thiểu 6 ký tự" required />
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="ConfirmPassword" class="form-label small fw-bold">Xác nhận mật khẩu: <span class="text-danger">*</span></label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light text-muted"><i class="bi bi-shield-check"></i></span>
+                        <input asp-for="ConfirmPassword" type="password" id="reg-confirm" class="form-control" placeholder="Nhập lại mật khẩu trên" required />
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger small"></span>
+                </div>
+
+                <div class="mb-4 form-check">
+                    <input asp-for="AgreeTerms" class="form-check-input" type="checkbox" id="chkTerms" checked />
+                    <label class="form-check-label small text-muted" for="chkTerms">
+                        Tôi đồng ý với các <a href="#" class="text-danger text-decoration-none">Điều khoản sử dụng</a> và chính sách hội viên Smember của CellphoneS.
+                    </label>
+                    <span asp-validation-for="AgreeTerms" class="text-danger small d-block"></span>
+                </div>
+
+                <button type="submit" class="btn btn-danger w-100 py-2 fw-bold fs-6 shadow-sm mb-3">
+                    <i class="bi bi-person-plus-fill me-1"></i> HOÀN TẤT ĐĂNG KÝ
+                </button>
+
+                <div class="text-center small text-muted">
+                    Bạn đã có tài khoản Smember? 
+                    <a asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl" class="text-danger fw-bold text-decoration-none">Đăng nhập</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

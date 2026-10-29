@@ -1,0 +1,47 @@
+@{
+    ViewData["Title"] = "403 - Quyền Truy Cập Bị Từ Chối";
+}
+
+<div class="container py-5 text-center" style="max-width: 600px;">
+    <div class="card border-0 shadow-sm rounded-4 p-4 p-md-5">
+        <div class="mb-4">
+            <div class="d-inline-flex align-items-center justify-content-center bg-danger bg-opacity-10 text-danger rounded-circle p-4 mb-3" style="width: 100px; height: 100px;">
+                <i class="bi bi-shield-slash-fill" style="font-size: 52px;"></i>
+            </div>
+            <h2 class="fw-bolder text-dark mb-2">TRUY CẬP BỊ TỪ CHỐI</h2>
+            <span class="badge bg-danger fs-6 px-3 py-2 mb-3">HTTP 403 FORBIDDEN</span>
+            <p class="text-muted">
+                Tài khoản của bạn <strong>không có quyền Quản trị viên (Admin)</strong> để truy cập khu vực Quản trị hệ thống CellphoneS.
+            </p>
+        </div>
+
+        <div class="alert alert-warning border text-start small mb-4">
+            <div class="d-flex align-items-start gap-2">
+                <i class="bi bi-exclamation-triangle-fill fs-5 text-warning flex-shrink-0"></i>
+                <div>
+                    <strong>Lưu ý bảo mật:</strong> Khu vực này lưu trữ các chức năng nhạy cảm (Quản lý kho hàng, doanh thu, đơn hàng). Chỉ nhân viên có vai trò <strong>Admin</strong> mới được cấp quyền truy cập.
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex flex-column flex-sm-row justify-content-center gap-2">
+            <a href="/" class="btn btn-outline-secondary py-2 px-4 fw-bold">
+                <i class="bi bi-house-door-fill me-1"></i> Về Trang Chủ
+            </a>
+            <a asp-action="Login" asp-route-returnUrl="/Admin/Dashboard" class="btn btn-danger py-2 px-4 fw-bold">
+                <i class="bi bi-person-lock me-1"></i> Đăng Nhập Với Quyền Admin
+            </a>
+        </div>
+
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <div class="mt-4 pt-3 border-top text-muted small">
+                Đang đăng nhập với: <strong>@User.Identity.Name</strong> (@(User.IsInRole("Admin") ? "Admin" : "Khách hàng"))
+                <br />
+                <a asp-action="Logout" class="text-danger fw-bold text-decoration-none mt-1 d-inline-block">
+                    <i class="bi bi-box-arrow-right"></i> Đăng xuất tài khoản này
+                </a>
+            </div>
+        }
+    </div>
+</div>

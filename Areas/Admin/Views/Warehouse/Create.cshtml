@@ -1,0 +1,415 @@
+@{
+    ViewData["Title"] = "Lập Phiếu Nhập Hàng Mới";
+    var products = ViewBag.Products as IEnumerable<dynamic>;
+    var preselectedProductId = ViewBag.PreselectedProductId as int?;
+    var generatedReceiptCode = (string)ViewBag.GeneratedReceiptCode;
+}
+
+<div class="mb-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1" style="font-size: 13px;">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Warehouse" asp-action="Index">Kho hàng</a></li>
+            <li class="breadcrumb-item active text-danger fw-semibold">Tạo phiếu nhập</li>
+        </ol>
+    </nav>
+    <div class="d-flex align-items-center justify-content-between">
+        <div>
+            <h4 class="fw-bold mb-0 text-dark d-flex align-items-center gap-2">
+                <i class="bi bi-box-arrow-in-down text-danger"></i> Lập Phiếu Nhập Hàng (Tăng Tồn Kho)
+            </h4>
+            <div class="text-muted small">Nhập hàng hoá từ nhà cung cấp, tăng số lượng tồn kho tự động cho sản phẩm & biến thể</div>
+        </div>
+        <div>
+            <a asp-action="Index" class="btn btn-outline-secondary">
+                <i class="bi bi-arrow-left me-1"></i> Quay lại kho
+            </a>
+        </div>
+    </div>
+</div>
+
+<form id="createReceiptForm" onsubmit="submitReceipt(event, false)">
+    <div class="row g-4">
+        <!-- CỘT TRÁI: DANH SÁCH MẶT HÀNG NHẬP (CHIẾM 8 PHẦN) -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-3 mb-4">
+                <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-cart-plus-fill text-danger me-1"></i> Danh Sách Sản Phẩm Nhập Kho
+                    </h6>
+                    <button type="button" class="btn btn-sm btn-outline-danger fw-semibold" onclick="addRow()">
+                        <i class="bi bi-plus-circle me-1"></i> Thêm Dòng Sản Phẩm
+                    </button>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0" id="receiptItemsTable">
+                            <thead class="table-light small text-uppercase text-muted" style="font-size: 11px;">
+                                <tr>
+                                    <th style="min-width: 220px;" class="ps-3">Sản phẩm <span class="text-danger">*</span></th>
+                                    <th style="min-width: 170px;">Biến thể (Màu / Dung lượng)</th>
+                                    <th style="width: 110px;" class="text-center">Số lượng <span class="text-danger">*</span></th>
+                                    <th style="width: 150px;">Đơn giá nhập (₫) <span class="text-danger">*</span></th>
+                                    <th style="width: 150px;" class="text-end">Thành tiền (₫)</th>
+                                    <th style="width: 50px;" class="text-center pe-3"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="itemsTableBody">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                            <tfoot class="table-light fw-bold">
+                                <tr>
+                                    <td colspan="2" class="ps-3 text-uppercase small text-muted">Tổng cộng phiếu nhập</td>
+                                    <td class="text-center text-danger fs-6" id="grandTotalQty">0</td>
+                                    <td></td>
+                                    <td class="text-end text-danger fs-5" id="grandTotalAmount">0₫</td>
+                                    <td></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer bg-white py-3 border-top">
+                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addRow()">
+                        <i class="bi bi-plus-lg me-1"></i> Thêm sản phẩm khác vào phiếu
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI: THÔNG TIN NHÀ CUNG CẤP & CHỨNG TỪ (CHIẾM 4 PHẦN) -->
+        <div class="col-lg-4">
+            <!-- THÔNG TIN PHIẾU NHẬP -->
+            <div class="card border-0 shadow-sm rounded-3 mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-info-circle-fill text-primary me-1"></i> Thông Tin Chứng Từ
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Mã phiếu nhập <span class="text-danger">*</span></label>
+                        <input type="text" id="receiptCode" class="form-control font-monospace fw-bold" value="@generatedReceiptCode" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Ngày lập phiếu <span class="text-danger">*</span></label>
+                        <input type="datetime-local" id="importDate" class="form-control" value="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" required />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Người tạo phiếu</label>
+                        <input type="text" class="form-control bg-light" value="@(User.Identity?.Name ?? "Quản Trị Viên")" readonly />
+                    </div>
+                </div>
+            </div>
+
+            <!-- THÔNG TIN NHÀ CUNG CẤP -->
+            <div class="card border-0 shadow-sm rounded-3 mb-4">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="fw-bold mb-0 text-dark">
+                        <i class="bi bi-truck text-danger me-1"></i> Nhà Cung Cấp
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Tên nhà cung cấp <span class="text-danger">*</span></label>
+                        <input type="text" id="supplierName" class="form-control" placeholder="Nhập tên đối tác / nhà phân phối" required />
+                        
+                        <!-- Gợi ý nhanh -->
+                        <div class="mt-2 d-flex flex-wrap gap-1">
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setSupplier('FPT Synnex (Apple VN)', '02838248888', '39 Lê Duẩn, Q.1, TP.HCM')">FPT Synnex</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setSupplier('Samsung Electronics VN', '02839157310', 'Số 2 Hải Triều, Q.1, TP.HCM')">Samsung Vina</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setSupplier('Digiworld Corporation', '02839290059', '195 Cô Bắc, P. Cô Giang, Q.1')">Digiworld (DGW)</button>
+                            <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-2" style="font-size: 11px;" onclick="setSupplier('Xiaomi Việt Nam', '1800400188', 'Tòa nhà Landmark 81, TP.HCM')">Xiaomi VN</button>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Số điện thoại liên hệ</label>
+                        <input type="text" id="supplierPhone" class="form-control" placeholder="028..." />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Địa chỉ nhà cung cấp</label>
+                        <input type="text" id="supplierAddress" class="form-control" placeholder="Địa chỉ giao nhận" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Ghi chú phiếu nhập</label>
+                        <textarea id="receiptNote" class="form-control" rows="2" placeholder="Ghi chú đợt giao hàng, số hóa đơn đỏ, số hợp đồng..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TÁC VỤ HOÀN TẤT PHIẾU NHẬP -->
+            <div class="card border-0 shadow-sm rounded-3">
+                <div class="card-body p-3 d-grid gap-2">
+                    <button type="submit" id="btnSubmitComplete" class="btn btn-danger py-2 fw-bold fs-6 shadow-sm">
+                        <i class="bi bi-box-arrow-in-down me-1"></i> Lưu & Nhập Kho Ngay (+ Tồn kho)
+                    </button>
+                    <button type="button" onclick="submitReceipt(event, true)" class="btn btn-outline-secondary py-2 fw-semibold">
+                        <i class="bi bi-file-earmark me-1"></i> Lưu Dưới Dạng Bản Nháp
+                    </button>
+                    <small class="text-muted text-center mt-1" style="font-size: 11px;">
+                        <i class="bi bi-shield-check text-success me-1"></i> Chọn <b>Nhập Kho Ngay</b> sẽ tăng số lượng sản phẩm trong kho lập tức.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<!-- SẢN PHẨM TEMPLATE DATA CHO JAVASCRIPT -->
+<script>
+    const availableProducts = @Html.Raw(ViewBag.ProductsJson ?? "[]");
+    const preselectedId = @(preselectedProductId.HasValue ? preselectedProductId.Value.ToString() : "null");
+</script>
+
+@section Scripts {
+    <script>
+        let rowIndex = 0;
+
+        function setSupplier(name, phone, address) {
+            document.getElementById('supplierName').value = name;
+            document.getElementById('supplierPhone').value = phone;
+            document.getElementById('supplierAddress').value = address;
+        }
+
+        // Thêm một dòng sản phẩm vào bảng
+        function addRow(productId = null) {
+            rowIndex++;
+            const tbody = document.getElementById('itemsTableBody');
+            const tr = document.createElement('tr');
+            tr.id = `row-${rowIndex}`;
+
+            let productOptions = '<option value="">-- Chọn sản phẩm --</option>';
+            availableProducts.forEach(p => {
+                const selected = (productId && p.id === productId) ? 'selected' : '';
+                productOptions += `<option value="${p.id}" ${selected}>${p.name} (Tồn hiện tại: ${p.stock})</option>`;
+            });
+
+            tr.innerHTML = `
+                <td class="ps-3">
+                    <select class="form-select form-select-sm fw-semibold select-product" onchange="onProductChange(${rowIndex}, this.value)" required>
+                        ${productOptions}
+                    </select>
+                </td>
+                <td>
+                    <select class="form-select form-select-sm select-variant" id="variant-${rowIndex}" onchange="calculateRow(${rowIndex})">
+                        <option value="">-- Tiêu chuẩn (Không biến thể) --</option>
+                    </select>
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm text-center fw-bold input-qty" id="qty-${rowIndex}" value="10" min="1" oninput="calculateRow(${rowIndex})" required />
+                </td>
+                <td>
+                    <div class="input-group input-group-sm">
+                        <input type="number" class="form-control text-end fw-semibold input-price" id="price-${rowIndex}" value="0" min="0" oninput="calculateRow(${rowIndex})" required />
+                        <span class="input-group-text">₫</span>
+                    </div>
+                </td>
+                <td class="text-end fw-bold text-dark fs-6 pe-2" id="total-${rowIndex}">
+                    0₫
+                </td>
+                <td class="text-center pe-3">
+                    <button type="button" class="btn btn-sm btn-outline-danger py-0 px-1 border-0" onclick="removeRow(${rowIndex})" title="Xoá dòng này">
+                        <i class="bi bi-trash3-fill"></i>
+                    </button>
+                </td>
+            `;
+
+            tbody.appendChild(tr);
+
+            if (productId) {
+                onProductChange(rowIndex, productId);
+            }
+        }
+
+        // Khi đổi sản phẩm: load biến thể & đề xuất đơn giá nhập (80% giá bán)
+        async function onProductChange(rowId, productId) {
+            const variantSelect = document.getElementById(`variant-${rowId}`);
+            const priceInput = document.getElementById(`price-${rowId}`);
+            variantSelect.innerHTML = '<option value="">-- Đang tải... --</option>';
+
+            const prod = availableProducts.find(p => p.id == productId);
+            if (prod) {
+                // Đề xuất giá nhập ban đầu bằng 80% giá niêm yết
+                priceInput.value = Math.round(prod.price * 0.8 / 1000) * 1000;
+            }
+
+            if (!productId) {
+                variantSelect.innerHTML = '<option value="">-- Tiêu chuẩn (Không biến thể) --</option>';
+                calculateRow(rowId);
+                return;
+            }
+
+            try {
+                const res = await fetch(`/Admin/Warehouse/GetProductVariants?productId=${productId}`);
+                const variants = await res.json();
+
+                if (Array.isArray(variants) && variants.length > 0) {
+                    let optHtml = '<option value="">-- Chọn biến thể cụ thể --</option>';
+                    variants.forEach(v => {
+                        optHtml += `<option value="${v.id}" data-price="${v.price}">${v.colorName} - ${v.storage} (Tồn: ${v.stockQuantity})</option>`;
+                    });
+                    variantSelect.innerHTML = optHtml;
+                } else {
+                    variantSelect.innerHTML = '<option value="">-- Tiêu chuẩn (Không biến thể) --</option>';
+                }
+            } catch (e) {
+                variantSelect.innerHTML = '<option value="">-- Tiêu chuẩn --</option>';
+            }
+
+            calculateRow(rowId);
+        }
+
+        function calculateRow(rowId) {
+            const qtyInput = document.getElementById(`qty-${rowId}`);
+            const priceInput = document.getElementById(`price-${rowId}`);
+            const totalEl = document.getElementById(`total-${rowId}`);
+
+            if (!qtyInput || !priceInput || !totalEl) return;
+
+            const qty = parseInt(qtyInput.value) || 0;
+            const price = parseFloat(priceInput.value) || 0;
+            const total = qty * price;
+
+            totalEl.innerText = total.toLocaleString('vi-VN') + '₫';
+            calculateGrandTotal();
+        }
+
+        function calculateGrandTotal() {
+            let totalQty = 0;
+            let totalAmount = 0;
+
+            document.querySelectorAll('#itemsTableBody tr').forEach(tr => {
+                const qtyInput = tr.querySelector('.input-qty');
+                const priceInput = tr.querySelector('.input-price');
+                if (qtyInput && priceInput) {
+                    const q = parseInt(qtyInput.value) || 0;
+                    const p = parseFloat(priceInput.value) || 0;
+                    totalQty += q;
+                    totalAmount += (q * p);
+                }
+            });
+
+            document.getElementById('grandTotalQty').innerText = totalQty.toLocaleString('vi-VN');
+            document.getElementById('grandTotalAmount').innerText = totalAmount.toLocaleString('vi-VN') + '₫';
+        }
+
+        function removeRow(rowId) {
+            const row = document.getElementById(`row-${rowId}`);
+            if (row) {
+                row.remove();
+                calculateGrandTotal();
+            }
+        }
+
+        // Gửi phiếu nhập lên server
+        async function submitReceipt(e, isDraft) {
+            if (e) e.preventDefault();
+
+            const supplierName = document.getElementById('supplierName').value.trim();
+            if (!supplierName) {
+                Swal.fire('Chú ý', 'Vui lòng nhập tên nhà cung cấp!', 'warning');
+                return;
+            }
+
+            const items = [];
+            const rows = document.querySelectorAll('#itemsTableBody tr');
+            if (rows.length === 0) {
+                Swal.fire('Chú ý', 'Vui lòng thêm ít nhất một sản phẩm vào phiếu nhập!', 'warning');
+                return;
+            }
+
+            let hasInvalid = false;
+            rows.forEach(tr => {
+                const prodSelect = tr.querySelector('.select-product');
+                const variantSelect = tr.querySelector('.select-variant');
+                const qtyInput = tr.querySelector('.input-qty');
+                const priceInput = tr.querySelector('.input-price');
+
+                const prodId = parseInt(prodSelect.value) || 0;
+                const variantId = parseInt(variantSelect.value) || null;
+                const variantText = variantSelect.selectedIndex > 0 ? variantSelect.options[variantSelect.selectedIndex].text : null;
+                const qty = parseInt(qtyInput.value) || 0;
+                const price = parseFloat(priceInput.value) || 0;
+
+                if (prodId <= 0 || qty <= 0) {
+                    hasInvalid = true;
+                } else {
+                    items.push({
+                        productId: prodId,
+                        productVariantId: variantId,
+                        variantInfo: variantText,
+                        quantity: qty,
+                        importPrice: price
+                    });
+                }
+            });
+
+            if (hasInvalid || items.length === 0) {
+                Swal.fire('Chú ý', 'Vui lòng kiểm tra lại: Chọn sản phẩm và nhập số lượng > 0 cho tất cả các dòng!', 'warning');
+                return;
+            }
+
+            const payload = {
+                receiptCode: document.getElementById('receiptCode').value.trim(),
+                supplierName: supplierName,
+                supplierPhone: document.getElementById('supplierPhone').value.trim(),
+                supplierAddress: document.getElementById('supplierAddress').value.trim(),
+                importDate: document.getElementById('importDate').value ? new Date(document.getElementById('importDate').value).toISOString() : new Date().toISOString(),
+                note: document.getElementById('receiptNote').value.trim(),
+                isDraft: isDraft,
+                items: items
+            };
+
+            const btn = isDraft ? document.getElementById('btnSubmitDraft') : document.getElementById('btnSubmitComplete');
+            if (btn) btn.disabled = true;
+
+            try {
+                const res = await fetch('/Admin/Warehouse/CreateReceipt', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Thành công',
+                        text: data.message,
+                        confirmButtonColor: '#d70018'
+                    }).then(() => {
+                        window.location.href = `/Admin/Warehouse/Details/${data.receiptId}`;
+                    });
+                } else {
+                    Swal.fire('Lỗi', data.message || 'Không thể tạo phiếu nhập kho.', 'error');
+                    if (btn) btn.disabled = false;
+                }
+            } catch (err) {
+                Swal.fire('Lỗi', 'Có lỗi kết nối đến máy chủ.', 'error');
+                if (btn) btn.disabled = false;
+            }
+        }
+
+        // Expose functions globally for onclick attributes
+        window.addRow = addRow;
+        window.removeRow = removeRow;
+        window.onProductChange = onProductChange;
+        window.calculateRow = calculateRow;
+        window.setSupplier = setSupplier;
+        window.submitReceipt = submitReceipt;
+
+        // Khởi tạo dòng đầu tiên
+        document.addEventListener('DOMContentLoaded', () => {
+            if (preselectedId) {
+                addRow(preselectedId);
+            } else {
+                addRow();
+            }
+        });
+    </script>
+}

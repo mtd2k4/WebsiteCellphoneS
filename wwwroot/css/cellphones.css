@@ -1,0 +1,2416 @@
+/* ============================================================
+   CELLPHONES E-COMMERCE DESIGN SYSTEM & STYLING
+   Brand Color: #D70018 (CellphoneS Red)
+   Author: WebsiteBanDienThoai (.NET 8.0 MVC)
+   ============================================================ */
+
+:root {
+  --cps-red: #D70018;
+  --cps-red-dark: #b30013;
+  --cps-red-light: #fff5f5;
+  --cps-red-gradient: linear-gradient(135deg, #e51028 0%, #D70018 50%, #ba0014 100%);
+  --cps-flash-gradient: linear-gradient(90deg, #d70018 0%, #ff4d4f 50%, #f5222d 100%);
+  --cps-blue: #0071e3;
+  --cps-yellow: #ff9800;
+  --cps-green: #10b981;
+  --cps-text: #212529;
+  --cps-text-muted: #707070;
+  --cps-text-light: #9ca3af;
+  --cps-bg-body: #f4f6f8;
+  --cps-bg-card: #ffffff;
+  --cps-border: #e5e7eb;
+  --cps-radius-sm: 6px;
+  --cps-radius-md: 10px;
+  --cps-radius-lg: 14px;
+  --cps-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --cps-shadow-hover: 0 6px 16px rgba(0, 0, 0, 0.12);
+  --cps-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+body {
+  font-family: var(--cps-font);
+  background-color: var(--cps-bg-body);
+  color: var(--cps-text);
+  margin: 0;
+  padding: 0;
+  overflow-x: clip;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: color 0.2s ease;
+}
+
+/* ============================================================
+   1. TOP ANNOUNCEMENT BAR
+   ============================================================ */
+.cps-topbar {
+  background: linear-gradient(90deg, #8a000e 0%, #ba0014 25%, #d70018 50%, #ba0014 75%, #8a000e 100%);
+  color: #ffffff;
+  font-size: 12px;
+  padding: 6px 0;
+  font-weight: 500;
+  overflow: hidden;
+  letter-spacing: 0.15px;
+}
+
+.cps-topbar a {
+  color: #ffffff;
+  transition: opacity 0.2s ease;
+}
+
+.cps-topbar a:hover {
+  opacity: 0.95;
+  color: #ffffff;
+}
+
+.cps-topbar .pulse-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #ffd700;
+  border-radius: 50%;
+  display: inline-block;
+  margin-right: 6px;
+  animation: cpsPulse 1.5s infinite;
+}
+
+@keyframes cpsPulse {
+  0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0.7); }
+  70% { transform: scale(1.1); box-shadow: 0 0 0 8px rgba(255, 215, 0, 0); }
+  100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(255, 215, 0, 0); }
+}
+
+.cps-guarantee-bar {
+  background: #9e0012;
+  color: #ffffff;
+  font-size: 11.5px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  white-space: nowrap !important;
+}
+
+.cps-guarantee-bar .container {
+  max-width: 1360px !important;
+}
+
+.cps-guarantee-bar .item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: rgba(255, 255, 255, 0.92);
+  transition: color 0.2s ease;
+  font-size: 11.5px;
+  white-space: nowrap !important;
+  flex-shrink: 0;
+}
+
+.cps-guarantee-bar .item:hover {
+  color: #ffffff;
+}
+
+.cps-guarantee-bar .item strong {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* ============================================================
+   2. STICKY MAIN HEADER (#D70018)
+   ============================================================ */
+.cps-header {
+  background: linear-gradient(135deg, #e51028 0%, #D70018 55%, #ba0014 100%);
+  color: #ffffff;
+  position: sticky;
+  top: 0;
+  z-index: 1040;
+  box-shadow: 0 4px 16px rgba(215, 0, 24, 0.25);
+  padding: 8px 0;
+}
+
+.cps-header .container-fluid,
+.cps-header .container {
+  max-width: 1360px !important;
+}
+
+/* Brand Logo */
+.cps-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 24px;
+  font-weight: 900;
+  color: #ffffff;
+  letter-spacing: -0.5px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.cps-logo:hover {
+  color: #ffffff;
+  transform: scale(1.02);
+}
+
+.cps-logo span.highlight {
+  background: #ffffff;
+  color: var(--cps-red);
+  padding: 2px 7px;
+  border-radius: 6px;
+  margin-left: 2px;
+  font-size: 19px;
+  font-weight: 900;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+}
+
+/* Header Glassmorphism Buttons */
+.cps-btn-category,
+.cps-btn-action {
+  background: rgba(255, 255, 255, 0.16);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  white-space: nowrap !important;
+  height: 42px;
+}
+
+.cps-btn-category:hover,
+.cps-btn-action:hover {
+  background: rgba(255, 255, 255, 0.26);
+  border-color: rgba(255, 255, 255, 0.4);
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+.cps-btn-category:active,
+.cps-btn-action:active {
+  transform: translateY(0);
+}
+
+.cps-btn-action.dropdown-toggle::after {
+  margin-left: 3px;
+  vertical-align: 0.15em;
+  opacity: 0.8;
+}
+
+/* Search Bar (Spacious & Modern) */
+.cps-search-wrapper {
+  position: relative;
+  flex: 1 1 auto;
+  min-width: 200px;
+  max-width: 520px;
+}
+
+.cps-search-box {
+  background: #ffffff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  height: 42px;
+  width: 100%;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  transition: all 0.2s ease;
+  border: 1.5px solid transparent;
+}
+
+.cps-search-box:focus-within {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16), 0 0 0 3px rgba(255, 255, 255, 0.35);
+  border-color: rgba(215, 0, 24, 0.3);
+}
+
+.cps-search-box input {
+  border: none;
+  outline: none;
+  font-size: 13.5px;
+  width: 100%;
+  color: var(--cps-text);
+  padding: 6px 8px;
+  font-family: var(--cps-font);
+}
+
+.cps-search-box input::placeholder {
+  color: #8c95a0;
+  font-size: 13px;
+}
+
+.cps-search-box i {
+  color: #d70018;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+/* Search Results Autocomplete Dropdown */
+.cps-search-results {
+  position: absolute;
+  top: 45px;
+  left: 0;
+  width: 100%;
+  min-width: 380px;
+  max-width: min(520px, 94vw);
+  background: #ffffff;
+  border-radius: var(--cps-radius-md);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--cps-border);
+  z-index: 1050;
+  max-height: 440px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: none;
+}
+
+.cps-search-results.show {
+  display: block;
+}
+
+.cps-search-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f3f4f6;
+  transition: background 0.15s ease;
+}
+
+.cps-search-item:hover {
+  background: #f9fafb;
+}
+
+.cps-search-item img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 4px;
+}
+
+.cps-search-item .info h6 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cps-text);
+}
+
+.cps-search-item .info .price {
+  color: var(--cps-red);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Cart Badge */
+.cps-cart-btn {
+  position: relative;
+}
+
+.cps-cart-count {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #ffffff;
+  color: var(--cps-red);
+  font-size: 11px;
+  font-weight: 800;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+/* ============================================================
+   3. HERO SECTION (3 COLUMNS)
+   ============================================================ */
+.cps-hero-section {
+  padding: 14px 0;
+}
+
+.cps-hero-container {
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* Left Sidebar Menu */
+.cps-sidebar-menu {
+  background: #ffffff;
+  border-radius: var(--cps-radius-lg);
+  box-shadow: var(--cps-shadow);
+  overflow: visible;
+  position: relative;
+  height: 100%;
+}
+
+.cps-menu-list {
+  list-style: none;
+  padding: 6px 0;
+  margin: 0;
+}
+
+.cps-menu-item {
+  position: relative;
+}
+
+.cps-menu-link {
+  display: flex;
+  align-items: center;
+  padding: 7.5px 12px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #374151;
+  transition: all 0.15s ease;
+  border-radius: 6px;
+  margin: 0 6px;
+}
+
+.cps-menu-link i.menu-icon {
+  font-size: 16px;
+  width: 22px;
+  color: #4b5563;
+  margin-right: 8px;
+}
+
+.cps-menu-link i.bi-chevron-right {
+  margin-left: auto;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.cps-menu-item:hover .cps-menu-link {
+  background: #fee2e2;
+  color: var(--cps-red);
+}
+
+.cps-menu-item:hover .cps-menu-link i {
+  color: var(--cps-red);
+}
+
+/* Mega Menu Flyout */
+.cps-mega-flyout {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 720px;
+  background: #ffffff;
+  border-radius: var(--cps-radius-lg);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+  border: 1px solid var(--cps-border);
+  padding: 16px 20px;
+  display: none;
+  z-index: 1030;
+  min-height: 100%;
+}
+
+.cps-menu-item:hover .cps-mega-flyout {
+  display: block;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(5px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.cps-flyout-column h6 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cps-red);
+  margin-bottom: 8px;
+  border-bottom: 1px solid #f3f4f6;
+  padding-bottom: 4px;
+}
+
+.cps-flyout-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cps-flyout-column ul li a {
+  display: block;
+  font-size: 12px;
+  color: #4b5563;
+  padding: 4px 0;
+}
+
+.cps-flyout-column ul li a:hover {
+  color: var(--cps-red);
+  font-weight: 600;
+}
+
+/* Center Slider */
+.cps-main-slider {
+  border-radius: var(--cps-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--cps-shadow);
+  background: #ffffff;
+}
+
+.cps-main-slider .swiper-slide img {
+  width: 100%;
+  height: 330px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Slider Bottom Tabs */
+.cps-slider-tabs {
+  display: flex;
+  background: #ffffff;
+  border-top: 1px solid #f3f4f6;
+}
+
+.cps-tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 8px 4px;
+  font-size: 11.5px;
+  color: #4b5563;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+  line-height: 1.3;
+}
+
+.cps-tab-item.active {
+  color: var(--cps-red);
+  font-weight: 700;
+  border-bottom-color: var(--cps-red);
+  background: #fff5f5;
+}
+
+/* Right Widget (Smember + Mini Banners) */
+.cps-right-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cps-smember-box {
+  background: #ffffff;
+  border-radius: var(--cps-radius-lg);
+  box-shadow: var(--cps-shadow);
+  padding: 12px 14px;
+}
+
+.cps-smember-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.cps-smember-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #ffd3a5 0%, #fd6585 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  font-size: 18px;
+}
+
+.cps-smember-header h6 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cps-text);
+}
+
+.cps-smember-box p {
+  font-size: 11.5px;
+  color: #6b7280;
+  margin: 0 0 10px 0;
+  line-height: 1.4;
+}
+
+.cps-smember-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.cps-smember-actions .btn-smember {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: 6px;
+  padding: 5px 0;
+  text-align: center;
+}
+
+.cps-mini-banner {
+  border-radius: var(--cps-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--cps-shadow);
+  transition: transform 0.2s ease;
+  background: #ffffff;
+}
+
+.cps-mini-banner:hover {
+  transform: translateY(-2px);
+}
+
+.cps-mini-banner img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+
+/* ============================================================
+   4. QUICK SERVICE PILLS BAR
+   ============================================================ */
+.cps-quick-pills {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding: 4px 0 14px 0;
+  scrollbar-width: none;
+}
+
+.cps-quick-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.cps-pill-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid var(--cps-border);
+  border-radius: 30px;
+  padding: 6px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #374151;
+  white-space: nowrap;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  transition: all 0.2s ease;
+}
+
+.cps-pill-item:hover {
+  border-color: var(--cps-red);
+  color: var(--cps-red);
+  transform: translateY(-1px);
+}
+
+.cps-pill-item i {
+  color: var(--cps-red);
+  font-size: 15px;
+}
+
+/* ============================================================
+   5. FLASH SALE "HOT SALE CUỐI TUẦN"
+   ============================================================ */
+.cps-flashsale-block {
+  background: var(--cps-flash-gradient);
+  border-radius: var(--cps-radius-lg);
+  padding: 14px 16px;
+  margin-bottom: 24px;
+  box-shadow: 0 4px 15px rgba(215, 0, 24, 0.25);
+  color: #ffffff;
+}
+
+.cps-flashsale-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cps-flashsale-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 20px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.cps-flashsale-title i {
+  color: #ffeb3b;
+  font-size: 24px;
+  animation: bounceFire 1s infinite alternate;
+}
+
+@keyframes bounceFire {
+  from { transform: translateY(0); }
+  to { transform: translateY(-3px) scale(1.1); }
+}
+
+/* Countdown Clock */
+.cps-countdown {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.cps-countdown .time-box {
+  background: #000000;
+  color: #ffffff;
+  padding: 3px 6px;
+  border-radius: 4px;
+  font-size: 14px;
+  min-width: 28px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.cps-countdown .colon {
+  font-size: 14px;
+  font-weight: 900;
+}
+
+/* Flash Sale Card */
+.cps-flashsale-block .cps-product-card {
+  border: none;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* Progress Bar for Sold Items */
+.cps-sold-progress {
+  background: #fed7aa;
+  border-radius: 20px;
+  height: 16px;
+  position: relative;
+  overflow: hidden;
+  margin-top: 6px;
+}
+
+.cps-sold-progress .bar {
+  background: linear-gradient(90deg, #ea580c, #dc2626);
+  height: 100%;
+  border-radius: 20px;
+}
+
+.cps-sold-progress .label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* ============================================================
+   6. PRODUCT CARD COMPONENT (CHỮ KÝ CELLPHONES)
+   ============================================================ */
+.cps-product-card {
+  background: var(--cps-bg-card);
+  border-radius: var(--cps-radius-md);
+  border: 1px solid var(--cps-border);
+  box-shadow: var(--cps-shadow);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  transition: all 0.25s ease;
+  height: 100%;
+}
+
+.cps-product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--cps-shadow-hover);
+  border-color: #fca5a5;
+}
+
+/* Badges on Top */
+.cps-card-badges {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  z-index: 5;
+  pointer-events: none;
+}
+
+.cps-badge-installment {
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.cps-badge-discount {
+  background: var(--cps-red);
+  color: #ffffff;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Image */
+.cps-card-image {
+  position: relative;
+  width: 100%;
+  padding-top: 100%; /* 1:1 Aspect Ratio */
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.cps-card-image img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.cps-product-card:hover .cps-card-image img {
+  transform: scale(1.06);
+}
+
+/* Product Info */
+.cps-card-title {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--cps-text);
+  line-height: 1.35;
+  height: 36px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  margin-bottom: 6px;
+}
+
+.cps-product-card:hover .cps-card-title {
+  color: var(--cps-red);
+}
+
+/* Price Box */
+.cps-card-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.cps-sale-price {
+  color: var(--cps-red);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.cps-origin-price {
+  color: var(--cps-text-light);
+  font-size: 12px;
+  text-decoration: line-through;
+  font-weight: 500;
+}
+
+/* Smember Discount Box */
+.cps-smember-tag {
+  background: var(--cps-red-light);
+  border: 1px dashed #fca5a5;
+  border-radius: 4px;
+  padding: 3px 6px;
+  font-size: 11px;
+  color: var(--cps-red);
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+/* Promotion info box */
+.cps-promo-box {
+  background: #f9fafb;
+  border: 1px solid #f3f4f6;
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-size: 11px;
+  color: #4b5563;
+  margin-bottom: 8px;
+  line-height: 1.3;
+  height: 32px;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+/* Rating & Wishlist */
+.cps-card-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #6b7280;
+  padding-top: 6px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.cps-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.cps-rating i {
+  color: var(--cps-yellow);
+}
+
+.cps-wishlist-btn {
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.cps-wishlist-btn:hover {
+  color: var(--cps-red);
+}
+
+/* ============================================================
+   7. CATEGORY SECTION HEADER & BRAND TABS
+   ============================================================ */
+.cps-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cps-section-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--cps-text);
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.cps-brand-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.cps-brand-tab {
+  background: #ffffff;
+  border: 1px solid var(--cps-border);
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cps-brand-tab:hover,
+.cps-brand-tab.active {
+  background: var(--cps-red);
+  color: #ffffff;
+  border-color: var(--cps-red);
+}
+
+.cps-view-all {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cps-red);
+}
+
+.cps-view-all:hover {
+  text-decoration: underline;
+}
+
+/* ============================================================
+   8. SFORUM TECH NEWS CARDS
+   ============================================================ */
+.cps-news-card {
+  background: #ffffff;
+  border-radius: var(--cps-radius-md);
+  overflow: hidden;
+  box-shadow: var(--cps-shadow);
+  transition: transform 0.2s ease;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.cps-news-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--cps-shadow-hover);
+}
+
+.cps-news-thumb {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+}
+
+.cps-news-body {
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.cps-news-tag {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--cps-red);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.cps-news-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--cps-text);
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.cps-news-time {
+  margin-top: auto;
+  font-size: 11.5px;
+  color: #9ca3af;
+}
+
+/* ============================================================
+   9. FOOTER
+   ============================================================ */
+.cps-footer {
+  background: #ffffff;
+  border-top: 1px solid var(--cps-border);
+  padding: 30px 0 15px 0;
+  margin-top: 40px;
+  font-size: 12px;
+  color: #4b5563;
+}
+
+.cps-footer h6 {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--cps-text);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.cps-footer ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.cps-footer ul li {
+  margin-bottom: 6px;
+}
+
+.cps-footer ul li a:hover {
+  color: var(--cps-red);
+}
+
+.cps-footer .hotline-box strong {
+  color: var(--cps-red);
+  font-size: 14px;
+}
+
+.cps-footer-bottom {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 15px;
+  margin-top: 25px;
+  text-align: center;
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+/* ============================================================
+   10. MOBILE BOTTOM NAVIGATION BAR
+   ============================================================ */
+.cps-mobile-bottom-nav {
+  display: none;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+  border-top: 1px solid var(--cps-border);
+  z-index: 1040;
+  padding: 6px 0 4px 0;
+}
+
+.cps-bottom-nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  font-size: 10px;
+  font-weight: 600;
+  flex: 1;
+  position: relative;
+}
+
+.cps-bottom-nav-item i {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.cps-bottom-nav-item.active,
+.cps-bottom-nav-item:hover {
+  color: var(--cps-red);
+}
+
+@media (max-width: 991.98px) {
+  .cps-mobile-bottom-nav {
+    display: flex;
+  }
+  body {
+    padding-bottom: 55px;
+  }
+  .cps-sidebar-menu,
+  .cps-right-widget {
+    display: none;
+  }
+  .cps-main-slider .swiper-slide img {
+    height: 200px;
+  }
+  .cps-search-wrapper {
+    max-width: 100%;
+  }
+}
+
+/* ============================================================
+   11. HOMEPAGE ENHANCEMENT STYLES
+   ============================================================ */
+
+/* Flash Sale Tabs */
+.cps-flash-tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  margin-bottom: 12px;
+}
+
+.cps-flash-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.cps-flash-tab {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cps-flash-tab:hover,
+.cps-flash-tab.active {
+  background: #ffffff;
+  color: var(--cps-red);
+  border-color: #ffffff;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Price Filter Pills */
+.cps-price-pills {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.cps-price-pill {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  color: #4b5563;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.cps-price-pill:hover,
+.cps-price-pill.active {
+  background: var(--cps-red);
+  color: #ffffff;
+  border-color: var(--cps-red);
+}
+
+/* Wishlist Active */
+.cps-wishlist-btn.active i {
+  color: var(--cps-red) !important;
+  font-weight: 900;
+}
+
+/* Apple Authorised Reseller Showcase (AAR) */
+.cps-aar-box {
+  background: linear-gradient(135deg, #1c1c1e 0%, #2c2c2e 100%);
+  border-radius: var(--cps-radius-lg);
+  padding: 20px 24px;
+  color: #ffffff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+  margin-bottom: 24px;
+}
+
+.cps-aar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cps-aar-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.cps-aar-badge {
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-size: 11px;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* Trade-In Valuation Calculator Widget */
+.cps-tradein-widget {
+  background: linear-gradient(135deg, #ffffff 0%, #fff7f7 100%);
+  border: 2px solid #fecaca;
+  border-radius: var(--cps-radius-lg);
+  padding: 20px 24px;
+  box-shadow: var(--cps-shadow);
+  margin-bottom: 24px;
+}
+
+.cps-tradein-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.cps-tradein-header i {
+  font-size: 26px;
+  color: var(--cps-red);
+}
+
+.cps-tradein-header h4 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--cps-text);
+  text-transform: uppercase;
+}
+
+.cps-tradein-result {
+  background: #ffffff;
+  border: 1px solid #fed7aa;
+  border-radius: var(--cps-radius-md);
+  padding: 14px;
+  text-align: center;
+}
+
+/* SEO Description Collapsible Box */
+.cps-seo-box {
+  background: #ffffff;
+  border-radius: var(--cps-radius-lg);
+  border: 1px solid var(--cps-border);
+  padding: 20px 24px;
+  margin-top: 30px;
+  position: relative;
+}
+
+.cps-seo-content {
+  max-height: 120px;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+  font-size: 13px;
+  line-height: 1.7;
+  color: #4b5563;
+}
+
+.cps-seo-content.expanded {
+  max-height: 1200px;
+}
+
+.cps-seo-toggle-btn {
+  display: block;
+  margin: 10px auto 0 auto;
+  background: none;
+  border: 1px solid var(--cps-border);
+  color: var(--cps-red);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 5px 20px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cps-seo-toggle-btn:hover {
+  background: var(--cps-red);
+  color: #ffffff;
+  border-color: var(--cps-red);
+}
+
+/* Floating Action Buttons */
+.cps-floating-buttons {
+  position: fixed;
+  bottom: 70px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 1030;
+}
+
+.cps-float-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+  font-size: 20px;
+}
+
+.cps-float-btn:hover {
+  transform: scale(1.1);
+  color: #ffffff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.cps-float-hotline {
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
+}
+
+.cps-float-zalo {
+  background: linear-gradient(135deg, #0068ff 0%, #0050c8 100%);
+}
+
+.cps-float-top {
+  background: rgba(31, 41, 55, 0.8);
+  display: none;
+}
+
+/* Trending search pills */
+.cps-trending-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  background: #f9fafb;
+  border-bottom: 1px solid var(--cps-border);
+}
+
+.cps-trend-pill {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: #374151;
+  cursor: pointer;
+  display: inline-block;
+  transition: all 0.15s ease;
+}
+
+.cps-trend-pill:hover {
+  border-color: var(--cps-red);
+  color: var(--cps-red);
+  background: #fff5f5;
+  box-shadow: 0 1px 4px rgba(215, 0, 24, 0.15);
+}
+
+/* ============================================================
+   SMEMBER COUPON TICKET STYLING (.cps-ticket-card)
+   ============================================================ */
+.cps-ticket-card {
+  position: relative;
+  background: #ffffff;
+  border-radius: 16px;
+  border: 1.5px solid #fed7d7;
+  box-shadow: 0 4px 16px rgba(215, 0, 24, 0.05);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  height: 100%;
+}
+
+.cps-ticket-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 28px rgba(215, 0, 24, 0.12);
+  border-color: #f87171;
+}
+
+.cps-ticket-top-ribbon {
+  height: 4px;
+  background: linear-gradient(90deg, #d70018 0%, #ff4d4f 50%, #f59e0b 100%);
+  width: 100%;
+}
+
+.cps-ticket-body {
+  padding: 16px 18px 12px 18px;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #fffafa 0%, #ffffff 100%);
+}
+
+.cps-ticket-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.cps-ticket-discount-tag {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #d70018 0%, #b91c1c 100%);
+  color: #ffffff;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(215, 0, 24, 0.28);
+  letter-spacing: -0.2px;
+  white-space: nowrap;
+}
+
+.cps-ticket-scope-tag {
+  display: inline-flex;
+  align-items: center;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #fecaca;
+  white-space: normal;
+  word-break: break-word;
+}
+
+.cps-ticket-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.cps-ticket-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.45;
+  margin-bottom: 10px;
+}
+
+.cps-ticket-expiry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  color: #64748b;
+  padding-top: 8px;
+  border-top: 1px dashed #f1f5f9;
+  margin-top: auto;
+}
+
+.cps-ticket-days-left {
+  background: #fffbeb;
+  color: #b45309;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #fde68a;
+  white-space: nowrap;
+}
+
+.cps-ticket-divider {
+  position: relative;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  margin: 0;
+  background: #ffffff;
+}
+
+.cps-ticket-notch {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+
+.cps-ticket-notch-left {
+  left: -10px;
+  border-right: 1.5px solid #fed7d7;
+  box-shadow: inset -2px 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.cps-ticket-notch-right {
+  right: -10px;
+  border-left: 1.5px solid #fed7d7;
+  box-shadow: inset 2px 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.cps-ticket-perforation {
+  width: 100%;
+  margin: 0 16px;
+  border-top: 1.5px dashed #fca5a5;
+  height: 0;
+}
+
+.cps-ticket-footer {
+  padding: 12px 18px 14px 18px;
+  background: #fff8f8;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cps-ticket-code-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  color: #94a3b8;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.cps-ticket-code-val {
+  font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+  font-size: 14px;
+  font-weight: 700;
+  color: #d70018;
+  letter-spacing: 1px;
+  background: #fee2e2;
+  padding: 3px 8px;
+  border-radius: 6px;
+  border: 1px dashed #f87171;
+  display: inline-block;
+  user-select: all;
+}
+
+.btn-cps-copy {
+  background: #ffffff;
+  color: #d70018;
+  border: 1.5px solid #d70018;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-cps-copy:hover {
+  background: #d70018;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(215, 0, 24, 0.25);
+}
+
+.btn-cps-copy.copied {
+  background: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25) !important;
+}
+
+/* ============================================================
+   PRODUCT VARIANTS STYLING (PHIÊN BẢN & MÀU SẮC)
+   ============================================================ */
+.cps-storage-pill {
+  position: relative;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: left;
+  user-select: none;
+}
+
+.cps-storage-pill:hover {
+  border-color: #fca5a5;
+  background: #fffafa;
+}
+
+.cps-storage-pill.active {
+  border-color: #d70018 !important;
+  background: #fff5f5 !important;
+  box-shadow: 0 2px 8px rgba(215, 0, 24, 0.15);
+}
+
+.cps-storage-pill .storage-name {
+  font-weight: 700;
+  font-size: 13.5px;
+  color: #1e293b;
+  display: block;
+}
+
+.cps-storage-pill.active .storage-name {
+  color: #d70018;
+}
+
+.cps-storage-pill .storage-price {
+  font-size: 11.5px;
+  color: #64748b;
+  display: block;
+}
+
+.cps-storage-pill.active .storage-price {
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.cps-color-pill {
+  position: relative;
+  background: #ffffff;
+  border: 1.5px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+}
+
+.cps-color-pill:hover {
+  border-color: #fca5a5;
+  background: #fffafa;
+}
+
+.cps-color-pill.active {
+  border-color: #d70018 !important;
+  background: #fff5f5 !important;
+  box-shadow: 0 2px 8px rgba(215, 0, 24, 0.15);
+}
+
+.cps-color-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: inline-block;
+  border: 1.5px solid rgba(0, 0, 0, 0.15);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.cps-color-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.cps-color-pill.active .cps-color-name {
+  color: #d70018;
+}
+
+/* ============================================================
+   PRODUCT REVIEWS & RATINGS STYLING (ĐÁNH GIÁ & NHẬN XÉT)
+   ============================================================ */
+.cps-rating-overview-card {
+  background: #ffffff;
+  border: 1px solid #f1f5f9;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.cps-big-score {
+  font-size: 48px;
+  font-weight: 900;
+  color: #d70018;
+  line-height: 1;
+}
+
+.cps-star-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 12px;
+}
+
+.cps-star-bar .progress {
+  flex-grow: 1;
+  height: 8px;
+  border-radius: 4px;
+  background-color: #f1f5f9;
+}
+
+.cps-review-item {
+  background: #ffffff;
+  border-bottom: 1px solid #f1f5f9;
+  padding: 20px 0;
+  transition: background 0.15s ease;
+}
+
+.cps-review-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(234, 88, 12, 0.25);
+  flex-shrink: 0;
+}
+
+.cps-admin-reply-box {
+  background: #fff8f8;
+  border-left: 4px solid #d70018;
+  border-radius: 0 10px 10px 0;
+  padding: 12px 16px;
+  margin-top: 10px;
+  font-size: 12.5px;
+}
+
+.star-interactive {
+  font-size: 28px;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: color 0.15s ease, transform 0.15s ease;
+}
+
+.star-interactive:hover,
+.star-interactive.active {
+  color: #f59e0b;
+  transform: scale(1.15);
+}
+
+/* ============================================================
+   BIG PROMOTIONAL BANNER (MEGA BANNER TRANG CHỦ)
+   ============================================================ */
+/* ============================================================
+   3.5. BIG PROMOTION BANNER (BANNER QUẢNG CÁO LỚN TRANG CHỦ)
+   ============================================================ */
+.cps-big-promo-section {
+  position: relative;
+  margin: 28px 0;
+}
+
+/* Khung banner to cố định tỉ lệ chuẩn Widescreen (1200 x 330px ~ 3.64:1) */
+.cps-big-promo-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden !important;
+  background: #0f121a;
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.12), 0 3px 10px rgba(215, 0, 24, 0.05);
+  border: 1px solid rgba(226, 232, 240, 0.85);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s ease;
+  width: 100%;
+  aspect-ratio: 1200 / 330;
+}
+
+.cps-big-promo-section:hover .cps-big-promo-card {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 36px -6px rgba(215, 0, 24, 0.2), 0 6px 16px rgba(0, 0, 0, 0.08);
+  border-color: rgba(215, 0, 24, 0.3);
+}
+
+/* Swiper Container: Cố định kích thước & tỉ lệ, khóa chặt overflow */
+.cps-big-promo-swiper {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden !important;
+  width: 100%;
+  aspect-ratio: 1200 / 330;
+}
+
+.cps-big-promo-swiper .swiper-wrapper {
+  height: 100% !important;
+}
+
+.cps-big-promo-swiper .swiper-slide {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden !important;
+  width: 100%;
+  height: 100% !important;
+}
+
+.cps-big-promo-link {
+  display: block;
+  position: relative;
+  overflow: hidden !important;
+  text-decoration: none;
+  width: 100%;
+  height: 100%;
+}
+
+/* Ảnh tự động co giãn và khớp 100% với khung cố định, không bị méo tỷ lệ */
+.cps-big-promo-img {
+  width: 100%;
+  height: 100% !important;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  border-radius: 20px;
+}
+
+@media (max-width: 991px) {
+  .cps-big-promo-card,
+  .cps-big-promo-swiper {
+    aspect-ratio: 16 / 5.5;
+  }
+}
+
+@media (max-width: 576px) {
+  .cps-big-promo-card,
+  .cps-big-promo-swiper {
+    aspect-ratio: 16 / 7;
+    border-radius: 14px;
+  }
+  .cps-big-promo-img {
+    border-radius: 14px;
+  }
+}
+
+/* Subtle Shimmer Sheen on Hover */
+.cps-big-promo-sheen {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.8s ease;
+  pointer-events: none;
+}
+
+.cps-big-promo-link:hover .cps-big-promo-sheen {
+  left: 140%;
+}
+
+/* Modern Glassmorphic Prev/Next Controls */
+.cps-big-promo-swiper .swiper-button-next,
+.cps-big-promo-swiper .swiper-button-prev {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.88);
+  color: #1e293b;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1.5px solid rgba(255, 255, 255, 0.95);
+  opacity: 0;
+  transform: translateY(-50%) scale(0.85);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 12;
+}
+
+.cps-big-promo-swiper .swiper-button-prev {
+  left: 18px;
+}
+
+.cps-big-promo-swiper .swiper-button-next {
+  right: 18px;
+}
+
+/* Reveal buttons smoothly on section hover */
+.cps-big-promo-section:hover .cps-big-promo-swiper .swiper-button-next,
+.cps-big-promo-section:hover .cps-big-promo-swiper .swiper-button-prev {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
+.cps-big-promo-swiper .swiper-button-next:hover,
+.cps-big-promo-swiper .swiper-button-prev:hover {
+  background: #d70018;
+  color: #ffffff;
+  border-color: #d70018;
+  transform: translateY(-50%) scale(1.12);
+  box-shadow: 0 10px 28px rgba(215, 0, 24, 0.5);
+}
+
+.cps-big-promo-swiper .swiper-button-next::after,
+.cps-big-promo-swiper .swiper-button-prev::after {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+/* On touch/mobile devices, always keep buttons slightly visible */
+@media (hover: none) {
+  .cps-big-promo-swiper .swiper-button-next,
+  .cps-big-promo-swiper .swiper-button-prev {
+    opacity: 0.88;
+    transform: translateY(-50%) scale(0.95);
+  }
+}
+
+/* Sleek Floating Pill Pagination positioned cleanly UNDER the banner */
+.cps-big-promo-pagination-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.cps-big-promo-pagination-wrap .swiper-pagination {
+  position: static !important;
+  transform: none !important;
+  left: auto !important;
+  bottom: auto !important;
+  width: auto !important;
+  background: rgba(241, 245, 249, 0.95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  padding: 6px 14px;
+  border-radius: 30px;
+  border: 1px solid #e2e8f0;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.cps-big-promo-pagination-wrap .swiper-pagination-bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #94a3b8;
+  opacity: 1;
+  margin: 0 !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.cps-big-promo-pagination-wrap .swiper-pagination-bullet-active {
+  width: 24px;
+  height: 8px;
+  border-radius: 6px;
+  background: #d70018;
+  box-shadow: 0 2px 8px rgba(215, 0, 24, 0.4);
+}
+
+/* Floating Admin Shortcut for Big Promo Banner - đặt phía trên bên ngoài để không che ảnh */
+.cps-admin-edit-banner-badge {
+  position: absolute;
+  top: -38px;
+  right: 0;
+  background: rgba(15, 23, 42, 0.85);
+  color: #ffffff !important;
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 5px 14px;
+  border-radius: 30px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  z-index: 15;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  transition: all 0.25s ease;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cps-admin-edit-banner-badge:hover {
+  background: #d70018;
+  color: #ffffff !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(215, 0, 24, 0.5);
+  border-color: #d70018;
+}
+
+/* ============================================================
+   PROMOTIONAL AD POPUP BANNER (POPUP QUẢNG CÁO TRANG CHỦ)
+   ============================================================ */
+.cps-promo-popup-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 18, 0.82);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+  padding: 20px;
+}
+
+.cps-promo-popup-backdrop.cps-popup-active {
+  opacity: 1;
+}
+
+.cps-promo-popup-backdrop.cps-popup-closing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Wrapper containing Admin shortcut, Close button and the Card */
+.cps-promo-popup-wrapper {
+  position: relative;
+  max-width: 680px;
+  width: 100%;
+}
+
+/* Admin floating badge above popup */
+.cps-promo-popup-admin-btn {
+  position: absolute;
+  top: -42px;
+  left: 0;
+  background: rgba(15, 23, 42, 0.92);
+  color: #fbbf24 !important;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 15px;
+  border-radius: 30px;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(251, 191, 36, 0.35);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 30;
+  transition: all 0.25s ease;
+}
+
+.cps-promo-popup-admin-btn:hover {
+  background: #d70018;
+  color: #ffffff !important;
+  border-color: #d70018;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(215, 0, 24, 0.5);
+}
+
+/* Floating Close Button at top-right corner */
+.cps-promo-popup-close-btn {
+  position: absolute;
+  top: -16px;
+  right: -16px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: #ffffff;
+  color: #1e293b;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  z-index: 30;
+}
+
+.cps-promo-popup-close-btn:hover {
+  background: #d70018;
+  color: #ffffff;
+  border-color: #ffffff;
+  transform: scale(1.15) rotate(90deg);
+  box-shadow: 0 10px 28px rgba(215, 0, 24, 0.6);
+}
+
+/* The Popup Card */
+.cps-promo-popup-card {
+  position: relative;
+  width: 100%;
+  border-radius: 24px;
+  overflow: hidden;
+  background: #0f121a;
+  box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.85), 0 0 50px -10px rgba(215, 0, 24, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  transform: scale(0.85) translateY(25px);
+  transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s ease;
+}
+
+.cps-promo-popup-backdrop.cps-popup-active .cps-promo-popup-card {
+  transform: scale(1) translateY(0);
+}
+
+.cps-promo-popup-backdrop.cps-popup-closing .cps-promo-popup-card {
+  transform: scale(0.88) translateY(15px);
+  opacity: 0;
+}
+
+/* Banner Link & Full-bleed Image: Cố định chuẩn 16:9 cho popup */
+.cps-promo-popup-link {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: #000000;
+  text-decoration: none;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.cps-promo-popup-img {
+  width: 100%;
+  height: 100% !important;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cps-promo-popup-link:hover .cps-promo-popup-img {
+  transform: scale(1.02);
+}
+
+/* Sheen effect on hover */
+.cps-promo-popup-sheen {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.18), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.75s ease;
+  pointer-events: none;
+}
+
+.cps-promo-popup-link:hover .cps-promo-popup-sheen {
+  left: 140%;
+}
+
+/* High-End Dark Frosted Glass Footer */
+.cps-promo-popup-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 22px;
+  background: linear-gradient(180deg, rgba(22, 25, 36, 0.95) 0%, rgba(12, 14, 22, 0.98) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+}
+
+/* Custom Checkbox */
+.cps-promo-popup-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: rgba(255, 255, 255, 0.78);
+  cursor: pointer;
+  user-select: none;
+  font-size: 13px;
+  font-weight: 500;
+  margin: 0;
+  transition: color 0.2s ease;
+}
+
+.cps-promo-popup-checkbox-label:hover {
+  color: #ffffff;
+}
+
+.cps-custom-checkbox {
+  width: 17px;
+  height: 17px;
+  accent-color: #d70018;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* Action Buttons */
+.cps-promo-popup-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cps-promo-btn-close {
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 30px;
+  padding: 7px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.cps-promo-btn-close:hover {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.cps-promo-btn-cta {
+  background: linear-gradient(135deg, #d70018 0%, #ff2a3b 100%);
+  color: #ffffff !important;
+  border: none;
+  border-radius: 30px;
+  padding: 7px 22px;
+  font-size: 13.5px;
+  font-weight: 700;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 0 4px 18px rgba(215, 0, 24, 0.45);
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cps-promo-btn-cta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(215, 0, 24, 0.65);
+}
+
+.cps-promo-btn-cta i {
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.cps-promo-btn-cta:hover i {
+  transform: translateX(3px);
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 576px) {
+  .cps-promo-popup-wrapper {
+    width: 95%;
+  }
+
+  .cps-promo-popup-card {
+    border-radius: 18px;
+  }
+
+  .cps-promo-popup-close-btn {
+    top: 10px;
+    right: 10px;
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .cps-promo-popup-admin-btn {
+    top: -36px;
+    font-size: 11px;
+    padding: 4px 12px;
+  }
+
+  .cps-promo-popup-img {
+    max-height: 320px;
+    min-height: 180px;
+  }
+
+  .cps-promo-popup-actions {
+    flex-direction: column;
+    gap: 12px;
+    align-items: stretch;
+    padding: 14px 16px;
+  }
+
+  .cps-promo-popup-buttons {
+    width: 100%;
+  }
+
+  .cps-promo-btn-close {
+    flex: 1;
+    text-align: center;
+  }
+
+  .cps-promo-btn-cta {
+    flex: 2;
+    justify-content: center;
+  }
+}
+
+/* ============================================================
+   POLICY & INFORMATION PAGES STYLING (CellPhoneS Standard)
+   ============================================================ */
+.cps-policy-sidebar-sticky {
+  position: sticky;
+  top: 85px;
+  z-index: 10;
+}
+
+.cps-policy-nav .list-group-item {
+  color: #374151;
+  font-size: 14px;
+  border-left: 3px solid transparent;
+  transition: all 0.2s ease;
+  background-color: #ffffff;
+}
+
+.cps-policy-nav .list-group-item:hover {
+  background-color: #fff5f5;
+  color: var(--cps-red);
+  padding-left: 1.25rem !important;
+}
+
+.cps-policy-nav .list-group-item.active {
+  background-color: #fff1f2 !important;
+  color: var(--cps-red) !important;
+  border-color: #fecdd3 !important;
+  border-left: 4px solid var(--cps-red) !important;
+  font-weight: 700 !important;
+}
+
+.cps-policy-nav .list-group-item.active i.bi-chevron-right {
+  color: var(--cps-red) !important;
+  transform: translateX(3px);
+}
+
+.cps-policy-article {
+  font-size: 14.5px;
+  line-height: 1.75;
+  color: #374151;
+}
+
+.cps-policy-article h2,
+.cps-policy-article h4,
+.cps-policy-article h5 {
+  letter-spacing: -0.2px;
+}
+
+.hover-shadow {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-shadow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+.btn-xs {
+  font-size: 11px;
+  border-radius: 4px;
+}
+
+/* Authentic E-Invoice Styling */
+.cps-invoice-box {
+  background-color: #ffffff;
+  border: 2px dashed #cbd5e1 !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.cps-invoice-box::before {
+  content: "BẢN THỂ HIỆN HÓA ĐƠN ĐIỆN TỬ";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  font-size: 42px;
+  font-weight: 900;
+  color: rgba(215, 0, 24, 0.035);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .cps-invoice-box, .cps-invoice-box * {
+    visibility: visible;
+  }
+  .cps-invoice-box {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: 1px solid #000 !important;
+    box-shadow: none !important;
+    padding: 20px !important;
+  }
+  header, footer, nav, .btn, .breadcrumb, .cps-topbar {
+    display: none !important;
+  }
+}
+
+
+
+
+

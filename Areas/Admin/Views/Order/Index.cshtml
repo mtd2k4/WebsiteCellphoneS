@@ -1,0 +1,183 @@
+@model IEnumerable<WebsiteBanDienThoai.Models.Order>
+@{
+    ViewData["Title"] = "Quản Lý Đơn Hàng";
+}
+
+<!-- STATUS FILTER PILLS & SEARCH -->
+<div class="cps-admin-card mb-3">
+    <div class="cps-admin-card-body p-3">
+        <div class="d-flex flex-wrap gap-2 mb-3">
+            <a asp-action="Index" asp-route-search="@ViewBag.CurrentSearch" 
+               class="btn btn-sm @(ViewBag.CurrentStatus == null ? "btn-dark" : "btn-outline-secondary")">
+                Tất cả đơn
+            </a>
+            <a asp-action="Index" asp-route-status="@WebsiteBanDienThoai.Models.OrderStatus.Pending" asp-route-search="@ViewBag.CurrentSearch" 
+               class="btn btn-sm @(ViewBag.CurrentStatus == WebsiteBanDienThoai.Models.OrderStatus.Pending ? "btn-warning text-dark fw-bold" : "btn-outline-warning text-dark")">
+                <i class="bi bi-hourglass-split me-1"></i>Chờ xử lý
+            </a>
+            <a asp-action="Index" asp-route-status="@WebsiteBanDienThoai.Models.OrderStatus.Confirmed" asp-route-search="@ViewBag.CurrentSearch" 
+               class="btn btn-sm @(ViewBag.CurrentStatus == WebsiteBanDienThoai.Models.OrderStatus.Confirmed ? "btn-info text-dark fw-bold" : "btn-outline-info text-dark")">
+                <i class="bi bi-check2-circle me-1"></i>Đã xác nhận
+            </a>
+            <a asp-action="Index" asp-route-status="@WebsiteBanDienThoai.Models.OrderStatus.Shipping" asp-route-search="@ViewBag.CurrentSearch" 
+               class="btn btn-sm @(ViewBag.CurrentStatus == WebsiteBanDienThoai.Models.OrderStatus.Shipping ? "btn-primary fw-bold" : "btn-outline-primary")">
+                <i class="bi bi-truck me-1"></i>Đang giao hàng
+            </a>
+            <a asp-action="Index" asp-route-status="@WebsiteBanDienThoai.Models.OrderStatus.Completed" asp-route-search="@ViewBag.CurrentSearch" 
+               class="btn btn-sm @(ViewBag.CurrentStatus == WebsiteBanDienThoai.Models.OrderStatus.Completed ? "btn-success fw-bold" : "btn-outline-success")">
+                <i class="bi bi-check-lg me-1"></i>Hoàn thành
+            </a>
+            <a asp-action="Index" asp-route-status="@WebsiteBanDienThoai.Models.OrderStatus.Cancelled" asp-route-search="@ViewBag.CurrentSearch" 
+               class="btn btn-sm @(ViewBag.CurrentStatus == WebsiteBanDienThoai.Models.OrderStatus.Cancelled ? "btn-secondary fw-bold" : "btn-outline-secondary")">
+                <i class="bi bi-x-lg me-1"></i>Đã huỷ
+            </a>
+        </div>
+
+        <form method="get" class="row g-2 align-items-center">
+            <input type="hidden" name="status" value="@ViewBag.CurrentStatus" />
+            <div class="col-md-9">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Tìm kiếm theo mã đơn (CPS-...), tên khách hàng, số điện thoại..." value="@ViewBag.CurrentSearch" />
+                </div>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100 fw-bold">
+                    <i class="bi bi-search"></i> Tra Cứu
+                </button>
+                <a asp-area="Admin" asp-controller="Order" asp-action="Index" class="btn btn-outline-secondary" title="Đặt lại">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- ORDERS TABLE -->
+<div class="cps-admin-card">
+    <div class="cps-admin-card-header">
+        <h5>
+            <i class="bi bi-receipt-cutoff text-danger"></i> Danh Sách Đơn Hàng 
+            <span class="badge bg-secondary ms-2" style="font-size: 11px;">@ViewBag.TotalItems đơn</span>
+        </h5>
+    </div>
+
+    <div class="cps-admin-card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-cps m-0">
+                <thead>
+                    <tr>
+                        <th>Mã Đơn & Thời Gian</th>
+                        <th>Thông Tin Khách Hàng</th>
+                        <th>Địa Chỉ Giao</th>
+                        <th>Tổng Giá Trị</th>
+                        <th>Phương Thức</th>
+                        <th>Trạng Thái</th>
+                        <th class="text-end">Chi Tiết</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                Không có đơn hàng nào khớp với tìm kiếm hoặc bộ lọc hiện tại.
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>
+                                <span class="fw-bold text-danger fs-6">#@order.OrderCode</span>
+                                <div class="text-muted" style="font-size: 11px;">@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">@order.CustomerName</div>
+                                <div class="text-muted small"><i class="bi bi-telephone me-1"></i>@order.PhoneNumber</div>
+                                @if (!string.IsNullOrEmpty(order.Email))
+                                {
+                                    <div class="text-muted small" style="font-size: 11px;"><i class="bi bi-envelope me-1"></i>@order.Email</div>
+                                }
+                            </td>
+                            <td>
+                                <div class="small text-truncate" style="max-width: 220px;" title="@order.Address, @order.Province">
+                                    <i class="bi bi-geo-alt text-danger me-1"></i>@order.Address, @order.Province
+                                </div>
+                            </td>
+                            <td>
+                                <strong class="text-danger fs-6">@order.TotalAmount.ToString("N0")₫</strong>
+                                <div class="text-muted small" style="font-size: 11px;">@order.OrderDetails.Count sản phẩm</div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">@order.PaymentMethod</span>
+                            </td>
+                            <td>
+                                @switch (order.Status)
+                                {
+                                    case WebsiteBanDienThoai.Models.OrderStatus.Pending:
+                                        <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Chờ xử lý</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.OrderStatus.Confirmed:
+                                        <span class="badge bg-info text-dark"><i class="bi bi-check2-circle me-1"></i>Đã duyệt</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.OrderStatus.Shipping:
+                                        <span class="badge bg-primary"><i class="bi bi-truck me-1"></i>Đang giao</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.OrderStatus.Completed:
+                                        <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Hoàn thành</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.OrderStatus.Cancelled:
+                                        <span class="badge bg-secondary"><i class="bi bi-x-lg me-1"></i>Đã huỷ</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-area="Admin" asp-controller="Order" asp-action="Details" asp-route-id="@order.Id" 
+                                   class="btn btn-sm btn-outline-danger py-1 px-3 fw-bold">
+                                    Xử lý <i class="bi bi-chevron-right"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PAGINATION -->
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="cps-admin-card-header bg-white border-top">
+            <div class="text-muted small">
+                Trang @ViewBag.CurrentPage / @ViewBag.TotalPages
+            </div>
+            <nav>
+                <ul class="pagination pagination-sm m-0">
+                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" 
+                           asp-route-page="@(ViewBag.CurrentPage - 1)" 
+                           asp-route-search="@ViewBag.CurrentSearch" 
+                           asp-route-status="@ViewBag.CurrentStatus">&laquo; Trước</a>
+                    </li>
+                    @for (int p = 1; p <= ViewBag.TotalPages; p++)
+                    {
+                        <li class="page-item @(p == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-page="@p" 
+                               asp-route-search="@ViewBag.CurrentSearch" 
+                               asp-route-status="@ViewBag.CurrentStatus">@p</a>
+                        </li>
+                    }
+                    <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" 
+                           asp-route-page="@(ViewBag.CurrentPage + 1)" 
+                           asp-route-search="@ViewBag.CurrentSearch" 
+                           asp-route-status="@ViewBag.CurrentStatus">Sau &raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+</div>

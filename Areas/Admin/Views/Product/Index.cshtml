@@ -1,0 +1,259 @@
+@model IEnumerable<WebsiteBanDienThoai.Models.Product>
+@{
+    ViewData["Title"] = "Quản Lý Sản Phẩm";
+}
+
+<!-- FILTER & SEARCH TOOLBAR -->
+<div class="cps-admin-card">
+    <div class="cps-admin-card-body p-3">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Tìm tên hoặc mã sản phẩm..." value="@ViewBag.CurrentSearch" />
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <select name="categoryId" class="form-select" asp-items="ViewBag.Categories">
+                    <option value="">-- Tất cả danh mục --</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select name="brandId" class="form-select" asp-items="ViewBag.Brands">
+                    <option value="">-- Tất cả thương hiệu --</option>
+                </select>
+            </div>
+
+            <div class="col-md-2">
+                <select name="stockStatus" class="form-select">
+                    <option value="">-- Tồn kho --</option>
+                    <option value="in-stock" selected="@(ViewBag.CurrentStockStatus == "in-stock")">Còn hàng (> 20)</option>
+                    <option value="low-stock" selected="@(ViewBag.CurrentStockStatus == "low-stock")">Sắp hết hàng (1 - 20)</option>
+                    <option value="out-of-stock" selected="@(ViewBag.CurrentStockStatus == "out-of-stock")">Hết hàng (0)</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100 fw-bold">
+                    <i class="bi bi-funnel-fill"></i> Lọc
+                </button>
+                <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary" title="Xoá bộ lọc">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- PRODUCT LIST TABLE -->
+<div class="cps-admin-card">
+    <div class="cps-admin-card-header">
+        <h5>
+            <i class="bi bi-boxes text-danger"></i> Danh Sách Sản Phẩm 
+            <span class="badge bg-secondary ms-2" style="font-size: 11px;">@ViewBag.TotalItems sản phẩm</span>
+        </h5>
+        <a asp-area="Admin" asp-controller="Product" asp-action="Create" class="btn-cps-admin">
+            <i class="bi bi-plus-circle-fill"></i> Thêm Mới
+        </a>
+    </div>
+
+    <div class="cps-admin-card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-cps m-0">
+                <thead>
+                    <tr>
+                        <th style="width: 50px;">ID</th>
+                        <th style="width: 70px;">Ảnh</th>
+                        <th>Tên Sản Phẩm</th>
+                        <th>Danh Mục & Hãng</th>
+                        <th>Giá Bán</th>
+                        <th>Tồn Kho</th>
+                        <th>Đặc Tính</th>
+                        <th class="text-end" style="width: 120px;">Thao Tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-5">
+                                <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                                Không tìm thấy sản phẩm nào phù hợp với bộ lọc.
+                            </td>
+                        </tr>
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <tr id="product-row-@item.Id">
+                            <td class="text-muted fw-bold">@item.Id</td>
+                            <td>
+                                <img src="@item.ImageUrl" alt="@item.Name" 
+                                     style="width: 50px; height: 50px; object-fit: contain; border-radius: 6px; border: 1px solid #e2e8f0; padding: 2px;" />
+                            </td>
+                            <td>
+                                <a asp-area="Admin" asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id" 
+                                   class="text-dark fw-bold text-decoration-none d-block">
+                                    @item.Name
+                                </a>
+                                <div class="text-muted small" style="font-size: 11px;">Slug: @item.Slug</div>
+                                <a asp-area="Admin" asp-controller="Product" asp-action="Variants" asp-route-id="@item.Id" 
+                                   class="badge bg-danger-subtle text-danger border border-danger-subtle text-decoration-none mt-1 d-inline-flex align-items-center"
+                                   title="Quản lý biến thể sản phẩm">
+                                    <i class="bi bi-diagram-3-fill me-1"></i> @(item.Variants?.Count ?? 0) biến thể
+                                </a>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border">@(item.Category?.Name ?? "N/A")</span>
+                                <span class="badge bg-light text-primary border">@(item.Brand?.Name ?? "N/A")</span>
+                            </td>
+                            <td>
+                                <div class="text-danger fw-bold">@item.SalePrice.ToString("N0")₫</div>
+                                @if (item.OriginalPrice > item.SalePrice)
+                                {
+                                    <div class="text-muted text-decoration-line-through small" style="font-size: 11px;">
+                                        @item.OriginalPrice.ToString("N0")₫ (-@item.DiscountPercent%)
+                                    </div>
+                                }
+                            </td>
+                            <td>
+                                @if (item.StockQuantity > 20)
+                                {
+                                    <span class="badge bg-success bg-opacity-10 text-success fw-bold">@item.StockQuantity</span>
+                                }
+                                else if (item.StockQuantity > 0)
+                                {
+                                    <span class="badge bg-warning bg-opacity-25 text-warning-emphasis fw-bold">@item.StockQuantity (Sắp hết)</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger bg-opacity-10 text-danger fw-bold">Hết hàng</span>
+                                }
+                                <a asp-area="Admin" asp-controller="Warehouse" asp-action="Create" asp-route-productId="@item.Id" 
+                                   class="text-decoration-none small text-danger d-block mt-1" style="font-size: 11px;" title="Nhập hàng cho sản phẩm này">
+                                    <i class="bi bi-box-arrow-in-down"></i> Nhập kho
+                                </a>
+                            </td>
+                            <td>
+                                <div class="d-flex flex-wrap gap-1">
+                                    @if (item.IsHot)
+                                    {
+                                        <span class="badge bg-danger" style="font-size: 10px;">Hot</span>
+                                    }
+                                    @if (item.IsFlashSale)
+                                    {
+                                        <span class="badge bg-warning text-dark" style="font-size: 10px;"><i class="bi bi-lightning-fill"></i> Flash</span>
+                                    }
+                                    @if (item.HasInstallment0Percent)
+                                    {
+                                        <span class="badge bg-secondary" style="font-size: 10px;">0%</span>
+                                    }
+                                </div>
+                            </td>
+                            <td class="text-end">
+                                <a asp-area="Admin" asp-controller="Product" asp-action="Variants" asp-route-id="@item.Id" 
+                                   class="btn btn-sm btn-outline-danger py-1 px-2" title="Quản lý biến thể (màu sắc, dung lượng, ảnh)">
+                                    <i class="bi bi-diagram-3-fill"></i>
+                                </a>
+                                <a asp-area="Admin" asp-controller="Product" asp-action="Edit" asp-route-id="@item.Id" 
+                                   class="btn btn-sm btn-outline-primary py-1 px-2" title="Chỉnh sửa">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2" 
+                                        onclick="confirmDelete(@item.Id, '@item.Name')" title="Xoá">
+                                    <i class="bi bi-trash3-fill"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- PAGINATION -->
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="cps-admin-card-header bg-white border-top">
+            <div class="text-muted small">
+                Trang @ViewBag.CurrentPage / @ViewBag.TotalPages
+            </div>
+            <nav>
+                <ul class="pagination pagination-sm m-0">
+                    <li class="page-item @(ViewBag.CurrentPage == 1 ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" 
+                           asp-route-page="@(ViewBag.CurrentPage - 1)" 
+                           asp-route-search="@ViewBag.CurrentSearch" 
+                           asp-route-categoryId="@ViewBag.CurrentCategoryId" 
+                           asp-route-brandId="@ViewBag.CurrentBrandId" 
+                           asp-route-stockStatus="@ViewBag.CurrentStockStatus">&laquo; Trước</a>
+                    </li>
+                    @for (int p = 1; p <= ViewBag.TotalPages; p++)
+                    {
+                        <li class="page-item @(p == ViewBag.CurrentPage ? "active" : "")">
+                            <a class="page-link" asp-action="Index" 
+                               asp-route-page="@p" 
+                               asp-route-search="@ViewBag.CurrentSearch" 
+                               asp-route-categoryId="@ViewBag.CurrentCategoryId" 
+                               asp-route-brandId="@ViewBag.CurrentBrandId" 
+                               asp-route-stockStatus="@ViewBag.CurrentStockStatus">@p</a>
+                        </li>
+                    }
+                    <li class="page-item @(ViewBag.CurrentPage == ViewBag.TotalPages ? "disabled" : "")">
+                        <a class="page-link" asp-action="Index" 
+                           asp-route-page="@(ViewBag.CurrentPage + 1)" 
+                           asp-route-search="@ViewBag.CurrentSearch" 
+                           asp-route-categoryId="@ViewBag.CurrentCategoryId" 
+                           asp-route-brandId="@ViewBag.CurrentBrandId" 
+                           asp-route-stockStatus="@ViewBag.CurrentStockStatus">Sau &raquo;</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id, name) {
+            Swal.fire({
+                title: 'Xoá sản phẩm?',
+                html: `Bạn có chắc chắn muốn xoá sản phẩm <strong>"${name}"</strong> khỏi hệ thống?<br><small class="text-danger">Lưu ý: Hành động này không thể hoàn tác!</small>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d70018',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="bi bi-trash me-1"></i> Đồng ý xoá',
+                cancelButtonText: 'Huỷ bỏ',
+                customClass: {
+                    popup: 'rounded-4'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/Admin/Product/Delete/${id}`, {
+                        method: 'POST'
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            const row = document.getElementById(`product-row-${id}`);
+                            if (row) {
+                                row.style.transition = 'all 0.3s ease';
+                                row.style.opacity = '0';
+                                setTimeout(() => row.remove(), 300);
+                            }
+                            showToast('Đã xoá sản phẩm thành công!', 'success');
+                        } else {
+                            showError('Không thể xoá', data.message || 'Lỗi khi xoá sản phẩm');
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        showError('Lỗi kết nối', 'Không thể gửi yêu cầu xoá sản phẩm đến máy chủ!');
+                    });
+                }
+            });
+        }
+    </script>
+}

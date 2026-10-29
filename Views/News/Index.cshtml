@@ -1,0 +1,676 @@
+@model WebsiteBanDienThoai.Models.ViewModels.TechNewsViewModel
+@{
+    ViewData["Title"] = "Tin Tức Công Nghệ 24h - Sforum CellphoneS";
+}
+
+<!-- CSS RIÊNG CHO TRANG TIN CÔNG NGHỆ SFORUM -->
+<style>
+    .cps-news-page {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .cps-news-breadcrumb {
+        background: transparent;
+        padding: 8px 0;
+        font-size: 13px;
+        margin-bottom: 12px;
+    }
+
+    .cps-news-breadcrumb a {
+        color: #64748b;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .cps-news-breadcrumb a:hover {
+        color: #d70018;
+    }
+
+    /* Header Banner */
+    .cps-news-hero-bar {
+        background: linear-gradient(135deg, #d70018 0%, #b30014 100%);
+        border-radius: 14px;
+        padding: 24px 28px;
+        color: #ffffff;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 16px rgba(215, 0, 24, 0.2);
+    }
+
+    .cps-news-hero-title {
+        font-size: 24px;
+        font-weight: 800;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .cps-news-hero-title .badge-sforum {
+        background: #ffffff;
+        color: #d70018;
+        font-size: 13px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        font-weight: 800;
+        letter-spacing: 0.5px;
+    }
+
+    /* Search & Filter Toolbar */
+    .cps-news-filter-box {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 16px 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        margin-bottom: 24px;
+        border: 1px solid #f1f5f9;
+    }
+
+    .cps-cat-pill {
+        display: inline-block;
+        padding: 6px 16px;
+        border-radius: 20px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        color: #475569;
+        background: #f1f5f9;
+        transition: all 0.2s;
+        border: 1px solid transparent;
+    }
+
+    .cps-cat-pill:hover {
+        color: #d70018;
+        background: #fee2e2;
+        border-color: #fca5a5;
+    }
+
+    .cps-cat-pill.active {
+        color: #ffffff;
+        background: #d70018;
+        box-shadow: 0 2px 6px rgba(215, 0, 24, 0.3);
+    }
+
+    /* Featured Hero Section */
+    .cps-featured-card {
+        background: #ffffff;
+        border-radius: 14px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        border: 1px solid #f1f5f9;
+        transition: transform 0.25s, box-shadow 0.25s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .cps-featured-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+    }
+
+    .cps-featured-img-wrap {
+        position: relative;
+        padding-top: 56.25%; /* 16:9 */
+        overflow: hidden;
+        background: #0f172a;
+    }
+
+    .cps-featured-img-wrap img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s ease;
+    }
+
+    .cps-featured-card:hover .cps-featured-img-wrap img {
+        transform: scale(1.04);
+    }
+
+    .cps-featured-badge {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        background: #d70018;
+        color: #fff;
+        padding: 4px 12px;
+        border-radius: 6px;
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .cps-featured-body {
+        padding: 20px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .cps-featured-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 10px;
+        line-height: 1.35;
+        text-decoration: none;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .cps-featured-title:hover {
+        color: #d70018;
+    }
+
+    .cps-featured-desc {
+        color: #475569;
+        font-size: 14px;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        margin-bottom: 14px;
+    }
+
+    /* Trending Mini Cards */
+    .cps-trending-card {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 12px;
+        border: 1px solid #f1f5f9;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+        display: flex;
+        gap: 12px;
+        margin-bottom: 12px;
+        transition: transform 0.2s, background-color 0.2s;
+        text-decoration: none;
+    }
+
+    .cps-trending-card:hover {
+        transform: translateX(4px);
+        background-color: #fff5f5;
+    }
+
+    .cps-trending-thumb {
+        width: 100px;
+        height: 70px;
+        border-radius: 8px;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: #f1f5f9;
+    }
+
+    .cps-trending-title {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0 0 6px 0;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .cps-trending-card:hover .cps-trending-title {
+        color: #d70018;
+    }
+
+    /* Grid Article Cards */
+    .cps-article-card {
+        background: #ffffff;
+        border-radius: 12px;
+        overflow: hidden;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        transition: transform 0.25s, box-shadow 0.25s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .cps-article-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        border-color: #fca5a5;
+    }
+
+    .cps-article-thumb-wrap {
+        position: relative;
+        padding-top: 56.25%;
+        background: #0f172a;
+        overflow: hidden;
+    }
+
+    .cps-article-thumb-wrap img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s;
+    }
+
+    .cps-article-card:hover .cps-article-thumb-wrap img {
+        transform: scale(1.05);
+    }
+
+    .cps-article-cat {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.65);
+        backdrop-filter: blur(4px);
+        color: #ffffff;
+        padding: 3px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        font-weight: 600;
+    }
+
+    .cps-article-body {
+        padding: 14px;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .cps-article-title {
+        font-size: 14.5px;
+        font-weight: 700;
+        color: #0f172a;
+        line-height: 1.4;
+        margin-bottom: 8px;
+        text-decoration: none;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .cps-article-title:hover {
+        color: #d70018;
+    }
+
+    .cps-article-summary {
+        font-size: 12.5px;
+        color: #64748b;
+        line-height: 1.45;
+        margin-bottom: 12px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .cps-article-meta {
+        font-size: 11px;
+        color: #94a3b8;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 8px;
+        border-top: 1px solid #f1f5f9;
+    }
+
+    /* Sidebar Widgets */
+    .cps-news-sidebar-box {
+        background: #ffffff;
+        border-radius: 12px;
+        padding: 18px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+        margin-bottom: 20px;
+    }
+
+    .cps-news-sidebar-header {
+        font-size: 15px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 2px solid #fee2e2;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cps-tag-pill {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: #f1f5f9;
+        color: #475569;
+        font-size: 12px;
+        text-decoration: none;
+        margin: 3px;
+        transition: all 0.2s;
+    }
+
+    .cps-tag-pill:hover {
+        background: #fee2e2;
+        color: #d70018;
+    }
+
+    /* Hot Product Sidebar Mini Card */
+    .cps-side-prod {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 0;
+        border-bottom: 1px solid #f1f5f9;
+        text-decoration: none;
+    }
+
+    .cps-side-prod:last-child {
+        border-bottom: none;
+    }
+
+    .cps-side-prod img {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+        border-radius: 6px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        padding: 2px;
+    }
+
+    .cps-side-prod-info h6 {
+        margin: 0;
+        font-size: 12.5px;
+        font-weight: 600;
+        color: #1e293b;
+        line-height: 1.3;
+    }
+
+    .cps-side-prod:hover h6 {
+        color: #d70018;
+    }
+
+    .cps-side-prod-info span {
+        font-size: 12px;
+        color: #d70018;
+        font-weight: 700;
+    }
+</style>
+
+<div class="container cps-news-page my-3">
+    <!-- 1. BREADCRUMB -->
+    <nav aria-label="breadcrumb" class="cps-news-breadcrumb">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door-fill me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item active text-dark fw-bold" aria-current="page">Tin tức công nghệ (Sforum)</li>
+        </ol>
+    </nav>
+
+    <!-- 2. HERO BANNER SFORUM -->
+    <div class="cps-news-hero-bar">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="cps-news-hero-title">
+                    <span class="badge-sforum">SFORUM</span>
+                    <span>TIN TỨC CÔNG NGHỆ 24H</span>
+                </div>
+                <p class="mb-0 text-white text-opacity-90" style="font-size: 14px;">
+                    Cập nhật tin tức nhanh nhất về Điện thoại, Laptop, Đánh giá siêu phẩm, Thủ thuật công nghệ từ hệ thống <strong>CellphoneS</strong>.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a href="https://cellphones.com.vn/sforum" target="_blank" class="btn btn-light fw-bold text-danger px-3 py-2 shadow-sm" style="border-radius: 8px;">
+                    <i class="bi bi-box-arrow-up-right me-1"></i> Ghé thăm Sforum.vn
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. SEARCH & FILTER TOOLBAR -->
+    <div class="cps-news-filter-box">
+        <div class="row g-3 align-items-center">
+            <!-- Search bar -->
+            <div class="col-md-5">
+                <form method="get" asp-action="Index" class="d-flex">
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="search" class="form-control border-start-0 bg-light" placeholder="Tìm kiếm bài viết công nghệ, điện thoại..." value="@Model.CurrentSearch" />
+                        <button type="submit" class="btn btn-danger px-3 fw-semibold">Tìm kiếm</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Category Pills -->
+            <div class="col-md-7">
+                <div class="d-flex flex-wrap gap-2 justify-content-md-end">
+                    @foreach (var cat in Model.Categories)
+                    {
+                        var isAct = (Model.CurrentCategory == cat);
+                        <a asp-action="Index" asp-route-category="@cat" class="cps-cat-pill @(isAct ? "active" : "")">
+                            @cat
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. FEATURED HERO SECTION (HIỂN THỊ KHI Ở TRANG 1 VÀ KHÔNG SEARCH) -->
+    @if (Model.FeaturedArticle != null)
+    {
+        <div class="row g-4 mb-4">
+            <!-- Bài viết tiêu điểm lớn nhất -->
+            <div class="col-lg-7">
+                <div class="cps-featured-card">
+                    <div class="cps-featured-img-wrap">
+                        <a asp-action="Details" asp-route-slug="@Model.FeaturedArticle.Slug">
+                            <img src="@Model.FeaturedArticle.ThumbnailUrl" alt="@Model.FeaturedArticle.Title" onerror="this.src='/images/banners/banner-iphone16.jpg';" />
+                        </a>
+                        <span class="cps-featured-badge"><i class="bi bi-fire me-1"></i>Tiêu điểm</span>
+                    </div>
+                    <div class="cps-featured-body">
+                        <div>
+                            <span class="badge bg-danger bg-opacity-10 text-danger mb-2 fw-semibold">@Model.FeaturedArticle.Category</span>
+                            <a asp-action="Details" asp-route-slug="@Model.FeaturedArticle.Slug" class="cps-featured-title">
+                                @Model.FeaturedArticle.Title
+                            </a>
+                            <p class="cps-featured-desc">@Model.FeaturedArticle.Summary</p>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-between text-muted small pt-2 border-top">
+                            <span class="fw-semibold text-dark"><i class="bi bi-person-circle text-danger me-1"></i>@Model.FeaturedArticle.Author</span>
+                            <span><i class="bi bi-clock me-1"></i>@Model.FeaturedArticle.TimeAgo</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Cột bên phải: 4 bài xu hướng -->
+            <div class="col-lg-5">
+                <div class="cps-news-sidebar-box p-3 h-100 mb-0">
+                    <div class="cps-news-sidebar-header">
+                        <i class="bi bi-graph-up-arrow text-danger"></i>
+                        <span>Được Quan Tâm Nhất</span>
+                    </div>
+
+                    @foreach (var trend in Model.TrendingArticles)
+                    {
+                        <a asp-action="Details" asp-route-slug="@trend.Slug" class="cps-trending-card">
+                            <img src="@trend.ThumbnailUrl" alt="@trend.Title" class="cps-trending-thumb" onerror="this.src='/images/banners/banner-s24ultra.jpg';" />
+                            <div class="overflow-hidden">
+                                <span class="badge bg-light text-dark border mb-1" style="font-size: 10px;">@trend.Category</span>
+                                <h6 class="cps-trending-title">@trend.Title</h6>
+                                <span class="text-muted" style="font-size: 11px;"><i class="bi bi-clock me-1"></i>@trend.TimeAgo</span>
+                            </div>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    <!-- 5. MAIN CONTENT ROW: ARTICLES GRID + SIDEBAR WIDGETS -->
+    <div class="row g-4">
+        <!-- CỘT TRÁI: GRID DANH SÁCH BÀI VIẾT (8 CỘT) -->
+        <div class="col-lg-8">
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <h5 class="fw-bold m-0 text-dark">
+                    <i class="bi bi-newspaper text-danger me-1"></i> 
+                    @(string.IsNullOrWhiteSpace(Model.CurrentCategory) || Model.CurrentCategory == "Tất cả" ? "Tất Cả Bài Viết Mới Nhất" : Model.CurrentCategory)
+                    <span class="badge bg-secondary ms-2" style="font-size: 11px;">@Model.TotalArticles bài viết</span>
+                </h5>
+
+                @if (!string.IsNullOrWhiteSpace(Model.CurrentSearch))
+                {
+                    <a asp-action="Index" class="btn btn-sm btn-outline-secondary">Xoá tìm kiếm</a>
+                }
+            </div>
+
+            @if (!Model.Articles.Any())
+            {
+                <div class="card p-5 text-center text-muted">
+                    <i class="bi bi-search fs-1 mb-2"></i>
+                    <h6>Không tìm thấy bài viết nào phù hợp với từ khoá "@Model.CurrentSearch"</h6>
+                    <a asp-action="Index" class="btn btn-danger btn-sm mt-2 mx-auto">Xem tất cả bài viết</a>
+                </div>
+            }
+            else
+            {
+                <div class="row g-3">
+                    @foreach (var art in Model.Articles)
+                    {
+                        <div class="col-md-6 col-xl-4">
+                            <div class="cps-article-card">
+                                <div class="cps-article-thumb-wrap">
+                                    <a asp-action="Details" asp-route-slug="@art.Slug">
+                                        <img src="@art.ThumbnailUrl" alt="@art.Title" onerror="this.src='/images/banners/banner-khaitruong.jpg';" />
+                                    </a>
+                                    <span class="cps-article-cat">@art.Category</span>
+                                </div>
+                                <div class="cps-article-body">
+                                    <div>
+                                        <a asp-action="Details" asp-route-slug="@art.Slug" class="cps-article-title" title="@art.Title">
+                                            @art.Title
+                                        </a>
+                                        <p class="cps-article-summary">@art.Summary</p>
+                                    </div>
+                                    <div class="cps-article-meta">
+                                        <span class="text-truncate" style="max-width: 90px;"><i class="bi bi-person me-1"></i>@art.Author</span>
+                                        <span><i class="bi bi-clock me-1"></i>@art.TimeAgo</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <!-- PAGINATION -->
+                @if (Model.TotalPages > 1)
+                {
+                    <nav class="mt-4">
+                        <ul class="pagination justify-content-center">
+                            @if (Model.CurrentPage > 1)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link text-danger" asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)" asp-route-category="@Model.CurrentCategory" asp-route-search="@Model.CurrentSearch">
+                                        <i class="bi bi-chevron-left"></i> Trước
+                                    </a>
+                                </li>
+                            }
+
+                            @for (int p = 1; p <= Model.TotalPages; p++)
+                            {
+                                <li class="page-item @(p == Model.CurrentPage ? "active" : "")">
+                                    <a class="page-link @(p == Model.CurrentPage ? "bg-danger border-danger text-white" : "text-dark")" 
+                                       asp-action="Index" asp-route-page="@p" asp-route-category="@Model.CurrentCategory" asp-route-search="@Model.CurrentSearch">
+                                        @p
+                                    </a>
+                                </li>
+                            }
+
+                            @if (Model.CurrentPage < Model.TotalPages)
+                            {
+                                <li class="page-item">
+                                    <a class="page-link text-danger" asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)" asp-route-category="@Model.CurrentCategory" asp-route-search="@Model.CurrentSearch">
+                                        Sau <i class="bi bi-chevron-right"></i>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </nav>
+                }
+            }
+        </div>
+
+        <!-- CỘT PHẢI: WIDGETS PROMO & CHỦ ĐỀ HOT (4 CỘT) -->
+        <div class="col-lg-4">
+            <!-- Widget 1: Banner Thu Cũ Đổi Mới -->
+            <div class="cps-news-sidebar-box p-0 overflow-hidden mb-4">
+                <a asp-controller="TradeIn" asp-action="Index" class="d-block position-relative">
+                    <img src="/images/banners/banner-tradein.jpg" alt="Thu cũ đổi mới CellphoneS" class="img-fluid w-100" />
+                </a>
+            </div>
+
+            <!-- Widget 2: Chủ đề Hot -->
+            <div class="cps-news-sidebar-box">
+                <div class="cps-news-sidebar-header">
+                    <i class="bi bi-tags-fill text-danger"></i>
+                    <span>Chủ Đề Công Nghệ Hot</span>
+                </div>
+                <div class="d-flex flex-wrap">
+                    @foreach (var tag in Model.HotTags)
+                    {
+                        <a asp-action="Index" asp-route-search="@tag" class="cps-tag-pill">
+                            #@tag
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <!-- Widget 3: Sản phẩm ưu đãi nổi bật tại CellphoneS -->
+            <div class="cps-news-sidebar-box">
+                <div class="cps-news-sidebar-header">
+                    <i class="bi bi-lightning-charge-fill text-warning"></i>
+                    <span>Sản Phẩm Khuyến Mãi HOT</span>
+                </div>
+
+                @foreach (var prod in Model.RelatedProducts)
+                {
+                    <a asp-controller="Product" asp-action="Details" asp-route-id="@prod.Id" class="cps-side-prod">
+                        <img src="@prod.ImageUrl" alt="@prod.Name" onerror="this.src='/images/banners/banner-iphone16.jpg';" />
+                        <div class="cps-side-prod-info overflow-hidden">
+                            <h6 class="text-truncate">@prod.Name</h6>
+                            <div class="d-flex align-items-center gap-2 mt-1">
+                                <span>@prod.SalePrice.ToString("N0")₫</span>
+                                @if (prod.OriginalPrice > prod.SalePrice)
+                                {
+                                    <small class="text-decoration-line-through text-muted" style="font-size: 11px;">@prod.OriginalPrice.ToString("N0")₫</small>
+                                }
+                            </div>
+                        </div>
+                    </a>
+                }
+
+                <div class="mt-3 text-center">
+                    <a asp-controller="Product" asp-action="Category" asp-route-slug="dien-thoai" class="btn btn-outline-danger btn-sm w-100 fw-bold">
+                        Xem tất cả sản phẩm <i class="bi bi-chevron-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Widget 4: Banner Smember VIP -->
+            <div class="cps-news-sidebar-box p-0 overflow-hidden">
+                <a asp-controller="Account" asp-action="Profile" class="d-block position-relative">
+                    <img src="/images/banners/banner-smember.jpg" alt="Đặc quyền Smember" class="img-fluid w-100" />
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

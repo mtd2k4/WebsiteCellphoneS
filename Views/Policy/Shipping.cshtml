@@ -1,0 +1,171 @@
+@{
+    ViewData["Title"] = "Chính Sách Giao Hàng & Vận Chuyển Toàn Quốc - CellphoneS";
+}
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-transparent p-0 small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted"><i class="bi bi-house-door"></i> Trang chủ</a></li>
+            <li class="breadcrumb-item"><span class="text-muted">Thông tin & Chính sách</span></li>
+            <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Chính sách giao hàng</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- CỘT TRÁI: SIDEBAR ĐIỀU HƯỚNG -->
+        <div class="col-lg-3">
+            <partial name="_PolicySidebar" />
+        </div>
+
+        <!-- CỘT PHẢI: NỘI DUNG CHÍNH SÁCH -->
+        <div class="col-lg-9">
+            <div class="bg-white p-4 p-md-5 rounded-3 shadow-sm cps-policy-article">
+                <!-- Tiêu đề chính -->
+                <div class="border-bottom pb-4 mb-4">
+                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-bold mb-2">
+                        <i class="bi bi-truck me-1"></i> VẬN CHUYỂN TOÀN QUỐC
+                    </span>
+                    <h2 class="fw-bolder text-dark mb-2">Chính Sách Giao Hàng & Vận Chuyển</h2>
+                    <p class="text-muted mb-0">
+                        CellphoneS cam kết mang đến dịch vụ giao hàng nhanh chóng, an toàn và chuyên nghiệp nhất. Hỗ trợ giao hỏa tốc 2 giờ tại nội thành Hà Nội & TP.HCM, miễn phí vận chuyển cho đơn hàng từ 300.000₫.
+                    </p>
+                </div>
+
+                <!-- 1. CÁC HÌNH THỨC GIAO HÀNG -->
+                <div class="mb-5">
+                    <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 14px;">1</span>
+                        Các Phương Thức Giao Hàng
+                    </h4>
+
+                    <div class="row g-3">
+                        <!-- Giao 2H -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border border-danger-subtle rounded-3 p-3 bg-light shadow-sm">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="badge bg-danger fs-6 py-1 px-2"><i class="bi bi-lightning-charge-fill me-1"></i> GIAO HỎA TỐC 2H</span>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-2">Nhận hàng trong vòng 2 giờ</h5>
+                                <p class="small text-muted mb-3">
+                                    Áp dụng cho các đơn hàng tại khu vực nội thành Hà Nội và TP. Hồ Chí Minh với khoảng cách dưới 10km từ chi nhánh CellphoneS gần nhất có sẵn hàng.
+                                </p>
+                                <ul class="list-unstyled small text-muted d-flex flex-column gap-1 mb-0">
+                                    <li><i class="bi bi-clock-history text-danger me-1"></i> Khung giờ nhận đơn: 8h30 - 18h00 hằng ngày</li>
+                                    <li><i class="bi bi-box-seam text-danger me-1"></i> Nhân viên giao hàng riêng, an toàn tối đa</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Giao Toàn quốc -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border border-primary-subtle rounded-3 p-3 bg-light shadow-sm">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span class="badge bg-primary fs-6 py-1 px-2"><i class="bi bi-geo-alt-fill me-1"></i> GIAO TIÊU CHUẨN TOÀN QUỐC</span>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-2">Phủ sóng 63 tỉnh thành</h5>
+                                <p class="small text-muted mb-3">
+                                    Hợp tác cùng các đơn vị chuyển phát hàng đầu: Viettel Post, GHTK, GHN. Hàng hóa được đóng gói 3 lớp bảo vệ chống sốc và dán tem niêm phong chống bóc mở.
+                                </p>
+                                <ul class="list-unstyled small text-muted d-flex flex-column gap-1 mb-0">
+                                    <li><i class="bi bi-calendar-check text-primary me-1"></i> Thời gian: 24h - 48h đối với các tỉnh/thành phố</li>
+                                    <li><i class="bi bi-shield-check text-primary me-1"></i> Bảo hiểm hàng hóa 100% giá trị sản phẩm</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. BIỂU PHÍ GIAO HÀNG & CHÍNH SÁCH FREESHIP -->
+                <div class="mb-5">
+                    <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 14px;">2</span>
+                        Biểu Phí Giao Hàng & Miễn Phí Vận Chuyển (Freeship)
+                    </h4>
+
+                    <div class="table-responsive mb-3">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Giá trị đơn hàng</th>
+                                    <th>Khu vực giao hàng</th>
+                                    <th>Cước phí vận chuyển</th>
+                                    <th>Ghi chú</th>
+                                </tr>
+                            </thead>
+                            <tbody class="small">
+                                <tr>
+                                    <td class="fw-bold text-success fs-6">Từ 300.000₫ trở lên</td>
+                                    <td>Toàn quốc (63 tỉnh thành)</td>
+                                    <td><span class="badge bg-success fs-6 py-1 px-2">MIỄN PHÍ (0₫)</span></td>
+                                    <td>Tự động miễn phí vận chuyển khi đặt hàng</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold text-dark">Dưới 300.000₫</td>
+                                    <td>Toàn quốc</td>
+                                    <td><span class="fw-bold text-danger">30.000₫ / đơn</span></td>
+                                    <td>Có thể áp dụng mã giảm giá Freeship để được giảm cước</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold text-danger">Có mã Freeship</td>
+                                    <td>Toàn quốc</td>
+                                    <td><span class="badge bg-success fs-6 py-1 px-2">Giảm từ 30.000₫ - 50.000₫</span></td>
+                                    <td>Áp dụng đồng thời cùng mã giảm giá đơn hàng tại trang thanh toán</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="alert alert-info border-0 rounded-3 p-3 small text-muted">
+                        <i class="bi bi-info-circle-fill text-primary me-1"></i> <strong>Lưu ý:</strong>
+                        Cước phí được tính toán tự động tại trang thanh toán khi quý khách nhập địa chỉ nhận hàng và áp dụng mã voucher.
+                    </div>
+                </div>
+
+                <!-- 3. QUY TRÌNH ĐỒNG KIỂM KHI NHẬN HÀNG -->
+                <div class="mb-5">
+                    <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 14px;">3</span>
+                        Quy Định Đồng Kiểm Khi Nhận Hàng (Kiểm Tra Trước Khi Thanh Toán)
+                    </h4>
+                    <p class="small text-muted">
+                        Nhằm đảm bảo quyền lợi tuyệt đối cho khách hàng, CellphoneS áp dụng chính sách <strong>ĐỒNG KIỂM TOÀN DIỆN</strong> khi nhân viên giao hàng đến:
+                    </p>
+                    <div class="card border-0 bg-light p-3 rounded-3 mb-3">
+                        <ul class="small text-dark mb-0 d-flex flex-column gap-2">
+                            <li><i class="bi bi-check-circle-fill text-success me-1"></i> Khách hàng được quyền mở hộp vận chuyển để kiểm tra ngoại quan kiện hàng, số lượng và tên sản phẩm đúng với đơn đặt hàng.</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-1"></i> Kiểm tra tem niêm phong của nhà sản xuất (đối với máy mới còn nguyên seal chưa kích hoạt).</li>
+                            <li><i class="bi bi-check-circle-fill text-success me-1"></i> Kiểm tra tình trạng phụ kiện đi kèm (cáp sạc, sách hướng dẫn, phiếu bảo hành).</li>
+                            <li><i class="bi bi-exclamation-triangle-fill text-warning me-1"></i> <em>Lưu ý: Không được bóc seal máy để kích hoạt hệ điều hành (Active máy) trước khi thanh toán.</em></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 4. TRA CỨU ĐƠN HÀNG NHANH -->
+                <div class="card border border-danger-subtle rounded-3 p-4 bg-danger bg-opacity-10 text-center mb-4">
+                    <h5 class="fw-bold text-danger mb-2">
+                        <i class="bi bi-search me-1"></i> Bạn Muốn Tra Cứu Tiến Độ Giao Hàng?
+                    </h5>
+                    <p class="small text-muted mb-3">
+                        Nhập mã đơn hàng hoặc số điện thoại để kiểm tra trạng thái đóng gói, bàn giao vận chuyển và định vị đơn hàng theo thời gian thực.
+                    </p>
+                    <div>
+                        <a asp-controller="Cart" asp-action="Tracking" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
+                            <i class="bi bi-box-seam me-1"></i> Tra Cứu Đơn Hàng Ngay
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Nút chuyển tiếp -->
+                <div class="border-top pt-4 mt-5 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <a asp-controller="Policy" asp-action="Installment" class="btn btn-outline-secondary fw-semibold rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Chính sách Mua hàng trả góp 0%
+                    </a>
+                    <a asp-controller="Policy" asp-action="InvoiceLookup" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-receipt-cutoff me-1"></i> Tra cứu hóa đơn điện tử
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,1231 @@
+@model WebsiteBanDienThoai.Models.ViewModels.TradeInPageViewModel
+@{
+    ViewData["Title"] = "Thu Cũ Đổi Mới - Bán Lại Máy Cũ Lên Đời Siêu Phẩm | CellphoneS";
+}
+
+<div class="container my-4">
+    <!-- BREADCRUMB -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0 py-2 small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted"><i class="bi bi-house-door-fill me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Thu cũ đổi mới</li>
+        </ol>
+    </nav>
+
+    <!-- HERO BANNER SECTION (CHUẨN CELLPHONES) -->
+    <div class="card border-0 shadow-sm overflow-hidden mb-4" style="background: linear-gradient(135deg, #d70018 0%, #b30012 55%, #7a000c 100%); border-radius: 18px;">
+        <div class="card-body p-4 p-md-5 text-white position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <div class="d-flex flex-wrap gap-2 mb-3">
+                        <span class="badge bg-warning text-dark px-3 py-2 fw-bold text-uppercase rounded-pill shadow-sm">
+                            <i class="bi bi-fire text-danger me-1"></i> ĐẶC QUYỀN CELLPHONES
+                        </span>
+                        <span class="badge bg-white bg-opacity-25 text-white px-3 py-2 fw-bold rounded-pill">
+                            <i class="bi bi-shield-check me-1"></i> CAM KẾT S-BUYBACK
+                        </span>
+                    </div>
+                    <h1 class="display-6 fw-black mb-2 text-uppercase" style="font-weight: 800;">
+                        Thu Cũ Đổi Mới - Lên Đời Giá Hời
+                    </h1>
+                    <p class="fs-5 mb-4 text-white-50">
+                        Định giá online 60 giây • Trợ giá lên đời đến <strong class="text-warning">4.000.000₫</strong> • Tặng thêm <strong class="text-warning">5% cho Smember</strong>
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="#tradein-wizard" class="btn btn-warning text-dark fw-bolder px-4 py-2 shadow rounded-pill">
+                            <i class="bi bi-calculator-fill me-1"></i> ĐỊNH GIÁ NGAY BÂY GIỜ
+                        </a>
+                        <a asp-action="Tracking" class="btn btn-outline-light fw-bold px-4 py-2 rounded-pill">
+                            <i class="bi bi-search me-1"></i> Tra cứu phiếu thu cũ
+                        </a>
+                    </div>
+                </div>
+                <div class="col-lg-5 d-none d-lg-block text-center position-relative">
+                    <div class="p-3 bg-white bg-opacity-10 rounded-4 border border-white border-opacity-25 shadow-lg backdrop-blur">
+                        <div class="row g-2 text-center">
+                            <div class="col-4">
+                                <div class="p-2 bg-white rounded-3 text-dark">
+                                    <div class="fs-4 text-danger fw-bold"><i class="bi bi-shield-lock-fill"></i></div>
+                                    <div class="fw-bold small">Không ép giá</div>
+                                    <small class="text-muted" style="font-size: 11px;">Minh bạch 5 bậc</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-2 bg-white rounded-3 text-dark">
+                                    <div class="fs-4 text-danger fw-bold"><i class="bi bi-clock-history"></i></div>
+                                    <div class="fw-bold small">15 phút</div>
+                                    <small class="text-muted" style="font-size: 11px;">Nhận tiền / máy</small>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="p-2 bg-white rounded-3 text-dark">
+                                    <div class="fs-4 text-danger fw-bold"><i class="bi bi-gift-fill"></i></div>
+                                    <div class="fw-bold small">+4 Triệu</div>
+                                    <small class="text-muted" style="font-size: 11px;">Trợ giá độc quyền</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-white-50 small">
+                            <i class="bi bi-geo-alt-fill text-warning me-1"></i> Hơn 120 cửa hàng CellphoneS sẵn sàng phục vụ
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHÍNH SÁCH ĐỘC QUYỀN CELLPHONES HIGHLIGHTS -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%); border-left: 5px solid #f97316 !important;">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-warning bg-opacity-25 text-warning-emphasis d-flex align-items-center justify-content-center p-3 me-3 fs-3">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">
+                            Mua trước - Thu cũ sau (trong 3 ngày)
+                        </h6>
+                        <small class="text-muted">
+                            Mua máy mới mang về trải nghiệm, sao lưu dữ liệu thong thả. Mang máy cũ đến sau 3 ngày vẫn nhận trọn vẹn trợ giá và ưu đãi!
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm rounded-4 h-100 p-3" style="background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-left: 5px solid #22c55e !important;">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-success bg-opacity-25 text-success d-flex align-items-center justify-content-center p-3 me-3 fs-3">
+                        <i class="bi bi-award-fill"></i>
+                    </div>
+                    <div>
+                        <h6 class="fw-bold text-dark mb-1">
+                            Chương trình S-BuyBack bảo chứng
+                        </h6>
+                        <small class="text-muted">
+                            Cam kết thu lại thiết bị với mức giá cao nhất lên đến 65% trong 15 tháng. Thủ tục nhanh gọn, bảo vệ quyền lợi người dùng.
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN INTERACTIVE WIZARD -->
+    <div id="tradein-wizard" class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5">
+        
+        <!-- DEVICE CATEGORY TABS (CELLPHONES BENCHMARK) -->
+        <div class="bg-light p-2 border-bottom">
+            <div class="d-flex flex-wrap gap-2 justify-content-center" id="device-category-tabs">
+                @foreach (var type in Model.DeviceTypes)
+                {
+                    bool isActive = string.Equals(type, Model.SelectedDeviceType, StringComparison.OrdinalIgnoreCase);
+                    string icon = type switch
+                    {
+                        "Điện thoại" => "bi-phone",
+                        "Laptop" => "bi-laptop",
+                        "Tablet" => "bi-tablet",
+                        "Đồng hồ" => "bi-smartwatch",
+                        "Tai nghe" => "bi-headphones",
+                        _ => "bi-device-ssd"
+                    };
+                    <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 py-2 category-tab-btn @(isActive ? "active text-white" : "bg-white")"
+                            data-type="@type" onclick="onSwitchCategory('@type', this)">
+                        <i class="bi @icon me-1"></i> @type
+                    </button>
+                }
+            </div>
+        </div>
+
+        <!-- ACTION SWITCHER: LÊN ĐỜI MÁY MỚI vs BÁN LẠI NHẬN TIỀN -->
+        <div class="p-3 bg-white border-bottom text-center">
+            <div class="d-inline-flex p-1 bg-light rounded-pill border">
+                <button type="button" id="tab-action-upgrade" class="btn btn-sm rounded-pill px-4 fw-bold action-toggle-btn active" onclick="switchActionType('Upgrade')">
+                    <i class="bi bi-stars text-danger me-1"></i> Lên đời máy mới (Có trợ giá đến 4 Triệu)
+                </button>
+                <button type="button" id="tab-action-cashout" class="btn btn-sm rounded-pill px-4 fw-bold action-toggle-btn text-muted" onclick="switchActionType('CashOut')">
+                    <i class="bi bi-cash-stack text-success me-1"></i> Bán lại máy cũ (Nhận tiền ngay)
+                </button>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row g-4">
+                
+                <!-- CỘT TRÁI: CÁC BƯỚC ĐỊNH GIÁ -->
+                <div class="col-lg-7">
+                    
+                    <!-- BƯỚC 1: CHỌN MÁY CŨ & TÌM KIẾM NHANH -->
+                    <div class="mb-4 pb-3 border-bottom">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-danger rounded-circle me-2 px-2 py-1">1</span>
+                                <h5 class="fw-bold mb-0 text-dark">Chọn thiết bị bạn muốn thu cũ</h5>
+                            </div>
+                            <span class="text-muted small" id="lbl-current-category">Danh mục: <strong class="text-danger">@Model.SelectedDeviceType</strong></span>
+                        </div>
+
+                        <!-- LIVE SEARCH BOX (AUTOCOMPLETE) -->
+                        <div class="position-relative mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white border-danger-subtle"><i class="bi bi-search text-danger"></i></span>
+                                <input type="text" id="tradein-live-search" class="form-control border-danger-subtle shadow-none" 
+                                       placeholder="Tìm nhanh model máy cũ (vd: iPhone 14 Pro Max, MacBook Air M1, Galaxy S23...)"
+                                       oninput="handleLiveSearch(this.value)" autocomplete="off">
+                                <button type="button" class="btn btn-outline-secondary border-danger-subtle" onclick="clearLiveSearch()" title="Xóa tìm kiếm">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                            </div>
+                            <!-- Live search dropdown popup -->
+                            <div id="live-search-results" class="list-group position-absolute w-100 shadow-lg rounded-3 mt-1 overflow-auto d-none" 
+                                 style="max-height: 240px; z-index: 1050; background: #ffffff;">
+                            </div>
+                        </div>
+
+                        <!-- Brand Pills -->
+                        <div class="d-flex flex-wrap gap-2 mb-3" id="brand-pills-container">
+                            <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 brand-pill active" 
+                                    data-brand="" onclick="onSelectBrand('', this)">
+                                Tất cả hãng
+                            </button>
+                            @foreach (var brand in Model.Brands)
+                            {
+                                <button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 brand-pill" 
+                                        data-brand="@brand" onclick="onSelectBrand('@brand', this)">
+                                    @brand
+                                </button>
+                            }
+                        </div>
+
+                        <!-- Dropdown chọn máy cũ -->
+                        <div class="mb-2">
+                            <label class="form-label small text-muted fw-bold">Hoặc chọn model từ danh sách:</label>
+                            <select id="select-old-device" class="form-select form-select-lg border-danger-subtle shadow-none" onchange="onSelectOldDevice()">
+                                <option value="" disabled>-- Vui lòng chọn thiết bị cũ --</option>
+                                @{
+                                    var groupedDevices = Model.FeaturedOldDevices.GroupBy(d => d.Brand);
+                                    bool isFirstDev = true;
+                                }
+                                @foreach (var grp in groupedDevices)
+                                {
+                                    <optgroup label="Hãng @grp.Key">
+                                        @foreach (var dev in grp)
+                                        {
+                                            <option value="@dev.Id" data-base-price="@((long)dev.BasePrice)" data-brand="@dev.Brand" data-name="@dev.ModelName" data-storage="@dev.Storage" selected="@(isFirstDev)">
+                                                [@dev.Brand] @dev.ModelName - @dev.Storage (Định giá loại 1: @dev.BasePrice.ToString("N0")₫)
+                                            </option>
+                                            isFirstDev = false;
+                                        }
+                                    </optgroup>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- BƯỚC 2: CHỌN TÌNH TRẠNG MÁY (5 BẬC CELLPHONES) -->
+                    <div class="mb-4 pb-3 border-bottom">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-danger rounded-circle me-2 px-2 py-1">2</span>
+                                <h5 class="fw-bold mb-0 text-dark">Tình trạng thực tế của máy cũ</h5>
+                            </div>
+                            <span class="text-muted small"><i class="bi bi-info-circle me-1"></i>Minh bạch 5 cấp độ CellphoneS</span>
+                        </div>
+
+                        <div class="row g-2" id="condition-cards">
+                            <!-- Loại 1 -->
+                            <div class="col-md-12">
+                                <label class="condition-card p-3 rounded-3 border w-100 cursor-pointer position-relative active" for="cond-1">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="form-check m-0">
+                                            <input class="form-check-input" type="radio" name="conditionGrade" id="cond-1" value="1" checked onchange="recalculate()">
+                                            <label class="form-check-label fw-bold text-dark" for="cond-1">
+                                                Loại 1: Máy đẹp như mới (99%)
+                                            </label>
+                                        </div>
+                                        <span class="badge bg-danger px-2 py-1">100% Giá thu</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1 ps-4" style="font-size: 12px;">
+                                        Màn hình đẹp không trầy xước, thân máy đẹp không trầy, pin tốt (>85%), mọi chức năng hoạt động hoàn hảo.
+                                    </small>
+                                </label>
+                            </div>
+
+                            <!-- Loại 2 -->
+                            <div class="col-md-12">
+                                <label class="condition-card p-3 rounded-3 border w-100 cursor-pointer position-relative" for="cond-2">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="form-check m-0">
+                                            <input class="form-check-input" type="radio" name="conditionGrade" id="cond-2" value="2" onchange="recalculate()">
+                                            <label class="form-check-label fw-bold text-dark" for="cond-2">
+                                                Loại 2: Trầy xước nhẹ (95%)
+                                            </label>
+                                        </div>
+                                        <span class="badge bg-secondary px-2 py-1">~88% Giá thu</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1 ps-4" style="font-size: 12px;">
+                                        Màn hình đẹp, thân máy xước nhẹ lông mèo, không cấn móp, mọi chức năng hoạt động bình thường.
+                                    </small>
+                                </label>
+                            </div>
+
+                            <!-- Loại 3 -->
+                            <div class="col-md-12">
+                                <label class="condition-card p-3 rounded-3 border w-100 cursor-pointer position-relative" for="cond-3">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="form-check m-0">
+                                            <input class="form-check-input" type="radio" name="conditionGrade" id="cond-3" value="3" onchange="recalculate()">
+                                            <label class="form-check-label fw-bold text-dark" for="cond-3">
+                                                Loại 3: Trầy cấn nhiều (90%)
+                                            </label>
+                                        </div>
+                                        <span class="badge bg-secondary px-2 py-1">~72% Giá thu</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1 ps-4" style="font-size: 12px;">
+                                        Màn hình trầy xước thấy rõ, thân máy cấn móp nhẹ ở góc hoặc viền, pin chai nhẹ.
+                                    </small>
+                                </label>
+                            </div>
+
+                            <!-- Loại 4 -->
+                            <div class="col-md-12">
+                                <label class="condition-card p-3 rounded-3 border w-100 cursor-pointer position-relative" for="cond-4">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="form-check m-0">
+                                            <input class="form-check-input" type="radio" name="conditionGrade" id="cond-4" value="4" onchange="recalculate()">
+                                            <label class="form-check-label fw-bold text-dark" for="cond-4">
+                                                Loại 4: Màn ám ố / Nứt kính nhẹ
+                                            </label>
+                                        </div>
+                                        <span class="badge bg-secondary px-2 py-1">~55% Giá thu</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1 ps-4" style="font-size: 12px;">
+                                        Màn hình ám nhẹ, sọc nhẹ hoặc thân vỡ kính lưng, cấn móp sâu, hoạt động bình thường.
+                                    </small>
+                                </label>
+                            </div>
+
+                            <!-- Loại 5 -->
+                            <div class="col-md-12">
+                                <label class="condition-card p-3 rounded-3 border w-100 cursor-pointer position-relative" for="cond-5">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="form-check m-0">
+                                            <input class="form-check-input" type="radio" name="conditionGrade" id="cond-5" value="5" onchange="recalculate()">
+                                            <label class="form-check-label fw-bold text-dark" for="cond-5">
+                                                Loại 5: Lỗi chức năng / hỏng linh kiện
+                                            </label>
+                                        </div>
+                                        <span class="badge bg-secondary px-2 py-1">~40% Giá thu</span>
+                                    </div>
+                                    <small class="text-muted d-block mt-1 ps-4" style="font-size: 12px;">
+                                        Máy lỗi một vài tính năng (FaceID/Vân tay, camera, mic...) hoặc màn nứt vỡ nhưng máy vẫn lên nguồn.
+                                    </small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BƯỚC 3: ĐẶC QUYỀN HỘI VIÊN SMEMBER (CELLPHONES BONUS +5%) -->
+                    <div class="mb-4 pb-3 border-bottom">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <div class="d-flex align-items-center">
+                                <span class="badge bg-danger rounded-circle me-2 px-2 py-1">3</span>
+                                <h5 class="fw-bold mb-0 text-dark">Đặc quyền Hội viên Smember</h5>
+                            </div>
+                            <span class="badge bg-warning text-dark"><i class="bi bi-gift-fill me-1"></i>Tặng thêm 5%</span>
+                        </div>
+                        <p class="small text-muted mb-2">Hội viên CellphoneS được tặng thêm 5% giá trị thu mua máy cũ (tối đa 300k cho S-Mem, 500k cho S-VIP):</p>
+                        
+                        <div class="row g-2">
+                            <div class="col-md-4">
+                                <label class="p-2 border rounded-3 w-100 cursor-pointer text-center smember-tier-card @(Model.CurrentUserSmemberTier == "None" ? "border-danger bg-danger-subtle" : "bg-light")">
+                                    <input type="radio" name="smemberTier" value="None" class="d-none" @(Model.CurrentUserSmemberTier == "None" ? "checked" : "") onchange="onSelectSmemberTier(this)">
+                                    <div class="fw-bold text-dark small">Khách thông thường</div>
+                                    <small class="text-muted" style="font-size: 11px;">Không có ưu đãi</small>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="p-2 border rounded-3 w-100 cursor-pointer text-center smember-tier-card @(Model.CurrentUserSmemberTier == "S-Mem" ? "border-danger bg-danger-subtle" : "bg-light")">
+                                    <input type="radio" name="smemberTier" value="S-Mem" class="d-none" @(Model.CurrentUserSmemberTier == "S-Mem" ? "checked" : "") onchange="onSelectSmemberTier(this)">
+                                    <div class="fw-bold text-danger small"><i class="bi bi-gem me-1"></i>Thành viên S-Mem</div>
+                                    <small class="text-success fw-semibold" style="font-size: 11px;">+5% (Tối đa 300K)</small>
+                                </label>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="p-2 border rounded-3 w-100 cursor-pointer text-center smember-tier-card @(Model.CurrentUserSmemberTier == "S-VIP" ? "border-danger bg-danger-subtle" : "bg-light")">
+                                    <input type="radio" name="smemberTier" value="S-VIP" class="d-none" @(Model.CurrentUserSmemberTier == "S-VIP" ? "checked" : "") onchange="onSelectSmemberTier(this)">
+                                    <div class="fw-bold text-danger small"><i class="bi bi-crown me-1"></i>Thành viên S-VIP</div>
+                                    <small class="text-success fw-semibold" style="font-size: 11px;">+5% (Tối đa 500K)</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- BƯỚC 4: CHỌN MÁY MUỐN LÊN ĐỜI (CHỈ ÁP DỤNG KHI UPGRADE) -->
+                    <div id="section-target-product" class="mb-2">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="badge bg-danger rounded-circle me-2 px-2 py-1">4</span>
+                            <h5 class="fw-bold mb-0 text-dark">Bạn muốn lên đời siêu phẩm nào?</h5>
+                        </div>
+
+                        <div class="mb-3">
+                            <select id="select-target-product" class="form-select form-select-lg border-danger-subtle" onchange="recalculate()">
+                                @foreach (var prod in Model.TargetProducts)
+                                {
+                                    bool isSelected = Model.SelectedTargetProduct != null && Model.SelectedTargetProduct.Id == prod.Id;
+                                    <option value="@prod.Id" data-price="@prod.SalePrice" data-name="@prod.Name" selected="@isSelected">
+                                        @prod.Name - Giá ưu đãi: @prod.SalePrice.ToString("N0")₫
+                                    </option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- CỘT PHẢI: BẢNG TÍNH MINH BẠCH & FORM ĐẶT LỊCH HẸN -->
+                <div class="col-lg-5">
+                    <div class="p-4 rounded-4 bg-light border border-danger-subtle shadow-sm position-sticky" style="top: 20px;">
+                        
+                        <div class="d-flex align-items-center justify-content-between border-bottom pb-2 mb-3">
+                            <h5 class="fw-bold text-danger mb-0" id="box-summary-title">
+                                <i class="bi bi-receipt me-1"></i> BẢNG TÍNH LÊN ĐỜI
+                            </h5>
+                            <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                <i class="bi bi-shield-check me-1"></i>Giữ giá 30 ngày
+                            </span>
+                        </div>
+
+                        <!-- Tóm tắt chi tiết -->
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted small">Thiết bị thẩm định:</span>
+                            <strong id="summary-old-name" class="text-dark small text-end">Chưa chọn</strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted small">Tình trạng máy:</span>
+                            <span id="summary-condition" class="badge bg-light text-dark border small">Loại 1 (99%)</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted small">Giá thu cơ sở:</span>
+                            <strong id="summary-old-price" class="text-dark">0₫</strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2 text-primary" id="row-summary-smember">
+                            <span class="small fw-semibold"><i class="bi bi-gem me-1"></i>Thưởng Smember (5%):</span>
+                            <strong id="summary-smember-bonus">+0₫</strong>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2 text-success" id="row-summary-subsidy">
+                            <span class="small fw-semibold"><i class="bi bi-plus-circle me-1"></i>Trợ giá lên đời:</span>
+                            <strong id="summary-subsidy">+1.000.000₫</strong>
+                        </div>
+
+                        <div class="p-2 rounded bg-white border border-danger-subtle d-flex justify-content-between align-items-center mb-3">
+                            <span class="fw-bold text-dark small" id="lbl-total-benefit">TỔNG GIÁ TRỊ THU LẠI:</span>
+                            <span id="summary-total-benefit" class="text-danger fw-bolder fs-5">0₫</span>
+                        </div>
+
+                        <!-- Khối thanh toán lên đời -->
+                        <div id="box-upgrade-calculation" class="border-top pt-3 mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="text-muted small">Máy mới lên đời:</span>
+                                <strong id="summary-target-name" class="text-dark small text-end">iPhone 16 Pro Max</strong>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted small">Giá máy mới:</span>
+                                <span id="summary-target-price" class="fw-bold text-dark">0₫</span>
+                            </div>
+                            <div class="p-3 rounded-3 text-center" style="background: #fff0f1; border: 1.5px dashed #d70018;">
+                                <div class="small text-muted fw-bold text-uppercase mb-1">SỐ TIỀN CẦN BÙ DỰ KIẾN:</div>
+                                <div id="summary-pay-diff" class="text-danger fw-black display-6" style="font-weight: 800;">0₫</div>
+                                <small class="text-muted" style="font-size: 11.5px;">(Hỗ trợ trả góp 0% số tiền bù qua thẻ hoặc CCCD)</small>
+                            </div>
+                        </div>
+
+                        <!-- Khối nhận tiền mặt (chỉ hiện khi CashOut) -->
+                        <div id="box-cashout-calculation" class="border-top pt-3 mb-3 d-none">
+                            <div class="p-3 rounded-3 text-center" style="background: #f0fdf4; border: 1.5px dashed #22c55e;">
+                                <div class="small text-muted fw-bold text-uppercase mb-1">SỐ TIỀN BẠN NHẬN VỀ:</div>
+                                <div id="summary-cash-receive" class="text-success fw-black display-6" style="font-weight: 800;">0₫</div>
+                                <small class="text-muted" style="font-size: 11.5px;">(Nhận tiền mặt tại quầy hoặc chuyển khoản trong 15 phút)</small>
+                            </div>
+                        </div>
+
+                        <!-- FORM ĐẶT LỊCH HẸN GIỮ GIÁ -->
+                        <div class="border-top pt-3">
+                            <h6 class="fw-bold text-dark mb-3"><i class="bi bi-calendar2-check-fill text-danger me-1"></i> Đặt lịch hẹn thẩm định & giữ giá</h6>
+                            
+                            <form id="tradein-book-form" onsubmit="handleBookSubmit(event)">
+                                <div class="mb-2">
+                                    <input type="text" id="cust-name" class="form-control form-control-sm" placeholder="Họ và tên quý khách *" required value="@ViewBag.CustomerName">
+                                </div>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-7">
+                                        <input type="tel" id="cust-phone" class="form-control form-control-sm" placeholder="Số điện thoại *" required value="@ViewBag.CustomerPhone">
+                                    </div>
+                                    <div class="col-5">
+                                        <input type="email" id="cust-email" class="form-control form-control-sm" placeholder="Email (nếu có)" value="@ViewBag.CustomerEmail">
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <select id="cust-branch" class="form-select form-select-sm" required>
+                                        <option value="" disabled>-- Chọn cửa hàng CellphoneS gần bạn --</option>
+                                        @foreach (var br in Model.BranchStores)
+                                        {
+                                            <option value="@br">@br</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label text-muted small mb-1" style="font-size: 11px;">Thời gian dự kiến mang máy đến:</label>
+                                    <input type="datetime-local" id="cust-datetime" class="form-control form-control-sm" required>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="text" id="cust-note" class="form-control form-control-sm" placeholder="Ghi chú thêm về máy (phụ kiện, hộp, tình trạng pin...)">
+                                </div>
+
+                                <button type="submit" id="btn-submit-booking" class="btn btn-danger w-100 py-2 fw-bold text-uppercase shadow-sm">
+                                    <i class="bi bi-check2-circle me-1"></i> <span id="lbl-btn-submit">XÁC NHẬN ĐẶT LỊCH LÊN ĐỜI</span>
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KHỐI QUY TRÌNH THU CŨ ĐỔI MỚI CHUẨN CELLPHONES -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-5">
+        <h4 class="text-center fw-bold text-uppercase mb-4 text-dark">
+            <i class="bi bi-patch-check-fill text-danger me-1"></i> QUY TRÌNH THU CŨ ĐỔI MỚI DỄ DÀNG TẠI CELLPHONES
+        </h4>
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 bg-light h-100">
+                    <div class="fs-1 text-danger mb-2"><i class="bi bi-phone"></i></div>
+                    <h6 class="fw-bold text-dark">1. Định giá online</h6>
+                    <small class="text-muted">Chọn dòng máy cũ và nhận giá dự kiến kèm thưởng Smember chỉ trong 60 giây.</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 bg-light h-100">
+                    <div class="fs-1 text-danger mb-2"><i class="bi bi-calendar-event"></i></div>
+                    <h6 class="fw-bold text-dark">2. Đặt lịch giữ giá</h6>
+                    <small class="text-muted">Giữ mức giá thẩm định cố định trong 30 ngày tại chi nhánh bạn đã chọn.</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 bg-light h-100">
+                    <div class="fs-1 text-danger mb-2"><i class="bi bi-tools"></i></div>
+                    <h6 class="fw-bold text-dark">3. Thẩm định 15 phút</h6>
+                    <small class="text-muted">Kỹ thuật viên kiểm tra máy trực tiếp minh bạch 5 cấp độ trước mặt khách hàng.</small>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="p-3 rounded-3 bg-light h-100">
+                    <div class="fs-1 text-danger mb-2"><i class="bi bi-box2-heart-fill"></i></div>
+                    <h6 class="fw-bold text-dark">4. Rinh máy / Nhận tiền</h6>
+                    <small class="text-muted">Bù chênh lệch trả góp 0% hoặc nhận tiền mặt/chuyển khoản ngay tức thì.</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CHÍNH SÁCH CAM KẾT & CÂU HỎI THƯỜNG GẶP -->
+    <div class="card border-0 shadow-sm rounded-4 p-4">
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-question-circle-fill text-danger me-2"></i> Câu hỏi thường gặp về Thu cũ đổi mới CellphoneS</h5>
+        <div class="accordion accordion-flush" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed fw-semibold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq-1">
+                        1. Tôi không mua máy mới, chỉ muốn bán lại máy cũ lấy tiền mặt thì có được không?
+                    </button>
+                </h2>
+                <div id="faq-1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body small text-muted">
+                        Hoàn toàn được! Bạn có thể chọn mục <strong>"Bán lại máy cũ"</strong> ở trên. CellphoneS sẽ định giá và giải ngân tiền mặt hoặc chuyển khoản cho bạn ngay trong 15 phút tại cửa hàng, đặc biệt vẫn được hưởng ưu đãi thưởng thêm 5% nếu là hội viên Smember.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed fw-semibold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq-2">
+                        2. Chính sách "Mua trước - Thu cũ sau trong 3 ngày" hoạt động như thế nào?
+                    </button>
+                </h2>
+                <div id="faq-2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body small text-muted">
+                        Đây là đặc quyền riêng tại CellphoneS: Bạn có thể thanh toán mua máy mới đem về nhà sử dụng, truyền dữ liệu hoặc kiểm tra thoải mái. Trong vòng 3 ngày sau đó, bạn mang máy cũ ra cửa hàng thẩm định và nhận lại toàn bộ số tiền thu máy cũ kèm trọn gói trợ giá lên đời đã cam kết!
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed fw-semibold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq-3">
+                        3. Máy trầy xước nhiều, pin chai hoặc mất FaceID/vân tay có thu lại không?
+                    </button>
+                </h2>
+                <div id="faq-3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body small text-muted">
+                        CellphoneS nhận thu mọi dòng máy từ Loại 1 đến Loại 5. Ngay cả khi máy bị trầy xước sâu, vỡ kính lưng hoặc lỗi một vài chức năng (Face ID, camera...) vẫn được hệ thống định giá theo Loại 4 - Loại 5 rõ ràng và minh bạch.
+                    </div>
+                </div>
+            </div>
+            <div class="accordion-item">
+                <h2 class="accordion-header">
+                    <button class="accordion-button collapsed fw-semibold text-dark" type="button" data-bs-toggle="collapse" data-bs-target="#faq-4">
+                        4. Số tiền chênh lệch cần bù có được trả góp 0% không?
+                    </button>
+                </h2>
+                <div id="faq-4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body small text-muted">
+                        Có! Bạn có thể trả góp 0% số tiền bù qua thẻ tín dụng của hơn 25 ngân hàng đối tác hoặc duyệt hồ sơ online qua CCCD chỉ mất 5 phút tại quầy.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL THÔNG BÁO ĐẶT LỊCH THÀNH CÔNG -->
+<div class="modal fade" id="modalBookingSuccess" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow rounded-4 overflow-hidden">
+            <div class="modal-header bg-danger text-white border-0 py-3">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="bi bi-check-circle-fill fs-4 text-warning"></i>
+                    <h5 class="modal-title fw-bold" id="res-modal-title">ĐẶT LỊCH THẨM ĐỊNH THÀNH CÔNG!</h5>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6 mb-3">
+                    Mã phiếu: <strong id="res-request-code" class="text-danger fw-bolder">CPS-TC-XXXX</strong>
+                </div>
+                <p class="text-muted small mb-3">
+                    CellphoneS đã ghi nhận yêu cầu của quý khách <strong id="res-cust-name" class="text-dark"></strong>.
+                </p>
+
+                <div class="bg-light p-3 rounded-3 text-start small mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Cửa hàng hẹn:</span>
+                        <strong id="res-branch" class="text-dark text-end"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Thời gian hẹn:</span>
+                        <strong id="res-datetime" class="text-dark"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Thưởng Smember (5%):</span>
+                        <strong id="res-smember-bonus" class="text-primary"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span class="text-muted">Tổng thu lại:</span>
+                        <strong id="res-total-benefit" class="text-danger"></strong>
+                    </div>
+                    <div class="d-flex justify-content-between" id="res-paydiff-row">
+                        <span class="text-muted">Số tiền cần bù:</span>
+                        <strong id="res-pay-diff" class="text-danger fs-6"></strong>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning text-start small mb-3 py-2">
+                    <i class="bi bi-clock-history me-1"></i> Quý khách vui lòng mang theo máy cũ cùng CCCD/CMND khi đến cửa hàng để hoàn tất thủ tục nhanh nhất!
+                </div>
+
+                <div class="d-grid gap-2">
+                    <a asp-controller="Account" asp-action="Profile" class="btn btn-outline-danger fw-bold">
+                        <i class="bi bi-person-circle me-1"></i> Xem trong Trang cá nhân Smember
+                    </a>
+                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Đóng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .cursor-pointer { cursor: pointer; }
+    .condition-card {
+        border-color: #e5e7eb !important;
+        background: #ffffff;
+        transition: all 0.2s ease-in-out;
+    }
+    .condition-card:hover {
+        border-color: #d70018 !important;
+        background: #fffafa;
+    }
+    .condition-card.active {
+        border-color: #d70018 !important;
+        background: #fff5f5;
+        box-shadow: 0 0 0 2px rgba(215, 0, 24, 0.2);
+    }
+    .category-tab-btn.active {
+        background-color: #d70018 !important;
+        color: #ffffff !important;
+        border-color: #d70018 !important;
+    }
+    .brand-pill.active {
+        background-color: #d70018 !important;
+        color: #ffffff !important;
+        border-color: #d70018 !important;
+    }
+    .action-toggle-btn.active {
+        background-color: #d70018 !important;
+        color: #ffffff !important;
+        box-shadow: 0 2px 4px rgba(215,0,24,0.3);
+    }
+    .smember-tier-card {
+        transition: all 0.2s ease;
+    }
+    .backdrop-blur {
+        backdrop-filter: blur(8px);
+    }
+</style>
+
+@section Scripts {
+<script>
+    function decodeHtml(html) {
+        if (!html) return '';
+        const txt = document.createElement("textarea");
+        txt.innerHTML = html;
+        return txt.value;
+    }
+
+    let currentCategory = decodeHtml('@Html.Raw(Model.SelectedDeviceType)') || 'Điện thoại';
+    let currentBrand = '';
+    let currentActionType = 'Upgrade'; // 'Upgrade' hoặc 'CashOut'
+    let currentSmemberTier = decodeHtml('@Html.Raw(Model.CurrentUserSmemberTier)') || 'None';
+    let currentCategoryModels = []; // Cache toàn bộ thiết bị của danh mục hiện tại
+
+    function initModelsCacheFromDOM() {
+        const select = document.getElementById("select-old-device");
+        if (!select) return;
+        const opts = Array.from(select.querySelectorAll("option")).filter(o => o.value);
+        if (opts.length > 0) {
+            currentCategoryModels = opts.map(o => ({
+                id: parseInt(o.value),
+                brand: (o.dataset.brand || '').trim(),
+                deviceType: currentCategory,
+                modelName: (o.dataset.name || '').trim(),
+                storage: (o.dataset.storage || '').trim(),
+                basePrice: parseFloat(o.dataset.basePrice) || 0,
+                displayName: `${o.dataset.name || ''} ${o.dataset.storage || ''}`.trim()
+            }));
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        // Khởi tạo ngày giờ hẹn mặc định: ngày mai 10:00 sáng
+        const now = new Date();
+        now.setDate(now.getDate() + 1);
+        now.setHours(10, 0, 0, 0);
+        const isoString = new Date(now.getTime() - now.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+        const dtInput = document.getElementById("cust-datetime");
+        if (dtInput) dtInput.value = isoString;
+
+        // Khởi tạo cache máy cũ từ các option đã được server render
+        initModelsCacheFromDOM();
+
+        // Chọn máy cũ đầu tiên nếu có
+        const oldSelect = document.getElementById("select-old-device");
+        const validOptions = oldSelect ? Array.from(oldSelect.options).filter(o => o.value) : [];
+        if (validOptions.length > 0) {
+            if (oldSelect.selectedIndex <= 0) {
+                oldSelect.value = validOptions[0].value;
+            }
+        } else {
+            // Dự phòng: Nếu server render chưa có danh sách máy, nạp ngay bằng AJAX
+            loadModelsByCategoryAndBrand(currentCategory || 'Điện thoại', '');
+        }
+
+        // Tự động chọn chi nhánh theo khu vực người dùng đã lưu
+        function syncTradeInBranchWithCity(city) {
+            const branchSelect = document.getElementById("cust-branch");
+            if (!branchSelect || branchSelect.options.length <= 1) return;
+
+            city = city || (typeof getSavedCity === 'function' ? getSavedCity() : (localStorage.getItem('cps_selected_city') || 'Hồ Chí Minh'));
+            let searchKw = city;
+            if (city.includes('Hồ Chí Minh')) searchKw = 'TP.HCM';
+
+            let matchedIndex = -1;
+            for (let i = 1; i < branchSelect.options.length; i++) {
+                const optText = branchSelect.options[i].text;
+                if (optText.includes(searchKw) || optText.includes(city)) {
+                    matchedIndex = i;
+                    break;
+                }
+            }
+            if (matchedIndex > 0) {
+                branchSelect.selectedIndex = matchedIndex;
+            } else if (branchSelect.selectedIndex <= 0) {
+                branchSelect.selectedIndex = 1;
+            }
+        }
+
+        syncTradeInBranchWithCity();
+
+        // Lắng nghe khi người dùng đổi khu vực từ Header Modal
+        window.addEventListener('cps:locationChanged', function (e) {
+            if (e.detail && e.detail.city) {
+                syncTradeInBranchWithCity(e.detail.city);
+            }
+        });
+
+        recalculate();
+    });
+
+    // 1. Chuyển đổi loại thiết bị (Điện thoại, Laptop, Tablet, Đồng hồ, Tai nghe)
+    function onSwitchCategory(category, btn) {
+        currentCategory = decodeHtml(category) || 'Điện thoại';
+        currentBrand = '';
+        currentCategoryModels = []; // Reset cache cho danh mục mới
+
+        document.querySelectorAll(".category-tab-btn").forEach(el => {
+            el.classList.remove("active", "text-white");
+            el.classList.add("bg-white");
+        });
+        if (btn) {
+            btn.classList.add("active", "text-white");
+            btn.classList.remove("bg-white");
+        }
+
+        const lblCat = document.getElementById("lbl-current-category");
+        if (lblCat) lblCat.innerHTML = `Danh mục: <strong class="text-danger">${currentCategory}</strong>`;
+        
+        const searchInput = document.getElementById("tradein-live-search");
+        if (searchInput) searchInput.value = "";
+        hideLiveSearch();
+
+        // 1. Tải danh sách Hãng độc lập
+        fetch(`/TradeIn/GetBrands?deviceType=${encodeURIComponent(currentCategory)}`)
+            .then(res => res.json())
+            .then(brands => {
+                const container = document.getElementById("brand-pills-container");
+                if (container) {
+                    let html = `<button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 brand-pill active" 
+                                        data-brand="" onclick="onSelectBrand('', this)">Tất cả hãng</button>`;
+                    brands.forEach(b => {
+                        html += `<button type="button" class="btn btn-outline-danger btn-sm rounded-pill px-3 brand-pill" 
+                                         data-brand="${b}" onclick="onSelectBrand('${b}', this)">${b}</button>`;
+                    });
+                    container.innerHTML = html;
+                }
+            })
+            .catch(err => console.error("Lỗi tải Hãng:", err));
+
+        // 2. Tải danh sách Máy độc lập (không đợi Hãng)
+        loadModelsByCategoryAndBrand(currentCategory, '');
+    }
+
+    // 2. Chọn Hãng (Lọc tức thì 0ms từ cache, cực kỳ mượt mà và không bao giờ lỗi)
+    function onSelectBrand(brand, btn) {
+        currentBrand = decodeHtml(brand ? brand.trim() : '');
+        document.querySelectorAll(".brand-pill").forEach(el => el.classList.remove("active"));
+        if (btn) btn.classList.add("active");
+
+        // Nếu đã có cache máy của danh mục hiện tại -> lọc tức thì trên client!
+        if (currentCategoryModels && currentCategoryModels.length > 0) {
+            const filtered = currentBrand 
+                ? currentCategoryModels.filter(m => m.brand.toLowerCase().trim() === currentBrand.toLowerCase().trim())
+                : currentCategoryModels;
+            renderModelsDropdown(filtered);
+            return;
+        }
+
+        // Nếu cache chưa có, gọi fetch
+        loadModelsByCategoryAndBrand(currentCategory, currentBrand);
+    }
+
+    function renderModelsDropdown(data) {
+        const select = document.getElementById("select-old-device");
+        if (!select) return;
+
+        if (!data || data.length === 0) {
+            select.innerHTML = '<option value="" disabled selected>-- Không có thiết bị phù hợp --</option>';
+            return;
+        }
+
+        // Nhóm theo Hãng
+        const groups = {};
+        data.forEach(item => {
+            const b = item.brand || 'Khác';
+            if (!groups[b]) groups[b] = [];
+            groups[b].push(item);
+        });
+
+        let html = '<option value="" disabled>-- Vui lòng chọn thiết bị cũ --</option>';
+        let isFirst = true;
+
+        Object.keys(groups).forEach(brandName => {
+            html += `<optgroup label="Hãng ${brandName}">`;
+            groups[brandName].forEach(item => {
+                const selectedAttr = isFirst ? ' selected' : '';
+                isFirst = false;
+                const priceNum = Number(item.basePrice) || 0;
+                html += `
+                    <option value="${item.id}" 
+                            data-base-price="${priceNum}" 
+                            data-brand="${item.brand}" 
+                            data-name="${item.modelName}" 
+                            data-storage="${item.storage}"${selectedAttr}>
+                        [${item.brand}] ${item.displayName} (Định giá loại 1: ${priceNum.toLocaleString('vi-VN')}₫)
+                    </option>
+                `;
+            });
+            html += `</optgroup>`;
+        });
+
+        select.innerHTML = html;
+        recalculate();
+    }
+
+    function loadModelsByCategoryAndBrand(category, brand) {
+        const select = document.getElementById("select-old-device");
+        if (select && select.options.length <= 1) {
+            select.innerHTML = '<option value="" disabled selected>⏳ Đang tải danh sách thiết bị...</option>';
+        }
+
+        let url = `/TradeIn/GetModels?deviceType=${encodeURIComponent(category)}`;
+        if (brand) url += `&brand=${encodeURIComponent(brand)}`;
+
+        fetch(url)
+            .then(res => {
+                if (!res.ok) throw new Error("HTTP error " + res.status);
+                return res.json();
+            })
+            .then(data => {
+                // Nếu tải toàn bộ category (không lọc brand), cập nhật cache
+                if (!brand && data && data.length > 0) {
+                    currentCategoryModels = data;
+                }
+                renderModelsDropdown(data);
+            })
+            .catch(err => {
+                console.error("Lỗi tải dòng máy:", err);
+                if (select && select.options.length <= 1) {
+                    fetch('/TradeIn/GetModels?deviceType=' + encodeURIComponent('Điện thoại'))
+                        .then(r => r.json())
+                        .then(fallbackData => {
+                            currentCategoryModels = fallbackData || [];
+                            renderModelsDropdown(fallbackData);
+                        })
+                        .catch(() => {
+                            select.innerHTML = '<option value="" disabled selected>⚠️ Không thể nạp thiết bị. Vui lòng thử lại!</option>';
+                        });
+                }
+            });
+    }
+
+    // 3. Tìm kiếm tức thì (Live Autocomplete Search)
+    let searchTimeout = null;
+    function handleLiveSearch(query) {
+        clearTimeout(searchTimeout);
+        const resultsBox = document.getElementById("live-search-results");
+        if (!query || query.trim().length < 2) {
+            hideLiveSearch();
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            fetch(`/TradeIn/GetModels?keyword=${encodeURIComponent(query.trim())}`)
+                .then(res => res.json())
+                .then(items => {
+                    if (!items || items.length === 0) {
+                        resultsBox.innerHTML = '<div class="p-3 text-muted small text-center">Không tìm thấy máy phù hợp</div>';
+                        resultsBox.classList.remove("d-none");
+                        return;
+                    }
+
+                    let html = '';
+                    items.forEach(item => {
+                        const priceNum = Number(item.basePrice) || 0;
+                        html += `
+                            <a href="javascript:void(0)" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center py-2"
+                               onclick="selectFromSearch(${item.id}, '${item.modelName.replace(/'/g, "\\'")}', '${item.storage}', ${priceNum}, '${item.brand}', '${item.deviceType || ''}')">
+                                <div>
+                                    <span class="badge bg-danger-subtle text-danger me-1">${item.deviceType || 'Máy'}</span>
+                                    <strong class="text-dark small">${item.displayName}</strong>
+                                </div>
+                                <span class="text-danger fw-bold small">${priceNum.toLocaleString('vi-VN')}₫</span>
+                            </a>
+                        `;
+                    });
+                    resultsBox.innerHTML = html;
+                    resultsBox.classList.remove("d-none");
+                })
+                .catch(err => console.error("Lỗi tìm kiếm:", err));
+        }, 250);
+    }
+
+    function selectFromSearch(id, modelName, storage, basePrice, brand, deviceType) {
+        hideLiveSearch();
+        document.getElementById("tradein-live-search").value = `${modelName} ${storage}`;
+
+        // Nếu thiết bị được chọn thuộc Category khác, đồng bộ tab
+        if (deviceType && deviceType !== currentCategory) {
+            currentCategory = deviceType;
+            document.querySelectorAll(".category-tab-btn").forEach(el => {
+                if (el.dataset.type === deviceType) {
+                    el.classList.add("active", "text-white");
+                    el.classList.remove("bg-white");
+                } else {
+                    el.classList.remove("active", "text-white");
+                    el.classList.add("bg-white");
+                }
+            });
+            const lblCat = document.getElementById("lbl-current-category");
+            if (lblCat) lblCat.innerHTML = `Danh mục: <strong class="text-danger">${deviceType}</strong>`;
+        }
+
+        const select = document.getElementById("select-old-device");
+        let foundOpt = Array.from(select.options).find(o => o.value == id);
+        if (!foundOpt) {
+            foundOpt = document.createElement("option");
+            foundOpt.value = id;
+            foundOpt.dataset.basePrice = basePrice;
+            foundOpt.dataset.brand = brand;
+            foundOpt.dataset.name = modelName;
+            foundOpt.dataset.storage = storage;
+            foundOpt.textContent = `[${brand}] ${modelName} ${storage} (Định giá loại 1: ${Number(basePrice).toLocaleString('vi-VN')}₫)`;
+            select.appendChild(foundOpt);
+        }
+        foundOpt.selected = true;
+
+        recalculate();
+    }
+
+    function clearLiveSearch() {
+        document.getElementById("tradein-live-search").value = "";
+        hideLiveSearch();
+        loadModelsByCategoryAndBrand(currentCategory, currentBrand);
+    }
+
+    function hideLiveSearch() {
+        const resultsBox = document.getElementById("live-search-results");
+        if (resultsBox) resultsBox.classList.add("d-none");
+    }
+
+    document.addEventListener("click", function (e) {
+        if (!e.target.closest("#tradein-live-search") && !e.target.closest("#live-search-results")) {
+            hideLiveSearch();
+        }
+    });
+
+    function onSelectOldDevice() {
+        recalculate();
+    }
+
+    // 4. Chuyển đổi Action: Lên đời máy mới vs Bán lại nhận tiền
+    function switchActionType(action) {
+        currentActionType = action;
+        const btnUpgrade = document.getElementById("tab-action-upgrade");
+        const btnCashOut = document.getElementById("tab-action-cashout");
+        const secTarget = document.getElementById("section-target-product");
+        const boxUpgrade = document.getElementById("box-upgrade-calculation");
+        const boxCashOut = document.getElementById("box-cashout-calculation");
+        const rowSubsidy = document.getElementById("row-summary-subsidy");
+        const lblTitle = document.getElementById("box-summary-title");
+        const lblSubmit = document.getElementById("lbl-btn-submit");
+
+        if (action === 'Upgrade') {
+            btnUpgrade.classList.add("active");
+            btnUpgrade.classList.remove("text-muted");
+            btnCashOut.classList.remove("active");
+            btnCashOut.classList.add("text-muted");
+
+            secTarget.classList.remove("d-none");
+            boxUpgrade.classList.remove("d-none");
+            boxCashOut.classList.add("d-none");
+            rowSubsidy.classList.remove("d-none");
+            lblTitle.innerHTML = '<i class="bi bi-receipt me-1"></i> BẢNG TÍNH LÊN ĐỜI';
+            lblSubmit.textContent = 'XÁC NHẬN ĐẶT LỊCH LÊN ĐỜI';
+        } else {
+            btnCashOut.classList.add("active");
+            btnCashOut.classList.remove("text-muted");
+            btnUpgrade.classList.remove("active");
+            btnUpgrade.classList.add("text-muted");
+
+            secTarget.classList.add("d-none");
+            boxUpgrade.classList.add("d-none");
+            boxCashOut.classList.remove("d-none");
+            rowSubsidy.classList.add("d-none");
+            lblTitle.innerHTML = '<i class="bi bi-cash-stack me-1"></i> BẢNG TÍNH BÁN LẠI NHẬN TIỀN';
+            lblSubmit.textContent = 'XÁC NHẬN BÁN LẠI NHẬN TIỀN';
+        }
+
+        recalculate();
+    }
+
+    // 5. Chọn bậc hội viên Smember
+    function onSelectSmemberTier(radio) {
+        currentSmemberTier = radio.value;
+        document.querySelectorAll(".smember-tier-card").forEach(c => {
+            c.classList.remove("border-danger", "bg-danger-subtle");
+            c.classList.add("bg-light");
+        });
+        const parentCard = radio.closest(".smember-tier-card");
+        if (parentCard) {
+            parentCard.classList.add("border-danger", "bg-danger-subtle");
+            parentCard.classList.remove("bg-light");
+        }
+        recalculate();
+    }
+
+    // 6. Cập nhật thẻ tình trạng máy
+    document.querySelectorAll('input[name="conditionGrade"]').forEach(radio => {
+        radio.addEventListener('change', function () {
+            document.querySelectorAll('.condition-card').forEach(c => c.classList.remove('active'));
+            const card = this.closest('.condition-card');
+            if (card) card.classList.add('active');
+        });
+    });
+
+    // 7. Tính toán lại toàn bộ bảng tính
+    function recalculate() {
+        const oldSelect = document.getElementById("select-old-device");
+        if (!oldSelect || oldSelect.selectedIndex < 0) return;
+
+        const selectedOldOpt = oldSelect.options[oldSelect.selectedIndex];
+        if (!selectedOldOpt || !selectedOldOpt.value) return;
+
+        const oldDeviceId = parseInt(selectedOldOpt.value);
+        const conditionGrade = parseInt(document.querySelector('input[name="conditionGrade"]:checked')?.value || "1");
+
+        const targetSelect = document.getElementById("select-target-product");
+        const targetProductId = (currentActionType === 'Upgrade' && targetSelect && targetSelect.value) ? parseInt(targetSelect.value) : null;
+
+        fetch('/TradeIn/Calculate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                oldDeviceId: oldDeviceId,
+                conditionGrade: conditionGrade,
+                targetProductId: targetProductId,
+                actionType: currentActionType,
+                smemberTier: currentSmemberTier
+            })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (res.success) {
+                document.getElementById("summary-old-name").textContent = `${res.oldDeviceName} ${res.oldDeviceStorage}`;
+                document.getElementById("summary-condition").textContent = res.conditionName;
+                document.getElementById("summary-old-price").textContent = res.baseEstimatePrice.toLocaleString('vi-VN') + '₫';
+                
+                // Thưởng Smember
+                const rowSmember = document.getElementById("row-summary-smember");
+                if (res.smemberBonus > 0) {
+                    rowSmember.classList.remove("d-none");
+                    document.getElementById("summary-smember-bonus").textContent = '+' + res.smemberBonus.toLocaleString('vi-VN') + '₫';
+                } else {
+                    document.getElementById("summary-smember-bonus").textContent = '+0₫';
+                }
+
+                // Trợ giá máy mới
+                document.getElementById("summary-subsidy").textContent = '+' + res.subsidyAmount.toLocaleString('vi-VN') + '₫';
+                document.getElementById("summary-total-benefit").textContent = res.totalBenefit.toLocaleString('vi-VN') + '₫';
+                
+                if (currentActionType === 'Upgrade') {
+                    document.getElementById("summary-target-name").textContent = res.targetProductName;
+                    document.getElementById("summary-target-price").textContent = res.targetProductPrice.toLocaleString('vi-VN') + '₫';
+                    document.getElementById("summary-pay-diff").textContent = res.payDifference.toLocaleString('vi-VN') + '₫';
+                } else {
+                    document.getElementById("summary-cash-receive").textContent = res.totalBenefit.toLocaleString('vi-VN') + '₫';
+                }
+            }
+        })
+        .catch(err => console.error("Lỗi tính toán định giá:", err));
+    }
+
+    // 8. Gửi Form đặt lịch
+    function handleBookSubmit(event) {
+        event.preventDefault();
+
+        const btn = document.getElementById("btn-submit-booking");
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang tạo phiếu...';
+
+        const oldSelect = document.getElementById("select-old-device");
+        const selectedOldOpt = oldSelect.options[oldSelect.selectedIndex];
+
+        const targetSelect = document.getElementById("select-target-product");
+        const selectedTargetOpt = (currentActionType === 'Upgrade' && targetSelect) ? targetSelect.options[targetSelect.selectedIndex] : null;
+
+        const oldPriceRaw = document.getElementById("summary-old-price").textContent.replace(/[^\d]/g, '');
+        const smemberBonusRaw = document.getElementById("summary-smember-bonus").textContent.replace(/[^\d]/g, '');
+        const subsidyRaw = document.getElementById("summary-subsidy").textContent.replace(/[^\d]/g, '');
+        const totalRaw = document.getElementById("summary-total-benefit").textContent.replace(/[^\d]/g, '');
+        const targetPriceRaw = (currentActionType === 'Upgrade') ? document.getElementById("summary-target-price").textContent.replace(/[^\d]/g, '') : '0';
+        const payDiffRaw = (currentActionType === 'Upgrade') ? document.getElementById("summary-pay-diff").textContent.replace(/[^\d]/g, '') : '0';
+
+        const payload = {
+            customerName: document.getElementById("cust-name").value,
+            phoneNumber: document.getElementById("cust-phone").value,
+            email: document.getElementById("cust-email").value,
+            oldDeviceName: selectedOldOpt.dataset.name || "Thiết bị cũ",
+            oldDeviceStorage: selectedOldOpt.dataset.storage || "",
+            conditionGrade: parseInt(document.querySelector('input[name="conditionGrade"]:checked')?.value || "1"),
+            actionType: currentActionType,
+            smemberTier: currentSmemberTier,
+            smemberBonus: parseFloat(smemberBonusRaw) || 0,
+            baseEstimatePrice: parseFloat(oldPriceRaw) || 0,
+            subsidyAmount: (currentActionType === 'Upgrade') ? (parseFloat(subsidyRaw) || 0) : 0,
+            totalBenefit: parseFloat(totalRaw) || 0,
+            targetProductId: (currentActionType === 'Upgrade' && targetSelect && targetSelect.value) ? parseInt(targetSelect.value) : null,
+            targetProductName: selectedTargetOpt ? selectedTargetOpt.dataset.name : "Không đổi máy",
+            targetProductPrice: parseFloat(targetPriceRaw) || 0,
+            payDifference: parseFloat(payDiffRaw) || 0,
+            branchStore: document.getElementById("cust-branch").value,
+            appointmentDate: document.getElementById("cust-datetime").value,
+            customerNote: document.getElementById("cust-note").value
+        };
+
+        fetch('/TradeIn/Book', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="bi bi-check2-circle me-1"></i> <span id="lbl-btn-submit">${currentActionType === 'Upgrade' ? 'XÁC NHẬN ĐẶT LỊCH LÊN ĐỜI' : 'XÁC NHẬN BÁN LẠI NHẬN TIỀN'}</span>`;
+
+            if (data.success) {
+                document.getElementById("res-request-code").textContent = data.requestCode;
+                document.getElementById("res-cust-name").textContent = data.customerName;
+                document.getElementById("res-branch").textContent = data.branchStore;
+                document.getElementById("res-datetime").textContent = data.appointmentDate;
+                document.getElementById("res-smember-bonus").textContent = data.smemberBonus || "0₫";
+                document.getElementById("res-total-benefit").textContent = data.totalBenefit;
+                
+                const payDiffRow = document.getElementById("res-paydiff-row");
+                if (data.actionType === 'CashOut') {
+                    payDiffRow.classList.add("d-none");
+                    document.getElementById("res-modal-title").textContent = "ĐẶT LỊCH BÁN MÁY THÀNH CÔNG!";
+                } else {
+                    payDiffRow.classList.remove("d-none");
+                    document.getElementById("res-pay-diff").textContent = data.payDifference;
+                    document.getElementById("res-modal-title").textContent = "ĐẶT LỊCH THẨM ĐỊNH THÀNH CÔNG!";
+                }
+
+                const modal = new bootstrap.Modal(document.getElementById("modalBookingSuccess"));
+                modal.show();
+            } else {
+                showError(data.message || "Có lỗi xảy ra khi đặt lịch. Vui lòng thử lại!");
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="bi bi-check2-circle me-1"></i> <span id="lbl-btn-submit">${currentActionType === 'Upgrade' ? 'XÁC NHẬN ĐẶT LỊCH LÊN ĐỜI' : 'XÁC NHẬN BÁN LẠI NHẬN TIỀN'}</span>`;
+            console.error("Lỗi đặt lịch:", err);
+            showError("Không thể kết nối đến máy chủ. Vui lòng thử lại!");
+        });
+    }
+</script>
+}

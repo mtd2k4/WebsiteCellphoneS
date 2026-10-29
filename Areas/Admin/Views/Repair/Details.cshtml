@@ -1,0 +1,301 @@
+@model WebsiteBanDienThoai.Models.RepairBooking
+@{
+    ViewData["Title"] = $"Chi Tiết Phiếu Hẹn #{Model.BookingCode}";
+
+    string badgeClass = Model.Status switch
+    {
+        WebsiteBanDienThoai.Models.RepairStatus.Pending => "bg-secondary",
+        WebsiteBanDienThoai.Models.RepairStatus.Received => "bg-primary",
+        WebsiteBanDienThoai.Models.RepairStatus.Repairing => "bg-warning text-dark",
+        WebsiteBanDienThoai.Models.RepairStatus.ReadyForPickup => "bg-info text-dark",
+        WebsiteBanDienThoai.Models.RepairStatus.Completed => "bg-success",
+        WebsiteBanDienThoai.Models.RepairStatus.Cancelled => "bg-danger",
+        _ => "bg-secondary"
+    };
+
+    string statusName = Model.Status switch
+    {
+        WebsiteBanDienThoai.Models.RepairStatus.Pending => "Chờ tiếp nhận máy",
+        WebsiteBanDienThoai.Models.RepairStatus.Received => "Đã tiếp nhận máy tại cửa hàng",
+        WebsiteBanDienThoai.Models.RepairStatus.Repairing => "Kỹ thuật viên đang kiểm tra & sửa chữa",
+        WebsiteBanDienThoai.Models.RepairStatus.ReadyForPickup => "Sẵn sàng bàn giao / chờ khách đến lấy",
+        WebsiteBanDienThoai.Models.RepairStatus.Completed => "Đã bàn giao hoàn tất cho khách",
+        WebsiteBanDienThoai.Models.RepairStatus.Cancelled => "Lịch hẹn đã bị hủy",
+        _ => Model.Status.ToString()
+    };
+}
+
+<div class="mb-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+    <div>
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb mb-1">
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Repair" asp-action="Index">Lịch hẹn sửa chữa</a></li>
+                <li class="breadcrumb-item active" aria-current="page">#@Model.BookingCode</li>
+            </ol>
+        </nav>
+        <h4 class="fw-bolder text-dark mb-0 d-flex align-items-center gap-2">
+            <span>Phiếu Hẹn Sửa Chữa: <span class="text-danger">@Model.BookingCode</span></span>
+            <span class="badge @badgeClass fs-6 px-3 py-2 rounded-pill">@statusName</span>
+        </h4>
+    </div>
+    <div class="d-flex gap-2">
+        <a asp-area="" asp-controller="Repair" asp-action="Tracking" asp-route-code="@Model.BookingCode" target="_blank" class="btn btn-outline-secondary btn-sm fw-semibold">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Trang Tra Cứu Khách
+        </a>
+        <a asp-area="" asp-controller="Repair" asp-action="Confirmation" asp-route-code="@Model.BookingCode" target="_blank" class="btn btn-outline-dark btn-sm fw-semibold">
+            <i class="bi bi-printer me-1"></i> In Phiếu Tiếp Nhận
+        </a>
+        <a asp-area="Admin" asp-controller="Repair" asp-action="Index" class="btn btn-secondary btn-sm fw-semibold">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<div class="row g-3">
+    <!-- CỘT TRÁI: THÔNG TIN THIẾT BỊ, DỊCH VỤ & CẬP NHẬT KỸ THUẬT -->
+    <div class="col-lg-8">
+        <!-- 1. THÔNG TIN THIẾT BỊ & DỊCH VỤ -->
+        <div class="card border-0 shadow-sm rounded-3 mb-3">
+            <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+                <h6 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-phone-fill text-danger me-2"></i>Thông Tin Thiết Bị & Dịch Vụ
+                </h6>
+                @if (Model.HasWarranty)
+                {
+                    <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1">
+                        <i class="bi bi-shield-fill-check me-1"></i> Thiết bị mua tại CellphoneS (Có bảo hành)
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-light text-muted border px-2 py-1">
+                        <i class="bi bi-tools me-1"></i> Sửa chữa dịch vụ ngoài
+                    </span>
+                }
+            </div>
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block">Tên thiết bị:</small>
+                        <strong class="fs-6 text-dark">@Model.DeviceName</strong>
+                    </div>
+                    <div class="col-sm-3">
+                        <small class="text-muted d-block">Loại thiết bị:</small>
+                        <span class="badge bg-light text-dark border">@Model.DeviceType</span>
+                    </div>
+                    <div class="col-sm-3">
+                        <small class="text-muted d-block">Số IMEI / Serial:</small>
+                        @if (!string.IsNullOrWhiteSpace(Model.SerialNumber))
+                        {
+                            <code class="fw-bold text-danger">@Model.SerialNumber</code>
+                        }
+                        else
+                        {
+                            <span class="text-muted fst-italic">Chưa cung cấp</span>
+                        }
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.OrderCode))
+                    {
+                        <div class="col-sm-6">
+                            <small class="text-muted d-block">Mã đơn hàng gốc CellphoneS:</small>
+                            <a asp-area="Admin" asp-controller="Order" asp-action="Details" asp-route-orderCode="@Model.OrderCode" class="fw-bold text-decoration-none">
+                                <i class="bi bi-receipt me-1"></i>@Model.OrderCode
+                            </a>
+                        </div>
+                    }
+
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block">Dịch vụ sửa chữa yêu cầu:</small>
+                        <span class="badge bg-danger-subtle text-danger fs-6 px-2 py-1">
+                            <i class="bi bi-wrench-adjustable me-1"></i>@Model.ServiceType
+                        </span>
+                    </div>
+
+                    <div class="col-12">
+                        <small class="text-muted d-block mb-1">Mô tả tình trạng lỗi của khách hàng:</small>
+                        <div class="p-3 bg-light rounded-3 border text-dark">
+                            <i class="bi bi-chat-left-quote text-muted me-2"></i>
+                            @(string.IsNullOrWhiteSpace(Model.IssueDescription) ? "Khách yêu cầu kiểm tra toàn diện máy tại trung tâm." : Model.IssueDescription)
+                        </div>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block">Chi phí dự kiến ban đầu:</small>
+                        <span class="fs-5 fw-bold text-danger">
+                            @(Model.EstimatedCost == 0 ? "Miễn phí kiểm tra / Bảo hành" : $"{Model.EstimatedCost:N0} đ")
+                        </span>
+                    </div>
+
+                    <div class="col-sm-6">
+                        <small class="text-muted d-block">Thời điểm tạo phiếu hẹn:</small>
+                        <span class="text-dark fw-semibold">
+                            <i class="bi bi-clock-history me-1 text-muted"></i>@Model.CreatedAt.ToString("HH:mm - dd/MM/yyyy")
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. FORM CẬP NHẬT TRẠNG THÁI & GHI CHÚ KỸ THUẬT -->
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h6 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-sliders text-primary me-2"></i>Cập Nhật Tiến Độ & Ghi Chú Kỹ Thuật Viên
+                </h6>
+            </div>
+            <div class="card-body">
+                <form asp-area="Admin" asp-controller="Repair" asp-action="UpdateStatus" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Trạng Thái Xử Lý <span class="text-danger">*</span></label>
+                            <select name="status" class="form-select form-select-lg fw-semibold" asp-for="Status">
+                                <option value="Pending">1. Chờ tiếp nhận máy</option>
+                                <option value="Received">2. Đã tiếp nhận máy tại cửa hàng</option>
+                                <option value="Repairing">3. Đang kiểm tra & sửa chữa</option>
+                                <option value="ReadyForPickup">4. Sẵn sàng bàn giao / Chờ khách lấy</option>
+                                <option value="Completed">5. Hoàn thành bàn giao</option>
+                                <option value="Cancelled">6. Hủy lịch hẹn</option>
+                            </select>
+                            <div class="form-text">Trạng thái sẽ được cập nhật tức thì trên trang Tra cứu tiến độ của khách hàng.</div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small text-muted">Chi Phí Cập Nhật / Thực Tế (VNĐ)</label>
+                            <div class="input-group input-group-lg">
+                                <input type="number" step="1000" min="0" name="finalCost" class="form-control fw-bold text-danger" value="@((long)Model.EstimatedCost)" placeholder="0" />
+                                <span class="input-group-text fw-bold">đ</span>
+                            </div>
+                            <div class="form-text">Nhập 0 nếu sửa chữa thuộc diện Bảo hành miễn phí.</div>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-bold small text-muted">Ghi Chú Kỹ Thuật Viên / Tình Trạng Bàn Giao</label>
+                            <textarea name="technicianNote" rows="4" class="form-control" placeholder="Ghi chú chi tiết: Tình trạng máy khi mở máy, linh kiện đã thay thế, mã linh kiện, thời gian bảo hành linh kiện, lời dặn cho khách hàng...">@Model.TechnicianNote</textarea>
+                            <div class="form-text">Ghi chú này sẽ được hiển thị công khai trên phiếu tra cứu để khách theo dõi tình trạng sửa chữa.</div>
+                        </div>
+
+                        <div class="col-12 text-end pt-2">
+                            <button type="submit" class="btn btn-danger btn-lg px-4 fw-bold shadow-sm">
+                                <i class="bi bi-save me-1"></i> Lưu Cập Nhật Tiến Độ
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- CỘT PHẢI: KHÁCH HÀNG & CỬA HÀNG HẸN -->
+    <div class="col-lg-4">
+        <!-- 1. KHÁCH HÀNG -->
+        <div class="card border-0 shadow-sm rounded-3 mb-3">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h6 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-person-circle text-primary me-2"></i>Thông Tin Khách Hàng
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Họ và tên khách:</small>
+                    <strong class="fs-6 text-dark">@Model.CustomerName</strong>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted d-block">Số điện thoại:</small>
+                    <div class="d-flex align-items-center justify-content-between mt-1">
+                        <strong class="text-primary fs-6">@Model.PhoneNumber</strong>
+                        <a href="tel:@Model.PhoneNumber" class="btn btn-sm btn-outline-primary py-0 px-2">
+                            <i class="bi bi-telephone-fill me-1"></i> Gọi ngay
+                        </a>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrWhiteSpace(Model.Email))
+                {
+                    <div class="mb-3">
+                        <small class="text-muted d-block">Email:</small>
+                        <div class="d-flex align-items-center justify-content-between mt-1">
+                            <span class="text-dark small text-truncate" style="max-width: 180px;">@Model.Email</span>
+                            <a href="mailto:@Model.Email" class="btn btn-sm btn-outline-secondary py-0 px-2">
+                                <i class="bi bi-envelope-fill me-1"></i> Gửi mail
+                            </a>
+                        </div>
+                    </div>
+                }
+
+                <div>
+                    <small class="text-muted d-block">Tài khoản thành viên:</small>
+                    @if (Model.User != null)
+                    {
+                        <span class="badge bg-success-subtle text-success border border-success-subtle mt-1">
+                            <i class="bi bi-check-circle-fill me-1"></i> @(string.IsNullOrWhiteSpace(Model.User.FullName) ? Model.User.Email : Model.User.FullName) (Smember)
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="badge bg-light text-muted border mt-1">
+                            <i class="bi bi-person-dash me-1"></i> Khách vãng lai
+                        </span>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. ĐỊA ĐIỂM & THỜI GIAN HẸN -->
+        <div class="card border-0 shadow-sm rounded-3">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h6 class="fw-bold mb-0 text-dark">
+                    <i class="bi bi-geo-alt-fill text-danger me-2"></i>Điểm Hẹn & Thời Gian Tiếp Nhận
+                </h6>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <small class="text-muted d-block">Ngày hẹn tiếp nhận:</small>
+                    <strong class="fs-6 text-danger">
+                        <i class="bi bi-calendar-event me-1"></i>@Model.BookingDate.ToString("dd/MM/yyyy")
+                    </strong>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted d-block">Khung giờ hẹn:</small>
+                    <span class="badge bg-danger fs-6 px-3 py-1">
+                        <i class="bi bi-clock me-1"></i>@Model.TimeSlot
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted d-block">Tỉnh / Thành phố:</small>
+                    <strong class="text-dark">@Model.City</strong>
+                </div>
+
+                <div class="mb-3">
+                    <small class="text-muted d-block">Chi nhánh Điện Thoại Vui tiếp nhận:</small>
+                    <div class="p-2 bg-light rounded-2 border mt-1">
+                        <strong class="text-dark small d-block">
+                            <i class="bi bi-shop text-danger me-1"></i>@Model.StoreBranch
+                        </strong>
+                        <small class="text-muted">Mở cửa: 08h00 - 21h00 mỗi ngày</small>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning mb-0 p-2 small">
+                    <i class="bi bi-telephone-inbound-fill me-1"></i>
+                    Hotline kỹ thuật Điện Thoại Vui: <strong>1800.2064</strong> (Miễn phí)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

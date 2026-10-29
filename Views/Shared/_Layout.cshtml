@@ -1,0 +1,852 @@
+@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var cartJson = HttpContextAccessor.HttpContext?.Session.GetString("Cart");
+    int cartCount = 0;
+    if (!string.IsNullOrEmpty(cartJson))
+    {
+        try
+        {
+            var items = System.Text.Json.JsonSerializer.Deserialize<List<WebsiteBanDienThoai.Models.CartItem>>(cartJson);
+            cartCount = items?.Sum(i => i.Quantity) ?? 0;
+        }
+        catch { }
+    }
+
+    var wishlistJson = HttpContextAccessor.HttpContext?.Session.GetString("Wishlist");
+    int wishlistCount = 0;
+    if (!string.IsNullOrEmpty(wishlistJson))
+    {
+        try
+        {
+            var favIds = System.Text.Json.JsonSerializer.Deserialize<List<int>>(wishlistJson);
+            wishlistCount = favIds?.Count ?? 0;
+        }
+        catch { }
+    }
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CellphoneS Hệ Thống Điện Thoại, Laptop, Phụ Kiện Chính Hãng</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5 & Icons -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
+    <!-- Swiper Carousel -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <!-- CellphoneS Design System Styles -->
+    <link rel="stylesheet" href="~/css/cellphones.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- 1. TOP PROMOTION & GUARANTEE TICKER -->
+    <div class="cps-topbar text-center d-none d-md-block">
+        <a href="#flashsale" class="text-white text-decoration-none d-inline-flex align-items-center">
+            <span class="badge bg-warning text-dark fw-bold me-2 px-2 py-0.5" style="font-size: 10.5px; border-radius: 4px;">
+                <i class="bi bi-fire text-danger me-1"></i>HOT SALE
+            </span>
+            <span>Tuần lễ xả kho công nghệ - Giảm sốc đến 50% cùng đặc quyền Smember!</span>
+            <span class="fw-bold text-warning ms-2" style="font-size: 11.5px;">Khám phá ngay <i class="bi bi-arrow-right"></i></span>
+        </a>
+    </div>
+    
+    <div class="cps-guarantee-bar d-none d-lg-block">
+        <div class="container d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-3">
+                <span class="item"><i class="bi bi-patch-check-fill text-warning me-1"></i>Chính hãng - Xuất VAT</span>
+                <span class="item"><i class="bi bi-truck text-light me-1"></i>Giao nhanh miễn phí</span>
+                <a asp-controller="Voucher" asp-action="Index" class="item text-warning fw-bold text-decoration-none">
+                    <i class="bi bi-gift-fill text-warning me-1"></i>Săn Voucher Mỗi Ngày
+                </a>
+                <a asp-controller="TradeIn" asp-action="Index" class="item text-white text-decoration-none d-none d-xl-inline-flex">
+                    <i class="bi bi-arrow-repeat text-warning me-1"></i>Thu cũ trợ giá 4 triệu
+                </a>
+                <a asp-controller="Repair" asp-action="Booking" class="item text-white text-decoration-none d-none d-xxl-inline-flex">
+                    <i class="bi bi-wrench-adjustable text-warning me-1"></i>Sửa chữa Điện Thoại Vui
+                </a>
+                <a asp-controller="Warranty" asp-action="Lookup" class="item text-white text-decoration-none d-none d-xxl-inline-flex">
+                    <i class="bi bi-shield-check text-warning me-1"></i>Tra cứu bảo hành
+                </a>
+            </div>
+            <div class="d-flex align-items-center gap-3">
+                <a asp-controller="News" asp-action="Index" class="item text-white text-decoration-none d-none d-lg-inline-flex">
+                    <i class="bi bi-newspaper me-1"></i>Tin tức Sforum
+                </a>
+                <span class="opacity-50 d-none d-lg-inline">|</span>
+                <a href="tel:18002097" class="item text-white text-decoration-none">
+                    <i class="bi bi-telephone-inbound-fill text-warning me-1"></i>Hotline: <strong>1800.2097</strong>
+                </a>
+                <span class="opacity-50">|</span>
+                <span class="item text-white">
+                    <i class="bi bi-geo-alt-fill text-danger me-1"></i><strong>120+</strong> Cửa hàng
+                </span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. STICKY MAIN HEADER -->
+    <header class="cps-header">
+        <div class="container d-flex align-items-center gap-2 gap-lg-3">
+            
+            <!-- Mobile Menu Toggle Button (Mobile only) -->
+            <button class="cps-btn-action d-lg-none flex-shrink-0 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#categoriesOffcanvas" aria-label="Menu" style="width: 38px; height: 38px; justify-content: center; padding: 0 !important;">
+                <i class="bi bi-list fs-4"></i>
+            </button>
+
+            <!-- Logo -->
+            <a asp-controller="Home" asp-action="Index" class="cps-logo text-decoration-none flex-shrink-0" title="CellphoneS - Hệ thống bán lẻ điện thoại, phụ kiện chính hãng">
+                <span>cellphone</span><span class="highlight">S</span>
+            </a>
+
+            <!-- Danh mục Button (Desktop) -->
+            <button class="cps-btn-category d-none d-lg-flex flex-shrink-0" type="button" data-bs-toggle="offcanvas" data-bs-target="#categoriesOffcanvas">
+                <i class="bi bi-grid-fill fs-5"></i>
+                <span>Danh mục</span>
+            </button>
+
+            <!-- Search Bar with Live Autocomplete -->
+            <div class="cps-search-wrapper flex-grow-1">
+                <div class="cps-search-box">
+                    <i class="bi bi-search"></i>
+                    <input type="text" id="cps-search-input" placeholder="Bạn cần tìm điện thoại, laptop, phụ kiện gì hôm nay?" autocomplete="off" />
+                </div>
+                <div id="cps-search-results" class="cps-search-results"></div>
+            </div>
+
+            <!-- Header Action Buttons (Right Group) -->
+            <div class="d-flex align-items-center gap-2 ms-auto flex-shrink-0">
+                <!-- 1. Tra cứu đơn hàng -->
+                <a asp-controller="Cart" asp-action="Tracking" class="cps-btn-action d-none d-xl-flex text-decoration-none" title="Tra cứu trạng thái đơn hàng">
+                    <i class="bi bi-box-seam fs-5"></i>
+                    <div class="text-start lh-1">
+                        <span style="font-size: 10px; opacity: 0.85; display: block;">Tra cứu</span>
+                        <span style="font-weight: 700;">Đơn hàng</span>
+                    </div>
+                </a>
+
+                <!-- 2. Yêu thích -->
+                <a asp-controller="Wishlist" asp-action="Index" class="cps-btn-action text-decoration-none position-relative" title="Danh sách sản phẩm yêu thích">
+                    <div class="position-relative d-inline-flex align-items-center">
+                        <i class="bi @(wishlistCount > 0 ? "bi-heart-fill text-warning" : "bi-heart") fs-5"></i>
+                        <span id="cps-wishlist-badge" class="cps-cart-count" style="display: @(wishlistCount > 0 ? "inline-flex" : "none");">@wishlistCount</span>
+                    </div>
+                    <div class="text-start lh-1 d-none d-xl-block">
+                        <span style="font-size: 10px; opacity: 0.85; display: block;">Yêu</span>
+                        <span style="font-weight: 700;">thích</span>
+                    </div>
+                </a>
+
+                <!-- 3. Giỏ hàng -->
+                <a asp-controller="Cart" asp-action="Index" class="cps-btn-action cps-cart-btn text-decoration-none position-relative" title="Giỏ hàng của bạn">
+                    <div class="position-relative d-inline-flex align-items-center">
+                        <i class="bi bi-cart3 fs-5"></i>
+                        <span id="cps-cart-badge" class="cps-cart-count">@cartCount</span>
+                    </div>
+                    <div class="text-start lh-1 d-none d-md-block">
+                        <span style="font-size: 10px; opacity: 0.85; display: block;">Giỏ</span>
+                        <span style="font-weight: 700;">hàng</span>
+                    </div>
+                </a>
+
+                <!-- 3.5. Chuông Thông báo Khách hàng (Customer Notifications) -->
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="dropdown">
+                        <a href="#" class="cps-btn-action text-decoration-none position-relative" id="customerNotifBtn" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo đơn hàng & ưu đãi">
+                            <div class="position-relative d-inline-flex align-items-center">
+                                <i id="cps-notif-icon" class="bi bi-bell fs-5"></i>
+                                <span id="cps-notif-badge" class="cps-cart-count bg-warning text-dark fw-bold" style="display: none;">0</span>
+                            </div>
+                            <div class="text-start lh-1 d-none d-xl-block">
+                                <span style="font-size: 10px; opacity: 0.85; display: block;">Thông</span>
+                                <span style="font-weight: 700;">báo</span>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-4 mt-2 p-0 overflow-hidden" style="width: 360px; max-width: 92vw; z-index: 1060; font-size: 13px;">
+                            <div class="p-3 text-white d-flex align-items-center justify-content-between" style="background: linear-gradient(135deg, #d70018 0%, #b30014 100%);">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-bell-fill fs-6"></i>
+                                    <span class="fw-bold">Thông Báo Của Bạn</span>
+                                    <span id="customerNotifUnreadText" class="badge bg-white text-danger fw-bold rounded-pill" style="font-size: 10.5px;">0 mới</span>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-outline-light border-0 py-0 px-2 fw-semibold" onclick="markAllCustomerNotifsRead()" style="font-size: 11px;">
+                                    <i class="bi bi-check2-all me-1"></i>Đã đọc
+                                </button>
+                            </div>
+                            <div id="customerNotifList" class="overflow-auto" style="max-height: 360px;">
+                                <div class="p-4 text-center text-muted small">
+                                    <div class="spinner-border spinner-border-sm text-danger mb-2" role="status"></div>
+                                    <div>Đang tải thông báo...</div>
+                                </div>
+                            </div>
+                            <div class="p-2 text-center bg-light border-top">
+                                <a asp-controller="Cart" asp-action="Tracking" class="text-danger fw-bold text-decoration-none small d-flex align-items-center justify-content-center gap-1">
+                                    <span>Tra cứu & theo dõi đơn hàng</span>
+                                    <i class="bi bi-arrow-right-short fs-5"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+
+                <!-- 4. Tài khoản / Smember User Menu -->
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <div class="dropdown">
+                        <a href="#" class="cps-btn-action text-decoration-none dropdown-toggle d-flex align-items-center gap-2" id="userMenuDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-person-circle fs-5 text-warning"></i>
+                            <div class="text-start lh-1 d-none d-md-block">
+                                <span style="font-size: 10px; opacity: 0.85; display: block;">
+                                    @(User.IsInRole("Admin") ? "Quản trị viên" : "Smember")
+                                </span>
+                                <span class="fw-bold text-truncate" style="max-width: 85px; display: inline-block;">@User.Identity.Name</span>
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-1" aria-labelledby="userMenuDropdown" style="font-size: 13px; min-width: 240px;">
+                            <li class="px-3 py-2 border-bottom bg-light rounded-top">
+                                <div class="d-flex align-items-center justify-content-between">
+                                    <div class="fw-bold text-dark text-truncate" style="max-width: 140px;">@User.Identity.Name</div>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <span class="badge bg-warning text-dark fw-bold" style="font-size: 10px;">
+                                            <i class="bi bi-shield-fill"></i> Admin
+                                        </span>
+                                    }
+                                </div>
+                                <small class="text-danger fw-bold"><i class="bi bi-star-fill text-warning me-1"></i>Hội viên @(User.FindFirst("SmemberLevel")?.Value ?? "Smember")</small>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" asp-controller="Account" asp-action="Profile">
+                                    <i class="bi bi-person-vcard me-2 text-danger"></i> Trang cá nhân Smember
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" asp-controller="Cart" asp-action="Tracking">
+                                    <i class="bi bi-box-seam me-2 text-primary"></i> Lịch sử & Đơn hàng
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" asp-controller="Wishlist" asp-action="Index">
+                                    <i class="bi bi-heart-fill me-2 text-danger"></i> Danh sách yêu thích
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" asp-controller="Warranty" asp-action="Lookup">
+                                    <i class="bi bi-shield-check text-success me-2"></i> Tra cứu phiếu bảo hành
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2 fw-semibold text-danger" asp-controller="Voucher" asp-action="Index">
+                                    <i class="bi bi-gift-fill me-2 text-danger"></i> Kho Voucher mỗi ngày
+                                    <span class="badge bg-danger ms-1" style="font-size: 9px;">Hot</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2" asp-controller="Repair" asp-action="Booking">
+                                    <i class="bi bi-wrench-adjustable text-danger me-2"></i> Đặt lịch sửa chữa Điện Thoại Vui
+                                </a>
+                            </li>
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <li><hr class="dropdown-divider my-1"></li>
+                                <li>
+                                    <a class="dropdown-item py-2 fw-bold text-primary bg-primary-subtle" asp-area="Admin" asp-controller="Dashboard" asp-action="Index">
+                                        <i class="bi bi-speedometer2 me-2 text-danger"></i> Vào Trang Quản Trị Admin
+                                    </a>
+                                </li>
+                            }
+                            <li><hr class="dropdown-divider my-1"></li>
+                            <li>
+                                <a class="dropdown-item py-2 text-danger" asp-controller="Account" asp-action="Logout">
+                                    <i class="bi bi-box-arrow-right me-2"></i> Đăng xuất
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                }
+                else
+                {
+                    <a asp-controller="Account" asp-action="Login" class="cps-btn-action text-decoration-none">
+                        <i class="bi bi-person-circle fs-5"></i>
+                        <div class="text-start lh-1 d-none d-md-block">
+                            <span style="font-size: 10px; opacity: 0.85; display: block;">Đăng nhập</span>
+                            <span class="fw-bold">Smember</span>
+                        </div>
+                    </a>
+                }
+            </div>
+
+        </div>
+    </header>
+
+    <!-- 3. MAIN BODY CONTENT -->
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+
+    <!-- 4. FOOTER (CELLPHONES STYLE) -->
+    <footer class="cps-footer">
+        <div class="container">
+            <div class="row g-4">
+                <!-- Col 1: Tổng đài hỗ trợ -->
+                <div class="col-6 col-md-3">
+                    <h6>Tổng đài hỗ trợ miễn phí</h6>
+                    <ul class="hotline-box">
+                        <li>Gọi mua hàng: <a href="tel:18002097"><strong>1800.2097</strong> (7h30 - 22h00)</a></li>
+                        <li>Khiếu nại: <a href="tel:18002063"><strong>1800.2063</strong> (8h00 - 21h30)</a></li>
+                        <li>Bảo hành: <a href="tel:18002064"><strong>1800.2064</strong> (8h00 - 21h00)</a></li>
+                    </ul>
+                    <h6 class="mt-3">Phương thức thanh toán</h6>
+                    <div class="d-flex flex-wrap gap-2 text-muted" style="font-size: 22px;">
+                        <i class="bi bi-credit-card-2-front" title="Visa / Master"></i>
+                        <i class="bi bi-qr-code-scan" title="VNPAY QR"></i>
+                        <i class="bi bi-wallet2" title="Ví MoMo"></i>
+                        <i class="bi bi-cash-stack" title="COD Tiền mặt"></i>
+                    </div>
+                </div>
+
+                <!-- Col 2: Thông tin & Chính sách -->
+                <div class="col-6 col-md-3">
+                    <h6>Thông tin & Chính sách</h6>
+                    <ul>
+                        <li><a asp-controller="Policy" asp-action="PaymentGuide">Mua hàng và thanh toán Online</a></li>
+                        <li><a asp-controller="Policy" asp-action="Installment">Mua hàng trả góp 0%</a></li>
+                        <li><a asp-controller="Policy" asp-action="Shipping">Chính sách giao hàng</a></li>
+                        <li><a asp-controller="Policy" asp-action="InvoiceLookup">Tra cứu hóa đơn điện tử</a></li>
+                        <li><a asp-controller="Warranty" asp-action="Lookup">Tra cứu phiếu bảo hành điện tử</a></li>
+                        <li><a asp-controller="Policy" asp-action="Warranty">Chính sách bảo hành</a></li>
+                        <li><a asp-controller="Policy" asp-action="Privacy">Chính sách bảo mật thông tin</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 3: Dịch vụ & Liên kết -->
+                <div class="col-6 col-md-3">
+                    <h6>Dịch vụ & Đối tác</h6>
+                    <ul>
+                        <li><a asp-controller="Voucher" asp-action="Index" class="text-danger fw-bold"><i class="bi bi-gift-fill me-1"></i>Săn Voucher Miễn Phí Mỗi Ngày</a></li>
+                        <li><a href="#">Ưu đãi cho Học sinh - Sinh viên</a></li>
+                        <li><a href="#">Bán hàng Doanh nghiệp (B2B)</a></li>
+                        <li><a asp-controller="TradeIn" asp-action="Index">Thu cũ đổi mới giá tốt</a></li>
+                        <li><a href="#">Trung tâm bảo hành Apple CareS</a></li>
+                        <li><a asp-controller="Repair" asp-action="Booking">Dịch vụ sửa chữa Điện Thoại Vui</a></li>
+                        <li><a asp-controller="News" asp-action="Index">Trang tin công nghệ Sforum</a></li>
+                    </ul>
+                </div>
+
+                <!-- Col 4: Hệ thống cửa hàng -->
+                <div class="col-6 col-md-3">
+                    <h6>Hệ thống CellphoneS</h6>
+                    <p style="line-height: 1.5;">Hệ thống hơn 180 cửa hàng bán lẻ điện thoại, máy tính bảng, laptop và phụ kiện chính hãng trên toàn quốc.</p>
+                    <a href="#" class="btn btn-sm btn-outline-danger fw-bold rounded-pill px-3 mt-1">
+                        <i class="bi bi-geo-alt me-1"></i> Xem 180 cửa hàng
+                    </a>
+                    <div class="mt-3">
+                        <span class="badge bg-danger p-2"><i class="bi bi-shield-lock-fill me-1"></i> Đã thông báo Bộ Công Thương</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Footer Bottom -->
+            <div class="cps-footer-bottom">
+                <p class="mb-1">© 2026 WebsiteBanDienThoai - Hệ thống bán lẻ thiết bị công nghệ chuẩn phong cách CellphoneS.</p>
+                <p class="mb-0">Địa chỉ: 123 Đường Công Nghệ, Quận 1, TP. Hồ Chí Minh. Hotline: 1800.2097</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 5. MOBILE BOTTOM NAVIGATION BAR -->
+    <nav class="cps-mobile-bottom-nav">
+        <a asp-controller="Home" asp-action="Index" class="cps-bottom-nav-item active">
+            <i class="bi bi-house-door-fill"></i>
+            <span>Trang chủ</span>
+        </a>
+        <a href="#" class="cps-bottom-nav-item" data-bs-toggle="offcanvas" data-bs-target="#categoriesOffcanvas">
+            <i class="bi bi-grid-fill"></i>
+            <span>Danh mục</span>
+        </a>
+        <a asp-controller="Cart" asp-action="Tracking" class="cps-bottom-nav-item">
+            <i class="bi bi-box-seam"></i>
+            <span>Tra cứu</span>
+        </a>
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <a asp-controller="Account" asp-action="Profile" class="cps-bottom-nav-item">
+                <i class="bi bi-person-check-fill text-warning"></i>
+                <span>Tài khoản</span>
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Account" asp-action="Login" class="cps-bottom-nav-item">
+                <i class="bi bi-person-circle"></i>
+                <span>Smember</span>
+            </a>
+        }
+        <a asp-controller="Cart" asp-action="Index" class="cps-bottom-nav-item">
+            <i class="bi bi-cart3"></i>
+            <span>Giỏ hàng</span>
+        </a>
+    </nav>
+
+    <!-- 6. OFFCANVAS DANH MỤC CHO MOBILE & DESKTOP QUICK ACCESS -->
+    <div class="offcanvas offcanvas-start" tabindex="-1" id="categoriesOffcanvas" aria-labelledby="categoriesOffcanvasLabel">
+        <div class="offcanvas-header bg-danger text-white">
+            <h5 class="offcanvas-title fw-bold" id="categoriesOffcanvasLabel">
+                <i class="bi bi-grid-fill me-2"></i> Tất cả danh mục
+            </h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+        </div>
+        <div class="offcanvas-body p-0">
+
+            <div class="list-group list-group-flush">
+                <a asp-controller="Voucher" asp-action="Index" class="list-group-item list-group-item-action d-flex align-items-center py-3 bg-danger-subtle text-danger">
+                    <i class="bi bi-gift-fill fs-5 text-danger me-3"></i>
+                    <span class="fw-bold">Kho Voucher Miễn Phí Mỗi Ngày</span>
+                    <span class="badge bg-danger ms-2" style="font-size: 10px;">HOT</span>
+                    <i class="bi bi-chevron-right ms-auto text-danger"></i>
+                </a>
+                <a asp-controller="Product" asp-action="Category" asp-route-slug="dien-thoai" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                    <i class="bi bi-phone fs-5 text-danger me-3"></i>
+                    <span class="fw-semibold">Điện thoại</span>
+                    <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                </a>
+                <a asp-controller="Product" asp-action="Category" asp-route-slug="laptop" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                    <i class="bi bi-laptop fs-5 text-danger me-3"></i>
+                    <span class="fw-semibold">Laptop</span>
+                    <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                </a>
+                <a asp-controller="Product" asp-action="Category" asp-route-slug="tablet" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                    <i class="bi bi-tablet fs-5 text-danger me-3"></i>
+                    <span class="fw-semibold">Máy tính bảng (Tablet)</span>
+                    <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                </a>
+                <a asp-controller="Product" asp-action="Category" asp-route-slug="am-thanh" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                    <i class="bi bi-headphones fs-5 text-danger me-3"></i>
+                    <span class="fw-semibold">Âm thanh (Tai nghe, Loa)</span>
+                    <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                </a>
+                <a asp-controller="Product" asp-action="Category" asp-route-slug="dong-ho" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                    <i class="bi bi-smartwatch fs-5 text-danger me-3"></i>
+                    <span class="fw-semibold">Đồng hồ thông minh</span>
+                    <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                </a>
+                <a asp-controller="Product" asp-action="Category" asp-route-slug="phu-kien" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                    <i class="bi bi-plug fs-5 text-danger me-3"></i>
+                    <span class="fw-semibold">Phụ kiện (Sạc, Cáp, Ốp lưng)</span>
+                    <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                </a>
+                <a asp-controller="TradeIn" asp-action="Index" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                    <i class="bi bi-arrow-repeat fs-5 text-danger me-3"></i>
+                    <span class="fw-semibold">Thu cũ đổi mới</span>
+                    <span class="badge bg-danger ms-2" style="font-size: 10px;">Trợ giá 4Tr</span>
+                    <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                </a>
+                <a asp-controller="News" asp-action="Index" class="list-group-item list-group-item-action d-flex align-items-center py-3">
+                    <i class="bi bi-newspaper fs-5 text-danger me-3"></i>
+                    <span class="fw-semibold">Tin công nghệ (Sforum)</span>
+                    <span class="badge bg-primary ms-2" style="font-size: 10px;">24h</span>
+                    <i class="bi bi-chevron-right ms-auto text-muted"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- 8. MODAL ĐĂNG NHẬP SMEMBER -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header border-0 pb-0">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <div class="cps-smember-avatar mx-auto mb-3" style="width: 54px; height: 54px; font-size: 26px;">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1">Đăng nhập tài khoản Smember</h5>
+                    <p class="text-muted small mb-4">Nhập hội thành viên CellphoneS để nhận vô vàn ưu đãi và voucher hấp dẫn!</p>
+                    
+                    <form asp-controller="Account" asp-action="Login" method="post">
+                        <div class="mb-3 text-start">
+                            <label class="form-label small fw-bold">Số điện thoại / Email</label>
+                            <input type="text" name="Username" class="form-control" placeholder="Nhập email hoặc số điện thoại" required />
+                        </div>
+                        <div class="mb-3 text-start">
+                            <label class="form-label small fw-bold">Mật khẩu</label>
+                            <input type="password" name="Password" class="form-control" placeholder="Nhập mật khẩu" required />
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100 fw-bold py-2 mb-2">ĐĂNG NHẬP</button>
+                        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-secondary w-100 py-2 small fw-semibold text-decoration-none">
+                            Chưa có tài khoản? Đăng ký ngay
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- 9. UNIFIED FLOATING ACTION BUTTONS & CHATBOT CLUSTER -->
+    <div class="cps-floating-buttons" id="cpsFloatingButtons">
+        <!-- 1. Cuộn lên đầu trang -->
+        <button type="button" id="cps-btn-backtotop" class="cps-float-btn cps-float-top" title="Cuộn lên đầu trang">
+            <i class="bi bi-chevron-up"></i>
+        </button>
+
+        <!-- 2. Gọi Hotline tư vấn -->
+        <a href="tel:18002097" class="cps-float-btn cps-float-hotline" title="Gọi tổng đài miễn phí 1800.2097">
+            <i class="bi bi-telephone-fill"></i>
+        </a>
+
+        <!-- 3. Chat Zalo OA -->
+        <a href="https://zalo.me" target="_blank" class="cps-float-btn cps-float-zalo" title="Chat Zalo tư vấn kỹ thuật">
+            <i class="bi bi-chat-text-fill"></i>
+        </a>
+
+        <!-- 4. Chatbot & Tư Vấn Viên 24/7 (Đồng bộ 100% cùng kích thước, cùng cột trục dọc) -->
+        <div class="cps-float-chat-wrap">
+            <div class="cps-chat-invite-pill" id="cpsChatInvitePill">
+                <span class="cps-pulse-beacon"></span>
+                <span>Chatbot & Tư vấn viên 24/7</span>
+                <i class="bi bi-x-circle-fill text-muted ms-1" id="cpsChatDismissPill" title="Ẩn gợi ý"></i>
+            </div>
+            <button type="button" id="cpsChatTriggerBtn" class="cps-float-btn cps-float-chat" title="Trợ lý AI & Tư vấn viên CellphoneS">
+                <i class="bi bi-headset" id="cpsChatTriggerIcon"></i>
+                <span class="cps-chat-badge-ai">AI</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 10. CHATBOT & LIVE ADVISOR WINDOW -->
+    @await Html.PartialAsync("_ChatWidget")
+
+    <!-- Scripts -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="~/js/cellphones.js" asp-append-version="true"></script>
+
+    <script>
+        function getSavedCity() { return 'Hồ Chí Minh'; }
+        function selectCity(cityName) { /* no-op */ }
+
+        async function toggleWishlist(productId, btn) {
+            try {
+                const res = await fetch('/Wishlist/Toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(productId)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const badge = document.getElementById('cps-wishlist-badge');
+                    if (badge) {
+                        badge.innerText = data.count;
+                        badge.style.display = data.count > 0 ? 'inline-flex' : 'none';
+                        const headerFavIcon = badge.parentElement ? badge.parentElement.querySelector('i') : null;
+                        if (headerFavIcon) {
+                            headerFavIcon.className = data.count > 0 ? 'bi bi-heart-fill' : 'bi bi-heart';
+                        }
+                    }
+
+                    // Update all buttons referencing this product on current page
+                    const targets = document.querySelectorAll(`[data-product-id="${productId}"]`);
+                    const allBtns = new Set(targets);
+                    if (btn) allBtns.add(btn);
+
+                    allBtns.forEach(el => {
+                        const isCardBtn = el.classList.contains('cps-wishlist-btn');
+                        const icon = el.querySelector('i');
+                        const text = el.querySelector('#fav-text') || el.querySelector('span');
+
+                        if (data.isFavorited) {
+                            if (isCardBtn) {
+                                el.classList.add('active');
+                                if (icon) icon.className = 'bi bi-heart-fill text-danger';
+                            } else {
+                                el.classList.remove('btn-outline-danger');
+                                el.classList.add('btn-danger');
+                                if (icon) icon.className = 'bi bi-heart-fill me-1';
+                                if (text) text.innerText = 'Đã yêu thích';
+                            }
+                        } else {
+                            if (isCardBtn) {
+                                el.classList.remove('active');
+                                if (icon) icon.className = 'bi bi-heart';
+                            } else {
+                                el.classList.remove('btn-danger');
+                                el.classList.add('btn-outline-danger');
+                                if (icon) icon.className = 'bi bi-heart me-1';
+                                if (text) text.innerText = 'Yêu thích';
+                            }
+                        }
+                    });
+
+                    showToastNotification(data.message, data.isFavorited ? 'success' : 'info');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        // Auto-sync favorite state on page load
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                const res = await fetch('/Wishlist/GetFavoriteIds');
+                if (res.ok) {
+                    const favIds = await res.json();
+                    if (Array.isArray(favIds) && favIds.length > 0) {
+                        favIds.forEach(id => {
+                            const btns = document.querySelectorAll(`.cps-wishlist-btn[data-product-id="${id}"]`);
+                            btns.forEach(b => {
+                                b.classList.add('active');
+                                const i = b.querySelector('i');
+                                if (i) i.className = 'bi bi-heart-fill text-danger';
+                            });
+                        });
+                    }
+                }
+            } catch (e) {
+                // silent fallback
+            }
+        });
+
+        // ========================================================
+        // SWEETALERT2 NOTIFICATION SYSTEM (CHUẨN CELLPHONES)
+        // ========================================================
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2600,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+
+        function showToast(message, icon = 'success') {
+            Toast.fire({
+                icon: icon,
+                title: message
+            });
+        }
+
+        // Tương thích ngược với showToastNotification cũ
+        function showToastNotification(message, type = 'success') {
+            const icon = type === 'success' ? 'success' : (type === 'error' ? 'error' : 'info');
+            showToast(message, icon);
+        }
+
+        function showAlert(arg1, arg2 = 'info', arg3 = '') {
+            let message = arg1;
+            let icon = 'info';
+            let title = 'Thông báo';
+
+            if (['success', 'error', 'warning', 'info', 'question'].includes(arg2)) {
+                icon = arg2;
+                title = arg3 || (icon === 'success' ? 'Thành công' : icon === 'error' ? 'Lỗi' : icon === 'warning' ? 'Chú ý' : 'Thông báo');
+            } else if (arg2) {
+                title = arg1;
+                message = arg2;
+                icon = arg3 || 'info';
+            }
+
+            return Swal.fire({
+                icon: icon,
+                title: title,
+                text: message,
+                confirmButtonColor: '#d70018',
+                confirmButtonText: 'Đồng ý',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                }
+            });
+        }
+
+        function showSuccess(arg1, arg2) {
+            if (arg2) return showAlert(arg1, arg2, 'success');
+            return showAlert(arg1, 'success', 'Thành công');
+        }
+
+        function showError(arg1, arg2) {
+            if (arg2) return showAlert(arg1, arg2, 'error');
+            return showAlert(arg1, 'error', 'Thông báo lỗi');
+        }
+
+        function showWarning(arg1, arg2) {
+            if (arg2) return showAlert(arg1, arg2, 'warning');
+            return showAlert(arg1, 'warning', 'Chú ý');
+        }
+
+        function showConfirm(title, text, confirmBtnText = 'Đồng ý', cancelBtnText = 'Hủy bỏ') {
+            return Swal.fire({
+                title: title,
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d70018',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: confirmBtnText,
+                cancelButtonText: cancelBtnText,
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                }
+            });
+        }
+
+        // Tự động chuyển đổi toàn bộ hàm alert() mặc định sang SweetAlert2
+        window.alert = function (message) {
+            showAlert(message, 'info', 'Thông báo');
+        };
+
+        // ========================================================
+        // HỆ THỐNG THÔNG BÁO ĐƠN HÀNG CHO KHÁCH HÀNG (SMEMBER)
+        // ========================================================
+        let lastKnownCustomerNotifId = 0;
+        let isFirstCustomerNotifLoad = true;
+
+        async function fetchCustomerNotifications() {
+            const notifBtn = document.getElementById('customerNotifBtn');
+            if (!notifBtn) return; // Khách chưa đăng nhập
+
+            try {
+                const res = await fetch('/Notification/GetCustomerNotifications');
+                if (!res.ok) return;
+                const data = await res.json();
+                if (!data.success) return;
+
+                const badge = document.getElementById('cps-notif-badge');
+                const unreadText = document.getElementById('customerNotifUnreadText');
+                const list = document.getElementById('customerNotifList');
+                const bellIcon = document.getElementById('cps-notif-icon');
+
+                if (badge && unreadText) {
+                    if (data.unreadCount > 0) {
+                        badge.style.display = 'inline-flex';
+                        badge.textContent = data.unreadCount > 99 ? '99+' : data.unreadCount;
+                        unreadText.textContent = `${data.unreadCount} mới`;
+                        if (bellIcon) {
+                            bellIcon.classList.remove('bi-bell');
+                            bellIcon.classList.add('bi-bell-fill', 'text-warning');
+                        }
+                    } else {
+                        badge.style.display = 'none';
+                        unreadText.textContent = '0 mới';
+                        if (bellIcon) {
+                            bellIcon.classList.remove('bi-bell-fill', 'text-warning');
+                            bellIcon.classList.add('bi-bell');
+                        }
+                    }
+                }
+
+                // Kiểm tra thông báo mới phát sinh trong lúc khách đang duyệt web
+                const latestId = (data.notifications && data.notifications.length > 0) ? data.notifications[0].id : 0;
+                if (!isFirstCustomerNotifLoad && latestId > lastKnownCustomerNotifId) {
+                    const newest = data.notifications[0];
+                    Swal.fire({
+                        toast: true,
+                        position: 'top-end',
+                        icon: 'success',
+                        title: `<strong class="text-danger">🔔 ${newest.title}</strong>`,
+                        html: `<div class="small mt-1 text-muted">${newest.message}</div>`,
+                        showConfirmButton: true,
+                        confirmButtonText: 'Xem đơn',
+                        confirmButtonColor: '#d70018',
+                        timer: 10000,
+                        timerProgressBar: true
+                    }).then((result) => {
+                        if (result.isConfirmed && newest.targetUrl) {
+                            window.location.href = newest.targetUrl;
+                        }
+                    });
+                }
+
+                lastKnownCustomerNotifId = Math.max(lastKnownCustomerNotifId, latestId);
+                isFirstCustomerNotifLoad = false;
+
+                if (list) {
+                    if (!data.notifications || data.notifications.length === 0) {
+                        list.innerHTML = `
+                            <div class="p-4 text-center text-muted small">
+                                <i class="bi bi-bell-slash fs-3 d-block text-muted opacity-50 mb-2"></i>
+                                <div>Bạn chưa có thông báo đơn hàng nào.</div>
+                            </div>
+                        `;
+                    } else {
+                        list.innerHTML = data.notifications.map(n => `
+                            <a href="${n.targetUrl || '/Cart/Tracking'}" onclick="markSingleCustomerNotifRead(${n.id})" class="text-decoration-none d-block px-3 py-2 border-bottom ${n.isRead ? 'bg-white' : 'bg-danger bg-opacity-10'} text-dark">
+                                <div class="d-flex align-items-start gap-2">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0 mt-1 ${n.isRead ? 'bg-light text-muted' : 'bg-danger text-white'}" style="width: 32px; height: 32px; font-size: 14px;">
+                                        <i class="bi bi-box-seam-fill"></i>
+                                    </div>
+                                    <div class="flex-grow-1 overflow-hidden" style="font-size: 12.5px;">
+                                        <div class="d-flex align-items-center justify-content-between mb-0.5">
+                                            <span class="fw-bold ${n.isRead ? 'text-dark' : 'text-danger'} text-truncate" style="max-width: 195px;">${n.title}</span>
+                                            <small class="text-muted" style="font-size: 10.5px;">${n.timeAgo}</small>
+                                        </div>
+                                        <div class="text-muted" style="font-size: 11.5px; line-height: 1.35;">${n.message}</div>
+                                    </div>
+                                    ${!n.isRead ? '<span class="badge bg-danger rounded-circle p-1 mt-2" style="width: 7px; height: 7px;"></span>' : ''}
+                                </div>
+                            </a>
+                        `).join('');
+                    }
+                }
+            } catch (e) { }
+        }
+
+        async function markAllCustomerNotifsRead() {
+            try {
+                await fetch('/Notification/MarkRead', { method: 'POST' });
+                fetchCustomerNotifications();
+            } catch (e) { }
+        }
+
+        async function markSingleCustomerNotifRead(id) {
+            try {
+                await fetch('/Notification/MarkRead?id=' + id, { method: 'POST' });
+            } catch (e) { }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            if (document.getElementById('customerNotifBtn')) {
+                fetchCustomerNotifications();
+                setInterval(fetchCustomerNotifications, 10000);
+            }
+        });
+    </script>
+
+    @if (TempData["Success"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                showToast('@Html.Raw(TempData["Success"])', 'success');
+            });
+        </script>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                showError('@Html.Raw(TempData["Error"])');
+            });
+        </script>
+    }
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

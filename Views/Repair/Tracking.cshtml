@@ -1,0 +1,261 @@
+@model WebsiteBanDienThoai.Models.RepairBooking?
+@{
+    ViewData["Title"] = "Tra Cứu Tiến Độ Sửa Chữa & Bảo Hành - Điện Thoại Vui";
+    var userBookings = ViewBag.UserBookings as List<WebsiteBanDienThoai.Models.RepairBooking> ?? new();
+    var isNotFound = ViewBag.NotFound as bool? ?? false;
+}
+
+<div class="container py-4">
+    <!-- BREADCRUMB -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Repair" asp-action="Booking" class="text-decoration-none text-muted">Đặt lịch sửa chữa</a></li>
+            <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Tra Cứu Tiến Độ Sửa Chữa</li>
+        </ol>
+    </nav>
+
+    <!-- SEARCH HERO CARD -->
+    <div class="card border-0 rounded-4 shadow-sm p-4 p-md-5 mb-4 text-center bg-white" style="border-top: 4px solid #d70018 !important;">
+        <h3 class="fw-bolder text-dark mb-2">TRA CỨU TIẾN ĐỘ SỬA CHỮA & BẢO HÀNH</h3>
+        <p class="text-muted small mx-auto mb-4" style="max-width: 600px;">
+            Nhập <strong>Mã phiếu hẹn</strong> (ví dụ: DTV-20261028-1029) hoặc <strong>Số điện thoại</strong> để theo dõi tình trạng sửa chữa thiết bị theo thời gian thực.
+        </p>
+
+        <form asp-action="Tracking" method="get" class="mx-auto" style="max-width: 650px;">
+            <div class="input-group input-group-lg shadow-sm rounded-pill overflow-hidden border border-2 border-danger">
+                <span class="input-group-text bg-white border-0 ps-3">
+                    <i class="bi bi-search text-danger fs-5"></i>
+                </span>
+                <input type="text" name="code" class="form-control border-0 ps-2" placeholder="Nhập mã phiếu hẹn (DTV-...) hoặc SĐT..." value="@(Model?.BookingCode ?? ViewBag.SearchCode as string ?? ViewBag.SearchPhone as string)" required />
+                <button type="submit" class="btn btn-danger px-4 fw-bold">
+                    Tra Cứu Ngay
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- NẾU KHÔNG TÌM THẤY -->
+    @if (isNotFound)
+    {
+        <div class="alert alert-warning border-0 rounded-4 shadow-sm p-4 text-center mb-4">
+            <i class="bi bi-exclamation-triangle-fill text-warning fs-1 d-block mb-2"></i>
+            <h5 class="fw-bold text-dark">Không tìm thấy thông tin lịch hẹn</h5>
+            <p class="text-muted small m-0">Vui lòng kiểm tra lại mã phiếu hẹn hoặc số điện thoại đã nhập và thử lại.</p>
+        </div>
+    }
+
+    <!-- NẾU TÌM THẤY KẾT QUẢ CỤ THỂ -->
+    @if (Model != null)
+    {
+        <div class="card border-0 shadow rounded-4 overflow-hidden mb-4">
+            <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+                <div>
+                    <span class="badge bg-danger fs-6 font-monospace">@Model.BookingCode</span>
+                    <span class="text-muted small ms-2">Tạo lúc: @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                </div>
+                <div>
+                    @switch (Model.Status)
+                    {
+                        case WebsiteBanDienThoai.Models.RepairStatus.Completed:
+                            <span class="badge bg-success fs-6"><i class="bi bi-check-circle-fill me-1"></i>Đã hoàn thành bàn giao</span>
+                            break;
+                        case WebsiteBanDienThoai.Models.RepairStatus.ReadyForPickup:
+                            <span class="badge bg-primary fs-6"><i class="bi bi-bell-fill me-1"></i>Đã sửa xong - Chờ khách nhận</span>
+                            break;
+                        case WebsiteBanDienThoai.Models.RepairStatus.Repairing:
+                            <span class="badge bg-info text-dark fs-6"><i class="bi bi-wrench-adjustable me-1"></i>Đang kiểm tra & sửa chữa</span>
+                            break;
+                        case WebsiteBanDienThoai.Models.RepairStatus.Received:
+                            <span class="badge bg-warning text-dark fs-6"><i class="bi bi-box-seam-fill me-1"></i>Đã tiếp nhận máy</span>
+                            break;
+                        case WebsiteBanDienThoai.Models.RepairStatus.Cancelled:
+                            <span class="badge bg-danger fs-6"><i class="bi bi-x-circle-fill me-1"></i>Đã hủy lịch hẹn</span>
+                            break;
+                        default:
+                            <span class="badge bg-secondary fs-6"><i class="bi bi-hourglass-split me-1"></i>Chờ tiếp nhận tại quầy</span>
+                            break;
+                    }
+                </div>
+            </div>
+
+            <div class="card-body p-4">
+                <!-- STEPPER TIẾN ĐỘ -->
+                <div class="p-3 bg-light rounded-4 border mb-4">
+                    <h6 class="fw-bold text-dark small mb-3"><i class="bi bi-activity text-danger me-1"></i> Tiến trình xử lý thiết bị:</h6>
+                    <div class="row text-center g-2">
+                        @{
+                            int currentStep = (int)Model.Status;
+                            var steps = new[] {
+                                (0, "1. Đặt lịch hẹn", "bi-calendar2-check"),
+                                (1, "2. Đã tiếp nhận", "bi-box-seam"),
+                                (2, "3. Đang sửa chữa", "bi-wrench"),
+                                (3, "4. Đã sửa xong", "bi-check2-all"),
+                                (4, "5. Đã bàn giao", "bi-patch-check-fill")
+                            };
+                        }
+                        @foreach (var st in steps)
+                        {
+                            var isDone = currentStep >= st.Item1 && Model.Status != WebsiteBanDienThoai.Models.RepairStatus.Cancelled;
+                            var isCurrent = currentStep == st.Item1 && Model.Status != WebsiteBanDienThoai.Models.RepairStatus.Cancelled;
+                            <div class="col">
+                                <div class="p-2 rounded-3 @(isCurrent ? "bg-danger text-white shadow-sm" : (isDone ? "bg-white text-success border border-success" : "bg-white text-muted border"))">
+                                    <i class="bi @st.Item3 fs-4 d-block mb-1"></i>
+                                    <div class="small fw-bold" style="font-size: 11px;">@st.Item2</div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <!-- CHI TIẾT THÔNG TIN -->
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-white h-100">
+                            <h6 class="fw-bold text-dark mb-2"><i class="bi bi-phone-fill text-danger me-1"></i> Thiết Bị & Dịch Vụ:</h6>
+                            <div class="mb-2">
+                                <span class="text-muted small">Tên thiết bị:</span>
+                                <strong class="text-dark d-block">@Model.DeviceName</strong>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.SerialNumber))
+                            {
+                                <div class="mb-2">
+                                    <span class="text-muted small">Số IMEI / Serial:</span>
+                                    <span class="font-monospace text-dark d-block">@Model.SerialNumber</span>
+                                </div>
+                            }
+                            <div class="mb-2">
+                                <span class="text-muted small">Dịch vụ yêu cầu:</span>
+                                <strong class="text-danger d-block">@Model.ServiceType</strong>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.IssueDescription))
+                            {
+                                <div class="mb-2">
+                                    <span class="text-muted small">Mô tả triệu chứng:</span>
+                                    <div class="fst-italic small text-dark">@Model.IssueDescription</div>
+                                </div>
+                            }
+                            <div class="pt-2 border-top">
+                                <span class="text-muted small">Chi phí ước tính:</span>
+                                <strong class="fs-5 text-danger ms-2">
+                                    @(Model.HasWarranty ? "0₫ (Bảo hành chính hãng)" : (Model.EstimatedCost > 0 ? $"{Model.EstimatedCost:N0}₫" : "Miễn phí"))
+                                </strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="p-3 border rounded-3 bg-white h-100">
+                            <h6 class="fw-bold text-dark mb-2"><i class="bi bi-geo-alt-fill text-danger me-1"></i> Chi Nhánh & Lịch Hẹn:</h6>
+                            <div class="mb-2">
+                                <span class="text-muted small">Điểm hẹn:</span>
+                                <strong class="text-dark d-block">@Model.StoreBranch</strong>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted small">Thời gian hẹn:</span>
+                                <div class="text-danger fw-bold">@Model.BookingDate.ToString("dd/MM/yyyy") (@Model.TimeSlot)</div>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-muted small">Khách hàng:</span>
+                                <div class="text-dark fw-semibold">@Model.CustomerName - <span class="font-monospace">@Model.PhoneNumber</span></div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.TechnicianNote))
+                            {
+                                <div class="p-2 bg-light border rounded small mt-2">
+                                    <strong class="text-primary d-block"><i class="bi bi-chat-left-dots-fill me-1"></i>Ghi chú kỹ thuật viên:</strong>
+                                    <span>@Model.TechnicianNote</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer bg-light p-3 d-flex justify-content-between align-items-center">
+                <a asp-action="Confirmation" asp-route-code="@Model.BookingCode" class="btn btn-outline-danger btn-sm fw-semibold">
+                    <i class="bi bi-receipt me-1"></i> Xem Phiếu Hẹn Đầy Đủ
+                </a>
+                <a href="tel:18002064" class="btn btn-sm btn-light border text-danger fw-bold">
+                    <i class="bi bi-telephone-fill me-1"></i> Hỗ trợ: 1800.2064
+                </a>
+            </div>
+        </div>
+    }
+
+    <!-- NẾU NGƯỜI DÙNG CÓ DANH SÁCH LỊCH HẸN TRƯỚC ĐÓ -->
+    @if (userBookings.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4">
+            <div class="card-header bg-white py-3 border-bottom">
+                <h5 class="fw-bold text-dark m-0">
+                    <i class="bi bi-clock-history text-danger me-2"></i> Lịch Hẹn Sửa Chữa Của Bạn (@userBookings.Count lịch hẹn)
+                </h5>
+            </div>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle small m-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Mã Hẹn</th>
+                            <th>Thiết Bị</th>
+                            <th>Dịch Vụ</th>
+                            <th>Ngày Hẹn</th>
+                            <th>Chi Nhánh</th>
+                            <th>Trạng Thái</th>
+                            <th class="text-end">Hành Động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var ub in userBookings)
+                        {
+                            <tr>
+                                <td>
+                                    <a asp-action="Confirmation" asp-route-code="@ub.BookingCode" class="fw-bold text-danger font-monospace text-decoration-none">
+                                        @ub.BookingCode
+                                    </a>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">@ub.DeviceName</div>
+                                    <small class="text-muted font-monospace">@ub.SerialNumber</small>
+                                </td>
+                                <td>@ub.ServiceType</td>
+                                <td>
+                                    <div>@ub.BookingDate.ToString("dd/MM/yyyy")</div>
+                                    <small class="text-muted">@ub.TimeSlot</small>
+                                </td>
+                                <td class="text-truncate" style="max-width: 220px;" title="@ub.StoreBranch">@ub.StoreBranch</td>
+                                <td>
+                                    @switch (ub.Status)
+                                    {
+                                        case WebsiteBanDienThoai.Models.RepairStatus.Completed:
+                                            <span class="badge bg-success">Hoàn thành</span>
+                                            break;
+                                        case WebsiteBanDienThoai.Models.RepairStatus.ReadyForPickup:
+                                            <span class="badge bg-primary">Chờ lấy máy</span>
+                                            break;
+                                        case WebsiteBanDienThoai.Models.RepairStatus.Repairing:
+                                            <span class="badge bg-info text-dark">Đang sửa</span>
+                                            break;
+                                        case WebsiteBanDienThoai.Models.RepairStatus.Received:
+                                            <span class="badge bg-warning text-dark">Đã nhận máy</span>
+                                            break;
+                                        case WebsiteBanDienThoai.Models.RepairStatus.Cancelled:
+                                            <span class="badge bg-danger">Đã hủy</span>
+                                            break;
+                                        default:
+                                            <span class="badge bg-secondary">Chờ tiếp nhận</span>
+                                            break;
+                                    }
+                                </td>
+                                <td class="text-end">
+                                    <a asp-action="Confirmation" asp-route-code="@ub.BookingCode" class="btn btn-sm btn-outline-danger py-0 px-2" title="Xem chi tiết">
+                                        Chi tiết
+                                    </a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+</div>

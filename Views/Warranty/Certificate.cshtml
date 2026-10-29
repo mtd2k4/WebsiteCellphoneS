@@ -1,0 +1,294 @@
+@model WebsiteBanDienThoai.Models.WarrantyCard
+@{
+    ViewData["Title"] = $"Giấy Chứng Nhận Bảo Hành Điện Tử - {Model.WarrantyCode}";
+    var repairHistory = ViewBag.RepairHistory as List<WebsiteBanDienThoai.Models.RepairBooking> ?? new();
+    var effectiveStatus = Model.EffectiveStatus;
+
+    string badgeClass = effectiveStatus switch
+    {
+        WebsiteBanDienThoai.Models.WarrantyCardStatus.Active => "bg-success",
+        WebsiteBanDienThoai.Models.WarrantyCardStatus.ExpiringSoon => "bg-warning text-dark",
+        WebsiteBanDienThoai.Models.WarrantyCardStatus.Expired => "bg-secondary",
+        WebsiteBanDienThoai.Models.WarrantyCardStatus.Void => "bg-danger",
+        _ => "bg-secondary"
+    };
+
+    string statusText = effectiveStatus switch
+    {
+        WebsiteBanDienThoai.Models.WarrantyCardStatus.Active => "Đang Còn Hiệu Lực Bảo Hành",
+        WebsiteBanDienThoai.Models.WarrantyCardStatus.ExpiringSoon => "Sắp Hết Hạn Bảo Hành (< 30 Ngày)",
+        WebsiteBanDienThoai.Models.WarrantyCardStatus.Expired => "Đã Hết Hạn Bảo Hành",
+        WebsiteBanDienThoai.Models.WarrantyCardStatus.Void => "Đã Bị Hủy / Bị Từ Chối Bảo Hành",
+        _ => "Không Xác Định"
+    };
+}
+
+<style>
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+        #printableCertificate, #printableCertificate * {
+            visibility: visible;
+        }
+        #printableCertificate {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            margin: 0 !important;
+            padding: 20px !important;
+            box-shadow: none !important;
+            border: 2px solid #d70018 !important;
+        }
+        .d-print-none {
+            display: none !important;
+        }
+    }
+
+    .cps-cert-frame {
+        border: 3px double #d70018;
+        border-radius: 20px;
+        position: relative;
+        background: #ffffff;
+    }
+
+    .cps-cert-stamp {
+        border: 3px dashed #d70018;
+        border-radius: 50%;
+        width: 130px;
+        height: 130px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #d70018;
+        transform: rotate(-12deg);
+        font-weight: 800;
+        font-size: 11px;
+        text-transform: uppercase;
+        line-height: 1.2;
+        padding: 8px;
+        background: rgba(215, 0, 24, 0.03);
+    }
+</style>
+
+<div class="container py-4">
+    <!-- BREADCRUMB & ACTIONS -->
+    <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 d-print-none gap-2">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb small m-0">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+                <li class="breadcrumb-item"><a asp-action="Lookup" class="text-decoration-none text-muted">Tra cứu bảo hành</a></li>
+                <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Giấy Chứng Nhận #@Model.WarrantyCode</li>
+            </ol>
+        </nav>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-outline-dark fw-bold btn-sm shadow-xs">
+                <i class="bi bi-printer-fill me-1"></i> In Giấy Chứng Nhận
+            </button>
+            <a asp-controller="Repair" asp-action="Booking" 
+               asp-route-imei="@Model.SerialNumber" 
+               asp-route-productName="@Model.ProductName" 
+               asp-route-orderCode="@Model.OrderCode" 
+               asp-route-isWarranty="@(Model.IsActiveNow ? "true" : "false")" 
+               class="btn btn-danger fw-bold btn-sm shadow-sm">
+                <i class="bi bi-calendar2-check-fill me-1"></i> Đặt Lịch Sửa Chữa
+            </a>
+            <a asp-action="Lookup" class="btn btn-secondary fw-semibold btn-sm">
+                <i class="bi bi-arrow-left me-1"></i> Quay lại
+            </a>
+        </div>
+    </div>
+
+    <!-- TỜ GIẤY CHỨNG NHẬN BẢO HÀNH ĐIỆN TỬ -->
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden mb-4 mx-auto cps-cert-frame" style="max-width: 900px;" id="printableCertificate">
+        <!-- HEADER CERTIFICATE -->
+        <div class="p-4 text-white text-center" style="background: linear-gradient(135deg, #d70018 0%, #b91c1c 60%, #7f1d1d 100%);">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fs-4 fw-bolder">cellphone<span class="text-warning">S</span> <span class="fw-normal">|</span> <span class="fs-5 text-warning fw-bold">CellphoneS Care</span></span>
+                <span class="badge bg-white text-danger font-monospace px-3 py-2 fw-bolder fs-6">@Model.WarrantyCode</span>
+            </div>
+            <h3 class="fw-bolder text-uppercase m-0 mt-2 letter-spacing-1">GIẤY CHỨNG NHẬN BẢO HÀNH ĐIỆN TỬ</h3>
+            <p class="text-white-50 small m-0 mt-1">E-WARRANTY CERTIFICATE - CHỨNG THỰC BẢO HÀNH CHÍNH HÃNG TOÀN QUỐC</p>
+        </div>
+
+        <div class="card-body p-4 p-md-5">
+            <!-- TRẠNG THÁI HIỆU LỰC -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center p-3 rounded-3 bg-light border mb-4 gap-2">
+                <div>
+                    <span class="text-muted small d-block">Tình trạng hiệu lực phiếu bảo hành:</span>
+                    <span class="badge @badgeClass fs-6 px-3 py-2 rounded-pill mt-1">
+                        <i class="bi bi-shield-fill-check me-1"></i>@statusText
+                    </span>
+                </div>
+                <div class="text-md-end">
+                    <span class="text-muted small d-block">Thời hạn bảo hành còn lại:</span>
+                    @if (Model.IsActiveNow)
+                    {
+                        <strong class="fs-5 text-success">@Model.RemainingDays Ngày</strong>
+                        <small class="text-muted d-block">Đến ngày: @Model.EndDate.ToString("dd/MM/yyyy")</small>
+                    }
+                    else
+                    {
+                        <strong class="fs-6 text-danger">Đã kết thúc hạn bảo hành</strong>
+                    }
+                </div>
+            </div>
+
+            <!-- BẢNG THÔNG TIN SẢN PHẨM & KHÁCH HÀNG -->
+            <div class="row g-4 mb-4">
+                <!-- Cột trái: Thông tin thiết bị -->
+                <div class="col-md-6 border-end-md">
+                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                        <i class="bi bi-phone-fill text-danger me-1"></i> Thông Tin Thiết Bị Bảo Hành
+                    </h6>
+                    <table class="table table-sm table-borderless small m-0">
+                        <tr>
+                            <td class="text-muted" style="width: 40%;">Tên thiết bị:</td>
+                            <td class="fw-bold text-dark">@Model.ProductName</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.VariantInfo))
+                        {
+                            <tr>
+                                <td class="text-muted">Phiên bản / Màu:</td>
+                                <td class="fw-bold text-dark">@Model.VariantInfo</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td class="text-muted">Số IMEI / Serial:</td>
+                            <td class="fw-bold text-danger font-monospace fs-6">@Model.SerialNumber</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.OrderCode))
+                        {
+                            <tr>
+                                <td class="text-muted">Mã đơn hàng:</td>
+                                <td class="fw-bold text-dark">#@Model.OrderCode</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td class="text-muted">Gói bảo hành:</td>
+                            <td class="fw-bold text-primary">@Model.WarrantyPackage</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Thời lượng:</td>
+                            <td class="fw-bold text-dark">@Model.WarrantyPeriodMonths Tháng chính hãng</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!-- Cột phải: Khách hàng & Thời hạn -->
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                        <i class="bi bi-person-badge-fill text-danger me-1"></i> Khách Hàng Sở Hữu
+                    </h6>
+                    <table class="table table-sm table-borderless small m-0">
+                        <tr>
+                            <td class="text-muted" style="width: 40%;">Chủ sở hữu:</td>
+                            <td class="fw-bold text-dark">@Model.CustomerName</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Số điện thoại:</td>
+                            <td class="fw-bold text-dark font-monospace">@Model.PhoneNumber</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.Email))
+                        {
+                            <tr>
+                                <td class="text-muted">Email:</td>
+                                <td class="text-dark">@Model.Email</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td class="text-muted">Ngày mua máy:</td>
+                            <td class="fw-bold text-dark">@Model.PurchaseDate.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Ngày kích hoạt:</td>
+                            <td class="fw-bold text-dark">@Model.StartDate.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Hết hạn vào:</td>
+                            <td class="fw-bold text-danger font-monospace fs-6">@Model.EndDate.ToString("dd/MM/yyyy")</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            <!-- PHẠM VI & ĐIỀU KIỆN BẢO HÀNH -->
+            <div class="p-3 bg-light rounded-3 border mb-4">
+                <h6 class="fw-bold text-dark small mb-2">
+                    <i class="bi bi-card-checklist text-danger me-1"></i> Phạm Vi & Quy Định Bảo Hành Chính Hãng:
+                </h6>
+                <p class="small text-muted mb-2 lh-base">
+                    @(Model.WarrantyTerms ?? "Bảo hành 1 đổi 1 trong 30 ngày đầu nếu lỗi phần cứng do nhà sản xuất. Sửa chữa thay thế linh kiện chính hãng miễn phí tại hệ thống Điện Thoại Vui. Không bảo hành các trường hợp rơi vỡ nứt bể, cấn móp, ngấm chất lỏng hoặc tự ý can thiệp phần cứng.")
+                </p>
+                <div class="small text-dark fw-semibold">
+                    <i class="bi bi-geo-alt-fill text-danger me-1"></i>
+                    Hệ thống tiếp nhận bảo hành: <strong>@Model.ServiceCenter</strong>
+                </div>
+            </div>
+
+            <!-- LỊCH SỬ TIẾP NHẬN SỬA CHỮA / BẢO HÀNH (NẾU CÓ) -->
+            @if (repairHistory.Any())
+            {
+                <div class="mb-4">
+                    <h6 class="fw-bold text-dark small border-bottom pb-2 mb-2">
+                        <i class="bi bi-clock-history text-danger me-1"></i> Lịch Sử Tiếp Nhận & Sửa Chữa Thiết Bị Này (@repairHistory.Count lần):
+                    </h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-bordered small align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Mã Phiếu Hẹn</th>
+                                    <th>Ngày Tiếp Nhận</th>
+                                    <th>Dịch Vụ Sửa Chữa</th>
+                                    <th>Chi Nhánh</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Ghi Chú Kỹ Thuật</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var rep in repairHistory)
+                                {
+                                    <tr>
+                                        <td class="font-monospace fw-bold text-danger">@rep.BookingCode</td>
+                                        <td>@rep.BookingDate.ToString("dd/MM/yyyy")</td>
+                                        <td>@rep.ServiceType</td>
+                                        <td>@rep.StoreBranch</td>
+                                        <td><span class="badge bg-secondary">@rep.Status</span></td>
+                                        <td>@(rep.TechnicianNote ?? "Đã kiểm tra máy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            }
+
+            <!-- CON DẤU XÁC THỰC CELLPHONES CARE & CHỮ KÝ -->
+            <div class="row align-items-center mt-5 pt-3 border-top">
+                <div class="col-6 text-center">
+                    <small class="text-muted d-block mb-1">MÃ QUÉT TRA CỨU NHANH</small>
+                    <div class="font-monospace fw-bold text-dark fs-5 letter-spacing-2">
+                        ||||| || |||| ||||| ||
+                    </div>
+                    <small class="font-monospace text-danger">@Model.WarrantyCode</small>
+                </div>
+                <div class="col-6 d-flex justify-content-center">
+                    <div class="cps-cert-stamp">
+                        <div>CELLPHONES</div>
+                        <i class="bi bi-patch-check-fill fs-4 my-1"></i>
+                        <div>CARE CERTIFIED</div>
+                        <div style="font-size: 8px;">CHÍNH HÃNG 100%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER PHIẾU BẢO HÀNH -->
+        <div class="card-footer bg-light p-3 text-center small text-muted">
+            Tổng đài hỗ trợ kỹ thuật & bảo hành CellphoneS / Điện Thoại Vui: <strong>1800.2064</strong> (Miễn phí từ 8h00 - 21h00 mỗi ngày).
+        </div>
+    </div>
+</div>

@@ -1,0 +1,114 @@
+@{
+    string active = ViewData["ActivePolicy"]?.ToString() ?? "";
+}
+
+<div class="cps-policy-sidebar-sticky">
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden mb-4">
+        <div class="card-header bg-white py-3 border-bottom">
+            <h6 class="fw-bolder text-uppercase m-0 text-dark" style="letter-spacing: 0.5px;">
+                <i class="bi bi-shield-check text-danger me-2"></i> Thông Tin & Chính Sách
+            </h6>
+        </div>
+        <div class="list-group list-group-flush cps-policy-nav">
+            <a asp-controller="Policy" asp-action="PaymentGuide" 
+               class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3 @(active == "PaymentGuide" ? "active" : "")">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-credit-card-2-front fs-5 text-danger"></i>
+                    <span class="fw-medium">Mua hàng và thanh toán Online</span>
+                </span>
+                <i class="bi bi-chevron-right small text-muted"></i>
+            </a>
+
+            <a asp-controller="Policy" asp-action="Installment" 
+               class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3 @(active == "Installment" ? "active" : "")">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-percent fs-5 text-danger"></i>
+                    <span class="fw-medium">Mua hàng trả góp 0%</span>
+                </span>
+                <i class="bi bi-chevron-right small text-muted"></i>
+            </a>
+
+            <a asp-controller="Policy" asp-action="Shipping" 
+               class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3 @(active == "Shipping" ? "active" : "")">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-truck fs-5 text-danger"></i>
+                    <span class="fw-medium">Chính sách giao hàng</span>
+                </span>
+                <i class="bi bi-chevron-right small text-muted"></i>
+            </a>
+
+            <a asp-controller="Policy" asp-action="InvoiceLookup" 
+               class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3 @(active == "InvoiceLookup" ? "active" : "")">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-receipt-cutoff fs-5 text-danger"></i>
+                    <span class="fw-medium">Tra cứu hóa đơn điện tử</span>
+                </span>
+                <i class="bi bi-chevron-right small text-muted"></i>
+            </a>
+
+            <a asp-controller="Policy" asp-action="Warranty" 
+               class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3 @(active == "Warranty" ? "active" : "")">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-shield-shaded fs-5 text-danger"></i>
+                    <span class="fw-medium">Chính sách bảo hành</span>
+                </span>
+                <i class="bi bi-chevron-right small text-muted"></i>
+            </a>
+
+            <a asp-controller="Policy" asp-action="Privacy" 
+               class="list-group-item list-group-item-action d-flex align-items-center justify-content-between py-3 @(active == "Privacy" ? "active" : "")">
+                <span class="d-flex align-items-center gap-2">
+                    <i class="bi bi-lock-fill fs-5 text-danger"></i>
+                    <span class="fw-medium">Chính sách bảo mật thông tin</span>
+                </span>
+                <i class="bi bi-chevron-right small text-muted"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- THẺ HỖ TRỢ & TỔNG ĐÀI -->
+    <div class="card border-0 shadow-sm rounded-3 overflow-hidden bg-light p-3 mb-4">
+        <h6 class="fw-bold text-dark mb-3">
+            <i class="bi bi-headset text-danger me-2"></i> Tổng đài hỗ trợ miễn phí
+        </h6>
+        <div class="small mb-2">
+            <div class="text-muted">Tư vấn mua hàng (Miễn phí):</div>
+            <a href="tel:18002097" class="fw-bold text-danger fs-6 text-decoration-none">
+                <i class="bi bi-telephone-fill me-1"></i> 1800.2097 (8h00 - 21h30)
+            </a>
+        </div>
+        <div class="small mb-2">
+            <div class="text-muted">Khiếu nại & Góp ý:</div>
+            <a href="tel:18002063" class="fw-bold text-dark text-decoration-none">
+                <i class="bi bi-telephone me-1"></i> 1800.2063 (8h00 - 21h30)
+            </a>
+        </div>
+        <div class="small">
+            <div class="text-muted">Email hỗ trợ khách hàng:</div>
+            <a href="mailto:cskh@cellphones.com.vn" class="text-muted text-decoration-none">
+                <i class="bi bi-envelope me-1"></i> cskh@cellphones.com.vn
+            </a>
+        </div>
+    </div>
+
+    <!-- CAM KẾT DỊCH VỤ -->
+    <div class="card border-0 shadow-sm rounded-3 p-3 bg-white">
+        <h6 class="fw-bold text-dark mb-2">
+            <i class="bi bi-award-fill text-warning me-2"></i> Cam kết CellphoneS
+        </h6>
+        <ul class="list-unstyled small text-muted m-0 d-flex flex-column gap-2">
+            <li class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-success"></i> 100% hàng chính hãng, hóa đơn VAT đầy đủ
+            </li>
+            <li class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-success"></i> 1 đổi 1 trong 30 ngày nếu lỗi phần cứng
+            </li>
+            <li class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-success"></i> Miễn phí giao hàng toàn quốc từ 300.000₫
+            </li>
+            <li class="d-flex align-items-center gap-2">
+                <i class="bi bi-check-circle-fill text-success"></i> Bảo hành chính hãng tại hơn 180 cửa hàng
+            </li>
+        </ul>
+    </div>
+</div>

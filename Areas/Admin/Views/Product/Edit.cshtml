@@ -1,0 +1,234 @@
+@model WebsiteBanDienThoai.Areas.Admin.Models.ProductFormViewModel
+@{
+    ViewData["Title"] = "Chỉnh Sửa Sản Phẩm: " + Model.Product.Name;
+}
+
+<form asp-action="Edit" asp-route-id="@Model.Product.Id" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Product.Id" />
+    <input type="hidden" asp-for="Product.CreatedAt" />
+    <input type="hidden" asp-for="Product.Rating" />
+    <input type="hidden" asp-for="Product.ReviewCount" />
+    <input type="hidden" asp-for="Product.FlashSaleSold" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row g-3">
+        <!-- CỘT TRÁI: THÔNG TIN CHÍNH & GIÁ -->
+        <div class="col-lg-8">
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-pencil-square text-danger"></i> Cập Nhật Thông Tin Sản Phẩm #@Model.Product.Id</h5>
+                </div>
+                <div class="cps-admin-card-body">
+                    <div class="mb-3">
+                        <label asp-for="Product.Name" class="form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
+                        <input asp-for="Product.Name" class="form-control" required />
+                        <span asp-validation-for="Product.Name" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.Slug" class="form-label fw-bold">Slug URL</label>
+                        <input asp-for="Product.Slug" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.ImageUrl" class="form-label fw-bold">Đường dẫn hình ảnh (URL) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input asp-for="Product.ImageUrl" id="image-url-input" class="form-control" required />
+                            <button type="button" class="btn btn-outline-secondary" onclick="previewImage()">Xem trước</button>
+                        </div>
+                        <div class="mt-2 text-center p-2 bg-light border rounded" style="max-height: 160px; overflow: hidden;">
+                            <img id="image-preview" src="@Model.Product.ImageUrl" alt="Preview" style="max-height: 140px; object-fit: contain;" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.TechnicalSpecs" class="form-label fw-bold">Thông số kỹ thuật tóm tắt</label>
+                        <textarea asp-for="Product.TechnicalSpecs" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.Description" class="form-label fw-bold">Mô tả bài viết giới thiệu chi tiết</label>
+                        <textarea asp-for="Product.Description" class="form-control" rows="5"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-tag-fill text-danger"></i> Thiết Lập Giá Cả & Khuyến Mãi</h5>
+                </div>
+                <div class="cps-admin-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Product.OriginalPrice" class="form-label fw-bold">Giá niêm yết (Gốc) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="Product.OriginalPrice" type="number" class="form-control" required />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.SalePrice" class="form-label fw-bold">Giá bán hiện tại <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="Product.SalePrice" type="number" class="form-control" required />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.SmemberDiscount" class="form-label fw-bold">Đặc quyền Smember giảm thêm</label>
+                            <div class="input-group">
+                                <input asp-for="Product.SmemberDiscount" type="number" class="form-control" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.PromotionInfo" class="form-label fw-bold">Quà tặng / Khuyến mãi kèm theo</label>
+                            <input asp-for="Product.PromotionInfo" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI: PHÂN LOẠI & THIẾT LẬP -->
+        <div class="col-lg-4">
+            <!-- BIẾN THỂ SẢN PHẨM -->
+            <div class="cps-admin-card border-danger border-opacity-50">
+                <div class="cps-admin-card-header bg-danger-subtle d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0 text-danger fw-bold"><i class="bi bi-diagram-3-fill me-1"></i> Biến Thể Sản Phẩm</h5>
+                    <span class="badge bg-danger">@(Model.Product.Variants?.Count ?? 0) biến thể</span>
+                </div>
+                <div class="cps-admin-card-body">
+                    <p class="small text-muted mb-3">
+                        Quản lý màu sắc (màu hiển thị, mã hex), dung lượng bộ nhớ, giá bán riêng biệt và ảnh tương ứng khi chọn từng màu.
+                    </p>
+                    <a asp-area="Admin" asp-controller="Product" asp-action="Variants" asp-route-id="@Model.Product.Id" 
+                       class="btn btn-danger w-100 fw-bold py-2 shadow-sm d-flex align-items-center justify-content-center gap-2">
+                        <i class="bi bi-diagram-3-fill"></i> Quản Lý Biến Thể (@(Model.Product.Variants?.Count ?? 0))
+                    </a>
+                </div>
+            </div>
+
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-folder-fill text-primary"></i> Phân Loại</h5>
+                </div>
+                <div class="cps-admin-card-body">
+                    <div class="mb-3">
+                        <label asp-for="Product.CategoryId" class="form-label fw-bold">Danh mục <span class="text-danger">*</span></label>
+                        <select asp-for="Product.CategoryId" class="form-select" asp-items="Model.CategoryList" required>
+                            <option value="">-- Chọn danh mục --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.BrandId" class="form-label fw-bold">Thương hiệu <span class="text-danger">*</span></label>
+                        <select asp-for="Product.BrandId" class="form-select" asp-items="Model.BrandList" required>
+                            <option value="">-- Chọn thương hiệu --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-box-fill text-warning"></i> Kho & Bảo Hành</h5>
+                </div>
+                <div class="cps-admin-card-body">
+                    <div class="mb-3">
+                        <label asp-for="Product.StockQuantity" class="form-label fw-bold d-flex justify-content-between align-items-center">
+                            <span>Số lượng tồn kho</span>
+                            <span class="badge bg-secondary-subtle text-secondary border"><i class="bi bi-lock-fill"></i> Tự động qua Nhập kho</span>
+                        </label>
+                        <div class="input-group">
+                            <input asp-for="Product.StockQuantity" type="number" class="form-control bg-light text-dark fw-bold" readonly />
+                            <a asp-area="Admin" asp-controller="Warehouse" asp-action="Create" asp-route-productId="@Model.Product.Id" 
+                               class="btn btn-outline-danger d-flex align-items-center gap-1" title="Tạo phiếu nhập hàng cho sản phẩm này">
+                                <i class="bi bi-box-arrow-in-down"></i> Nhập Thêm Hàng
+                            </a>
+                        </div>
+                        <small class="text-muted d-block mt-1" style="font-size: 11.5px;">
+                            <i class="bi bi-info-circle text-primary me-1"></i> Số lượng tồn kho được quản lý tự động: tăng khi <b>Nhập hàng</b> và giảm khi <b>Bán hàng thành công</b>.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.Warranty" class="form-label fw-bold">Chính sách bảo hành</label>
+                        <input asp-for="Product.Warranty" class="form-control" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-sliders text-success"></i> Đặc Quyền & Flash Sale</h5>
+                </div>
+                <div class="cps-admin-card-body">
+                    <div class="form-check form-switch mb-2">
+                        <input asp-for="Product.HasInstallment0Percent" class="form-check-input" type="checkbox" id="chk0Percent" />
+                        <label class="form-check-label fw-bold" for="chk0Percent">Hỗ trợ Trả góp 0%</label>
+                    </div>
+
+                    <div class="form-check form-switch mb-2">
+                        <input asp-for="Product.IsHot" class="form-check-input" type="checkbox" id="chkHot" />
+                        <label class="form-check-label fw-bold" for="chkHot">Gắn nhãn HOT / Bán chạy</label>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input asp-for="Product.IsFlashSale" class="form-check-input" type="checkbox" id="chkFlashSale" onchange="toggleFlashSaleFields()" />
+                        <label class="form-check-label fw-bold" for="chkFlashSale">Kích hoạt Flash Sale giờ vàng</label>
+                    </div>
+
+                    <div id="flashsale-options" style="display: @(Model.Product.IsFlashSale ? "block" : "none");" class="p-3 bg-light rounded border">
+                        <div class="mb-2">
+                            <label asp-for="Product.FlashSalePrice" class="form-label small fw-bold">Giá Flash Sale</label>
+                            <input asp-for="Product.FlashSalePrice" type="number" class="form-control form-control-sm" />
+                        </div>
+                        <div class="mb-2">
+                            <label asp-for="Product.FlashSaleQuantity" class="form-label small fw-bold">Số lượng mở bán</label>
+                            <input asp-for="Product.FlashSaleQuantity" type="number" class="form-control form-control-sm" />
+                        </div>
+                        <div class="mb-2">
+                            <label asp-for="Product.FlashSaleSold" class="form-label small fw-bold">Đã bán trong Flash Sale</label>
+                            <input asp-for="Product.FlashSaleSold" type="number" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-danger py-2 fw-bold fs-6">
+                    <i class="bi bi-save-fill me-1"></i> Lưu Cập Nhật
+                </button>
+                <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary py-2">
+                    <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function previewImage() {
+            const url = document.getElementById("image-url-input").value;
+            const preview = document.getElementById("image-preview");
+            if (url) {
+                preview.src = url;
+            }
+        }
+
+        function toggleFlashSaleFields() {
+            const chk = document.getElementById("chkFlashSale");
+            const box = document.getElementById("flashsale-options");
+            box.style.display = chk.checked ? "block" : "none";
+        }
+
+        document.getElementById("image-url-input")?.addEventListener("change", previewImage);
+    </script>
+}

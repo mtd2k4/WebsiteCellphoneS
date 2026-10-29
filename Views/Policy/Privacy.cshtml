@@ -1,0 +1,159 @@
+@{
+    ViewData["Title"] = "Chính Sách Bảo Mật Thông Tin Khách Hàng - CellphoneS";
+}
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-transparent p-0 small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted"><i class="bi bi-house-door"></i> Trang chủ</a></li>
+            <li class="breadcrumb-item"><span class="text-muted">Thông tin & Chính sách</span></li>
+            <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Chính sách bảo mật thông tin</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- CỘT TRÁI: SIDEBAR ĐIỀU HƯỚNG -->
+        <div class="col-lg-3">
+            <partial name="_PolicySidebar" />
+        </div>
+
+        <!-- CỘT PHẢI: NỘI DUNG CHÍNH SÁCH BẢO MẬT -->
+        <div class="col-lg-9">
+            <div class="bg-white p-4 p-md-5 rounded-3 shadow-sm cps-policy-article">
+                <!-- Tiêu đề chính -->
+                <div class="border-bottom pb-4 mb-4">
+                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-bold mb-2">
+                        <i class="bi bi-lock-fill me-1"></i> BẢO VỆ DỮ LIỆU CÁ NHÂN
+                    </span>
+                    <h2 class="fw-bolder text-dark mb-2">Chính Sách Bảo Mật Thông Tin Khách Hàng</h2>
+                    <p class="text-muted mb-0">
+                        CellphoneS cam kết tôn trọng và bảo vệ quyền riêng tư của mọi khách hàng. Chính sách bảo mật này tuân thủ nghiêm ngặt theo <strong>Nghị định 13/2023/NĐ-CP</strong> về bảo vệ dữ liệu cá nhân và Luật An toàn thông tin mạng của nước Cộng hòa Xã hội Chủ nghĩa Việt Nam.
+                    </p>
+                </div>
+
+                <!-- 1. MỤC ĐÍCH THU THẬP THÔNG TIN -->
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 13px;">1</span>
+                        Mục Đích Thu Thập Dữ Liệu Cá Nhân
+                    </h5>
+                    <p class="small text-muted mb-2">
+                        CellphoneS chỉ thu thập các thông tin cần thiết nhằm phục vụ các mục đích minh bạch sau:
+                    </p>
+                    <ul class="small text-muted mb-0 d-flex flex-column gap-2">
+                        <li><strong>Xử lý và thực hiện đơn hàng:</strong> Xác nhận đặt hàng, điều phối giao nhận sản phẩm tận nhà và liên hệ khi có thay đổi liên quan đến kiện hàng.</li>
+                        <li><strong>Bảo hành & Hậu mãi:</strong> Kích hoạt bảo hành điện tử chính hãng qua số điện thoại hoặc mã IMEI máy, thông báo khi sản phẩm bảo hành hoàn tất.</li>
+                        <li><strong>Xuất hóa đơn GTGT điện tử:</strong> Thực hiện nghĩa vụ tài chính và cung cấp hóa đơn VAT hợp pháp theo quy định của Tổng cục Thuế.</li>
+                        <li><strong>Chương trình khách hàng thân thiết Smember:</strong> Tích lũy điểm thưởng chiết khấu khi mua sắm, nâng hạng hội viên (S-New, S-Mem, S-VIP) và gửi tặng voucher sinh nhật.</li>
+                        <li><strong>Nâng cao trải nghiệm:</strong> Phản hồi thắc mắc, tiếp nhận khiếu nại và cá nhân hóa gợi ý sản phẩm phù hợp.</li>
+                    </ul>
+                </div>
+
+                <!-- 2. PHẠM VI THU THẬP THÔNG TIN -->
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 13px;">2</span>
+                        Phạm Vi Và Loại Thông Tin Thu Thập
+                    </h5>
+                    <div class="card border rounded-3 p-3 bg-light">
+                        <ul class="small text-muted mb-0 d-flex flex-column gap-2">
+                            <li><strong>Thông tin định danh cơ bản:</strong> Họ và tên, số điện thoại, địa chỉ nhận hàng, địa chỉ email.</li>
+                            <li><strong>Thông tin doanh nghiệp (nếu có yêu cầu xuất hóa đơn công ty):</strong> Tên công ty, mã số thuế (MST), địa chỉ đăng ký kinh doanh.</li>
+                            <li><strong>Thông tin kỹ thuật khi truy cập website:</strong> Địa chỉ IP, trình duyệt web, thời gian truy cập (thông qua cookie bảo mật nhằm duy trì giỏ hàng và phiên đăng nhập).</li>
+                            <li><span class="text-danger fw-bold"><i class="bi bi-shield-x me-1"></i> Lưu ý đặc biệt:</span> CellphoneS <strong>KHÔNG</strong> lưu trữ thông tin mật khẩu ngân hàng, số thẻ tín dụng hoặc mã bảo mật CVV/CVC của quý khách. Mọi giao dịch tài chính đều được thực hiện trực tiếp trên cổng thanh toán an toàn của ngân hàng/đối tác thanh toán.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 3. THỜI GIAN LƯU TRỮ VÀ BẢO MẬT THÔNG TIN -->
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 13px;">3</span>
+                        Thời Gian Lưu Trữ & Biện Pháp Bảo Vệ Dữ Liệu
+                    </h5>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card h-100 border rounded-3 p-3">
+                                <h6 class="fw-bold text-dark mb-2"><i class="bi bi-clock-history text-danger me-1"></i> Thời gian lưu trữ:</h6>
+                                <p class="small text-muted mb-0">
+                                    Thông tin cá nhân của khách hàng sẽ được lưu trữ an toàn trong suốt thời gian tài khoản hoạt động hoặc đến khi khách hàng gửi yêu cầu hủy bỏ dữ liệu. Riêng các chứng từ hóa đơn kế toán được lưu trữ tối thiểu theo quy định của Luật Kế toán Việt Nam.
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card h-100 border rounded-3 p-3">
+                                <h6 class="fw-bold text-dark mb-2"><i class="bi bi-shield-lock text-success me-1"></i> Biện pháp bảo vệ:</h6>
+                                <p class="small text-muted mb-0">
+                                    Hệ thống sử dụng giao thức mã hóa dữ liệu <strong>SSL 256-bit (HTTPS)</strong> trên toàn bộ website, hệ thống tường lửa đa tầng (Firewall) ngăn chặn xâm nhập và cơ chế kiểm soát phân quyền truy cập nội bộ nghiêm ngặt.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. CAM KẾT KHÔNG CHIA SẺ DỮ LIỆU -->
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 13px;">4</span>
+                        Cam Kết Tuyệt Đối Không Tiết Lộ Dữ Liệu
+                    </h5>
+                    <div class="alert alert-danger-subtle border border-danger-subtle rounded-3 p-3 small text-dark mb-0">
+                        <p class="mb-2"><strong>CellphoneS cam kết tuyệt đối:</strong></p>
+                        <ul class="mb-0 d-flex flex-column gap-1">
+                            <li>Không bán, trao đổi hoặc cho thuê thông tin cá nhân của khách hàng cho bất kỳ bên thứ ba nào vì mục đích thương mại.</li>
+                            <li>Chỉ chia sẻ họ tên, số điện thoại và địa chỉ giao nhận cho đơn vị vận chuyển đối tác (Viettel Post, GHTK, GHN...) để hoàn thành việc giao kiện hàng đến tận tay quý khách.</li>
+                            <li>Chỉ cung cấp thông tin cho cơ quan thực thi pháp luật khi có văn bản yêu cầu chính thức theo đúng trình tự pháp luật Việt Nam.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 5. QUYỀN LỢI CỦA KHÁCH HÀNG ĐỐI VỚI DỮ LIỆU -->
+                <div class="mb-4">
+                    <h5 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 13px;">5</span>
+                        Quyền Của Khách Hàng Đối Với Dữ Liệu Cá Nhân
+                    </h5>
+                    <p class="small text-muted mb-2">Quý khách có toàn quyền:</p>
+                    <div class="row g-2 small text-muted">
+                        <div class="col-sm-6">
+                            <div class="p-2 border rounded-2 bg-light"><i class="bi bi-check2 text-danger me-1"></i> Kiểm tra, cập nhật thông tin cá nhân trong trang <a asp-controller="Account" asp-action="Profile" class="text-danger fw-bold">Tài khoản Smember</a>.</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-2 border rounded-2 bg-light"><i class="bi bi-check2 text-danger me-1"></i> Yêu cầu trích xuất bản sao dữ liệu cá nhân đã lưu trữ.</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-2 border rounded-2 bg-light"><i class="bi bi-check2 text-danger me-1"></i> Từ chối nhận các email/SMS thông báo khuyến mãi bất kỳ lúc nào.</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="p-2 border rounded-2 bg-light"><i class="bi bi-check2 text-danger me-1"></i> Yêu cầu xóa vĩnh viễn dữ liệu tài khoản khi không còn nhu cầu mua sắm.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 6. ĐƠN VỊ THU THẬP & LIÊN HỆ KHIẾU NẠI -->
+                <div class="card border rounded-3 p-4 bg-light">
+                    <h6 class="fw-bold text-dark mb-2">
+                        <i class="bi bi-building text-danger me-2"></i> Đơn Vị Quản Trị Dữ Liệu Cá Nhân
+                    </h6>
+                    <div class="small text-muted">
+                        <p class="mb-1"><strong>CÔNG TY CỔ PHẦN BÁN LẺ CELLPHONES</strong></p>
+                        <p class="mb-1">Địa chỉ trụ sở: 123 Đường Công Nghệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
+                        <p class="mb-1">Hotline giải quyết khiếu nại bảo mật: <a href="tel:18002063" class="fw-bold text-danger text-decoration-none">1800.2063</a> (Miễn phí cước)</p>
+                        <p class="mb-0">Email chuyên trách bảo vệ dữ liệu: <a href="mailto:privacy@cellphones.com.vn" class="text-danger text-decoration-none">privacy@cellphones.com.vn</a></p>
+                    </div>
+                </div>
+
+                <!-- Nút chuyển tiếp -->
+                <div class="border-top pt-4 mt-5 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <a asp-controller="Policy" asp-action="Warranty" class="btn btn-outline-secondary fw-semibold rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Chính sách bảo hành
+                    </a>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-house-door me-1"></i> Trở về Trang chủ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,320 @@
+@{
+    ViewData["Title"] = "Mua Hàng Trả Góp 0% Lãi Suất - Chính Sách & Hướng Dẫn CellphoneS";
+}
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-transparent p-0 small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted"><i class="bi bi-house-door"></i> Trang chủ</a></li>
+            <li class="breadcrumb-item"><span class="text-muted">Thông tin & Chính sách</span></li>
+            <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Mua hàng trả góp 0%</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- CỘT TRÁI: SIDEBAR ĐIỀU HƯỚNG -->
+        <div class="col-lg-3">
+            <partial name="_PolicySidebar" />
+        </div>
+
+        <!-- CỘT PHẢI: NỘI DUNG CHÍNH SÁCH -->
+        <div class="col-lg-9">
+            <div class="bg-white p-4 p-md-5 rounded-3 shadow-sm cps-policy-article">
+                <!-- Tiêu đề chính -->
+                <div class="border-bottom pb-4 mb-4">
+                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-bold mb-2">
+                        <i class="bi bi-percent me-1"></i> ƯU ĐÃI TÀI CHÍNH TOÀN DIỆN
+                    </span>
+                    <h2 class="fw-bolder text-dark mb-2">Chính Sách Mua Hàng Trả Góp 0% Lãi Suất</h2>
+                    <p class="text-muted mb-0">
+                        Sở hữu ngay điện thoại flagship, laptop, tablet cao cấp với chương trình trả góp 0% lãi suất. Thủ tục nhanh gọn, duyệt hồ sơ online trong 15 phút, liên kết hơn 25 ngân hàng và tổ chức tài chính uy tín.
+                    </p>
+                </div>
+
+                <!-- 1. CÔNG CỤ TÍNH TRẢ GÓP TRỰC QUAN (INTERACTIVE CALCULATOR) -->
+                <div class="card border border-danger-subtle rounded-3 p-4 mb-5 shadow-sm bg-gradient" style="background: linear-gradient(135deg, #fffafa 0%, #fff0f1 100%);">
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+                            <i class="bi bi-calculator"></i>
+                        </div>
+                        <div>
+                            <h5 class="fw-bold text-dark m-0">Bảng Tính Ước Tính Trả Góp 0%</h5>
+                            <small class="text-muted">Tính toán số tiền trả trước và số tiền góp mỗi tháng chỉ với vài cú nhấp chuột</small>
+                        </div>
+                    </div>
+
+                    <div class="row g-3">
+                        <!-- Giá sản phẩm -->
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Giá sản phẩm (VNĐ):</label>
+                            <input type="number" id="calcProductPrice" class="form-control fw-bold fs-5 text-danger" value="25000000" step="500000" min="1000000" />
+                            <div class="d-flex gap-2 mt-2">
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-1 px-2 small set-price-btn" data-price="15000000">15 Triệu</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-1 px-2 small set-price-btn" data-price="25000000">25 Triệu</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-1 px-2 small set-price-btn" data-price="35000000">35 Triệu</button>
+                            </div>
+                        </div>
+
+                        <!-- Trả trước -->
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Tỷ lệ trả trước:</label>
+                            <div class="d-flex gap-2" id="prepayButtons">
+                                <button type="button" class="btn btn-outline-danger prepay-btn flex-fill" data-rate="0">0%</button>
+                                <button type="button" class="btn btn-outline-danger prepay-btn flex-fill active" data-rate="0.2">20%</button>
+                                <button type="button" class="btn btn-outline-danger prepay-btn flex-fill" data-rate="0.3">30%</button>
+                                <button type="button" class="btn btn-outline-danger prepay-btn flex-fill" data-rate="0.5">50%</button>
+                            </div>
+                            <div class="small text-muted mt-2">Số tiền trả trước: <strong id="calcPrepayAmount" class="text-dark">5.000.000₫</strong></div>
+                        </div>
+
+                        <!-- Kỳ hạn -->
+                        <div class="col-12">
+                            <label class="form-label small fw-bold">Kỳ hạn trả góp:</label>
+                            <div class="d-flex gap-2" id="termButtons">
+                                <button type="button" class="btn btn-outline-secondary term-btn flex-fill" data-term="3">3 Tháng</button>
+                                <button type="button" class="btn btn-outline-secondary term-btn flex-fill active" data-term="6">6 Tháng</button>
+                                <button type="button" class="btn btn-outline-secondary term-btn flex-fill" data-term="9">9 Tháng</button>
+                                <button type="button" class="btn btn-outline-secondary term-btn flex-fill" data-term="12">12 Tháng</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Hộp kết quả ước tính -->
+                    <div class="card border-0 bg-white shadow-sm rounded-3 p-3 mt-4">
+                        <div class="row align-items-center text-center text-md-start">
+                            <div class="col-md-4 border-end-md pb-3 pb-md-0">
+                                <span class="small text-muted d-block">Số tiền vay góp:</span>
+                                <h5 class="fw-bold text-dark m-0" id="calcLoanAmount">20.000.000₫</h5>
+                            </div>
+                            <div class="col-md-5 border-end-md pb-3 pb-md-0">
+                                <span class="small text-muted d-block">Góp mỗi tháng (0% lãi suất):</span>
+                                <h3 class="fw-bolder text-danger m-0" id="calcMonthlyAmount">3.333.333₫</h3>
+                                <small class="text-success"><i class="bi bi-check-circle-fill"></i> Lãi suất 0% / tháng</small>
+                            </div>
+                            <div class="col-md-3 pt-2 pt-md-0 text-center">
+                                <span class="badge bg-success-subtle text-success border border-success-subtle p-2 mb-2 d-inline-block">
+                                    Chênh lệch: 0₫
+                                </span>
+                                <a asp-controller="Home" asp-action="Index" class="btn btn-sm btn-danger w-100 fw-bold rounded-pill">
+                                    Mua ngay
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. BA HÌNH THỨC TRẢ GÓP LINH HOẠT -->
+                <div class="mb-5">
+                    <h4 class="fw-bold text-dark mb-4 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 14px;">2</span>
+                        3 Hình Thức Mua Hàng Trả Góp Tại CellphoneS
+                    </h4>
+
+                    <div class="row g-4">
+                        <!-- Thẻ 1: Trả góp qua Thẻ tín dụng -->
+                        <div class="col-md-4">
+                            <div class="card h-100 border rounded-3 p-3 shadow-sm hover-shadow transition">
+                                <div class="text-danger fs-1 mb-2">
+                                    <i class="bi bi-credit-card"></i>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-2">1. Qua Thẻ Tín Dụng</h5>
+                                <p class="small text-muted mb-3">
+                                    Lãi suất 0%, không cần nộp hồ sơ, không cần chứng minh thu nhập. Thanh toán linh hoạt qua hạn mức thẻ tín dụng.
+                                </p>
+                                <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-3">
+                                    <li><i class="bi bi-check2 text-danger me-1"></i> Hơn 25 ngân hàng lớn</li>
+                                    <li><i class="bi bi-check2 text-danger me-1"></i> Kỳ hạn: 3 - 6 - 9 - 12 tháng</li>
+                                    <li><i class="bi bi-check2 text-danger me-1"></i> Trả trước từ 0đ</li>
+                                    <li><i class="bi bi-check2 text-danger me-1"></i> Hoàn tất chỉ trong 3 phút</li>
+                                </ul>
+                                <span class="badge bg-danger text-white p-2 text-center mt-auto">Phổ biến nhất</span>
+                            </div>
+                        </div>
+
+                        <!-- Thẻ 2: Trả góp qua Công ty tài chính -->
+                        <div class="col-md-4">
+                            <div class="card h-100 border rounded-3 p-3 shadow-sm hover-shadow transition">
+                                <div class="text-primary fs-1 mb-2">
+                                    <i class="bi bi-person-vcard"></i>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-2">2. Công Ty Tài Chính</h5>
+                                <p class="small text-muted mb-3">
+                                    Hợp tác cùng Home Credit, FE Credit, HD SAISON, Shinhan Finance. Chỉ cần CCCD gắn chip (từ 18 tuổi).
+                                </p>
+                                <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-3">
+                                    <li><i class="bi bi-check2 text-primary me-1"></i> Không cần thẻ tín dụng</li>
+                                    <li><i class="bi bi-check2 text-primary me-1"></i> Duyệt online chỉ 15 phút</li>
+                                    <li><i class="bi bi-check2 text-primary me-1"></i> Tỷ lệ duyệt hồ sơ 95%</li>
+                                    <li><i class="bi bi-check2 text-primary me-1"></i> Áp dụng toàn bộ danh mục máy</li>
+                                </ul>
+                                <span class="badge bg-primary text-white p-2 text-center mt-auto">Thủ tục đơn giản</span>
+                            </div>
+                        </div>
+
+                        <!-- Thẻ 3: Mua trước trả sau (BNPL) -->
+                        <div class="col-md-4">
+                            <div class="card h-100 border rounded-3 p-3 shadow-sm hover-shadow transition">
+                                <div class="text-success fs-1 mb-2">
+                                    <i class="bi bi-wallet2"></i>
+                                </div>
+                                <h5 class="fw-bold text-dark mb-2">3. Mua Trước Trả Sau</h5>
+                                <p class="small text-muted mb-3">
+                                    Thanh toán qua ví điện tử: Kredivo, MoMo Ví Trả Sau, Fundiin. Chia nhỏ đơn hàng làm 3 - 4 kỳ tiện lợi.
+                                </p>
+                                <ul class="list-unstyled small text-muted d-flex flex-column gap-2 mb-3">
+                                    <li><i class="bi bi-check2 text-success me-1"></i> Thao tác 100% trên điện thoại</li>
+                                    <li><i class="bi bi-check2 text-success me-1"></i> Miễn lãi kỳ đầu tiên</li>
+                                    <li><i class="bi bi-check2 text-success me-1"></i> Phù hợp phụ kiện & máy tầm trung</li>
+                                    <li><i class="bi bi-check2 text-success me-1"></i> Tích lũy điểm thành viên</li>
+                                </ul>
+                                <span class="badge bg-success text-white p-2 text-center mt-auto">Nhanh chóng & Tiện lợi</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. DANH SÁCH ĐỐI TÁC NGÂN HÀNG & TÀI CHÍNH -->
+                <div class="mb-5">
+                    <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 14px;">3</span>
+                        Đối Tác Ngân Hàng & Tài Chính Đồng Hành
+                    </h4>
+                    <div class="p-3 bg-light rounded-3">
+                        <div class="d-flex flex-wrap gap-2 justify-content-center py-2">
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">Vietcombank</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">Techcombank</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">VPBank</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">MB Bank</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">Sacombank</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">ACB</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">TPBank</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">VIB</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">HSBC</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">Shinhan Bank</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">Home Credit</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">FE Credit</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">HD SAISON</span>
+                            <span class="badge bg-white text-dark border p-2 px-3 fw-bold shadow-sm">Kredivo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. THỦ TỤC & ĐIỀU KIỆN CẦN THIẾT -->
+                <div class="mb-5">
+                    <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 14px;">4</span>
+                        Điều Kiện & Giấy Tờ Cần Chuẩn Bị
+                    </h4>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 25%;">Hình thức</th>
+                                    <th style="width: 35%;">Giấy tờ yêu cầu</th>
+                                    <th>Thời gian xét duyệt</th>
+                                </tr>
+                            </thead>
+                            <tbody class="small">
+                                <tr>
+                                    <td class="fw-bold text-danger">Thẻ tín dụng (Credit Card)</td>
+                                    <td>Chỉ cần thẻ tín dụng chính chủ còn đủ hạn mức thanh toán. Không cần giấy tờ tùy thân.</td>
+                                    <td><span class="badge bg-success">Tức thì (1 - 3 phút)</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold text-primary">Công ty tài chính</td>
+                                    <td>Bản gốc Căn cước công dân (CCCD gắn chip) còn hạn sử dụng. Độ tuổi từ 18 - 60 tuổi.</td>
+                                    <td><span class="badge bg-primary">15 - 30 phút</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold text-success">Mua trước trả sau</td>
+                                    <td>Tài khoản ví điện tử đã định danh (eKYC) trên ứng dụng điện thoại.</td>
+                                    <td><span class="badge bg-success">Tức thì</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Nút chuyển tiếp -->
+                <div class="border-top pt-4 mt-5 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <a asp-controller="Policy" asp-action="PaymentGuide" class="btn btn-outline-secondary fw-semibold rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Hướng dẫn thanh toán Online
+                    </a>
+                    <a asp-controller="Policy" asp-action="Shipping" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-truck me-1"></i> Xem Chính sách giao hàng
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const inputPrice = document.getElementById('calcProductPrice');
+            const prepayButtons = document.querySelectorAll('.prepay-btn');
+            const termButtons = document.querySelectorAll('.term-btn');
+            const setPriceButtons = document.querySelectorAll('.set-price-btn');
+
+            const calcPrepayAmount = document.getElementById('calcPrepayAmount');
+            const calcLoanAmount = document.getElementById('calcLoanAmount');
+            const calcMonthlyAmount = document.getElementById('calcMonthlyAmount');
+
+            let currentRate = 0.2;
+            let currentTerm = 6;
+
+            function formatMoney(num) {
+                return new Intl.NumberFormat('vi-VN').format(Math.round(num)) + '₫';
+            }
+
+            function updateCalculation() {
+                const price = parseFloat(inputPrice.value) || 0;
+                const prepay = price * currentRate;
+                const loan = Math.max(0, price - prepay);
+                const monthly = currentTerm > 0 ? (loan / currentTerm) : 0;
+
+                calcPrepayAmount.innerText = formatMoney(prepay);
+                calcLoanAmount.innerText = formatMoney(loan);
+                calcMonthlyAmount.innerText = formatMoney(monthly);
+            }
+
+            inputPrice.addEventListener('input', updateCalculation);
+
+            setPriceButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    inputPrice.value = this.dataset.price;
+                    updateCalculation();
+                });
+            });
+
+            prepayButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    prepayButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentRate = parseFloat(this.dataset.rate);
+                    updateCalculation();
+                });
+            });
+
+            termButtons.forEach(btn => {
+                btn.addEventListener('click', function () {
+                    termButtons.forEach(b => {
+                        b.classList.remove('active');
+                        b.classList.remove('btn-danger');
+                        b.classList.add('btn-outline-secondary');
+                    });
+                    this.classList.add('active');
+                    this.classList.add('btn-danger');
+                    this.classList.remove('btn-outline-secondary');
+                    currentTerm = parseInt(this.dataset.term);
+                    updateCalculation();
+                });
+            });
+
+            // Lần chạy đầu
+            updateCalculation();
+        });
+    </script>
+}

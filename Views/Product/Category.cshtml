@@ -1,0 +1,191 @@
+@model WebsiteBanDienThoai.Models.ViewModels.CategoryViewModel
+
+@{
+    ViewData["Title"] = $"{Model.Category.Name} Chính Hãng - Giá Tốt Nhất | CellphoneS";
+}
+
+<div class="container my-3">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent p-0 mb-3" style="font-size: 12.5px;">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted"><i class="bi bi-house-door-fill me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item active text-danger fw-semibold">@Model.Category.Name</li>
+        </ol>
+    </nav>
+
+    <!-- Category Header Banner -->
+    <div class="bg-white p-3 rounded-3 shadow-sm border mb-4">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div>
+                <h1 class="h4 fw-bold text-dark mb-1">
+                    <i class="@(string.IsNullOrEmpty(Model.Category.IconClass) ? "bi bi-phone-fill" : Model.Category.IconClass) text-danger me-2"></i>
+                    @Model.Category.Name (@Model.TotalCount sản phẩm)
+                </h1>
+                <p class="text-muted small mb-0">Hệ thống phân phối điện thoại, thiết bị công nghệ chính hãng giá tốt nhất tại CellphoneS.</p>
+            </div>
+            <div>
+                <span class="badge bg-danger p-2"><i class="bi bi-shield-check me-1"></i> 100% Chính Hãng - Bảo Hành 12 Tháng</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- FILTER SECTION (BỘ LỌC ĐA TIÊU CHÍ CELLPHONES) -->
+    <div class="bg-white p-3 rounded-3 shadow-sm border mb-4">
+        <div class="row g-3">
+            <!-- 1. Lọc theo hãng -->
+            <div class="col-12">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="fw-bold small text-muted"><i class="bi bi-tag-fill me-1"></i> Thương hiệu:</span>
+                    <a asp-action="Category" asp-route-slug="@Model.Category.Slug" asp-route-brand="all" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-sort="@Model.SortOrder"
+                       class="btn btn-sm @(string.IsNullOrEmpty(Model.SelectedBrand) || Model.SelectedBrand == "all" ? "btn-danger fw-bold" : "btn-outline-secondary") rounded-pill px-3">
+                        Tất cả
+                    </a>
+                    @foreach (var brand in Model.Brands)
+                    {
+                        <a asp-action="Category" asp-route-slug="@Model.Category.Slug" asp-route-brand="@brand.Slug" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-sort="@Model.SortOrder"
+                           class="btn btn-sm @(Model.SelectedBrand == brand.Slug ? "btn-danger fw-bold" : "btn-outline-secondary") rounded-pill px-3">
+                            @brand.Name
+                        </a>
+                    }
+                </div>
+            </div>
+
+            <!-- 2. Lọc theo mức giá -->
+            <div class="col-12 border-top pt-3">
+                <div class="d-flex align-items-center gap-2 flex-wrap">
+                    <span class="fw-bold small text-muted"><i class="bi bi-cash-coin me-1"></i> Mức giá:</span>
+                    <a asp-action="Category" asp-route-slug="@Model.Category.Slug" asp-route-brand="@Model.SelectedBrand" asp-route-sort="@Model.SortOrder"
+                       class="btn btn-sm @(!Model.MinPrice.HasValue && !Model.MaxPrice.HasValue ? "btn-danger fw-bold" : "btn-outline-secondary") rounded-pill px-3">
+                        Tất cả giá
+                    </a>
+                    <a asp-action="Category" asp-route-slug="@Model.Category.Slug" asp-route-brand="@Model.SelectedBrand" asp-route-maxPrice="5000000" asp-route-sort="@Model.SortOrder"
+                       class="btn btn-sm @(Model.MaxPrice == 5000000 ? "btn-danger fw-bold" : "btn-outline-secondary") rounded-pill px-3">
+                        Dưới 5 triệu
+                    </a>
+                    <a asp-action="Category" asp-route-slug="@Model.Category.Slug" asp-route-brand="@Model.SelectedBrand" asp-route-minPrice="5000000" asp-route-maxPrice="10000000" asp-route-sort="@Model.SortOrder"
+                       class="btn btn-sm @(Model.MinPrice == 5000000 && Model.MaxPrice == 10000000 ? "btn-danger fw-bold" : "btn-outline-secondary") rounded-pill px-3">
+                        5 - 10 triệu
+                    </a>
+                    <a asp-action="Category" asp-route-slug="@Model.Category.Slug" asp-route-brand="@Model.SelectedBrand" asp-route-minPrice="10000000" asp-route-maxPrice="20000000" asp-route-sort="@Model.SortOrder"
+                       class="btn btn-sm @(Model.MinPrice == 10000000 && Model.MaxPrice == 20000000 ? "btn-danger fw-bold" : "btn-outline-secondary") rounded-pill px-3">
+                        10 - 20 triệu
+                    </a>
+                    <a asp-action="Category" asp-route-slug="@Model.Category.Slug" asp-route-brand="@Model.SelectedBrand" asp-route-minPrice="20000000" asp-route-sort="@Model.SortOrder"
+                       class="btn btn-sm @(Model.MinPrice == 20000000 ? "btn-danger fw-bold" : "btn-outline-secondary") rounded-pill px-3">
+                        Trên 20 triệu
+                    </a>
+                </div>
+            </div>
+
+            <!-- 3. Sắp xếp -->
+            <div class="col-12 border-top pt-3 d-flex align-items-center justify-content-between flex-wrap gap-2">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold small text-muted"><i class="bi bi-sort-down me-1"></i> Sắp xếp theo:</span>
+                    <a asp-action="Category" asp-route-slug="@Model.Category.Slug" asp-route-brand="@Model.SelectedBrand" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-sort="hot"
+                       class="btn btn-sm @(string.IsNullOrEmpty(Model.SortOrder) || Model.SortOrder == "hot" ? "btn-dark fw-bold" : "btn-outline-secondary") rounded-pill px-3">
+                        Nổi bật nhất
+                    </a>
+                    <a asp-action="Category" asp-route-slug="@Model.Category.Slug" asp-route-brand="@Model.SelectedBrand" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-sort="price-asc"
+                       class="btn btn-sm @(Model.SortOrder == "price-asc" ? "btn-dark fw-bold" : "btn-outline-secondary") rounded-pill px-3">
+                        Giá tăng dần
+                    </a>
+                    <a asp-action="Category" asp-route-slug="@Model.Category.Slug" asp-route-brand="@Model.SelectedBrand" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-sort="price-desc"
+                       class="btn btn-sm @(Model.SortOrder == "price-desc" ? "btn-dark fw-bold" : "btn-outline-secondary") rounded-pill px-3">
+                        Giá giảm dần
+                    </a>
+                    <a asp-action="Category" asp-route-slug="@Model.Category.Slug" asp-route-brand="@Model.SelectedBrand" asp-route-minPrice="@Model.MinPrice" asp-route-maxPrice="@Model.MaxPrice" asp-route-sort="discount"
+                       class="btn btn-sm @(Model.SortOrder == "discount" ? "btn-dark fw-bold" : "btn-outline-secondary") rounded-pill px-3">
+                        Giảm nhiều nhất
+                    </a>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.SelectedBrand) || Model.MinPrice.HasValue || Model.MaxPrice.HasValue)
+                {
+                    <a asp-action="Category" asp-route-slug="@Model.Category.Slug" class="text-danger small fw-bold">
+                        <i class="bi bi-x-circle-fill me-1"></i> Xóa tất cả bộ lọc
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- PRODUCT LISTING GRID -->
+    @if (!Model.Products.Any())
+    {
+        <div class="bg-white p-5 rounded-3 shadow-sm border text-center my-4">
+            <i class="bi bi-emoji-frown text-muted" style="font-size: 48px;"></i>
+            <h5 class="fw-bold mt-3">Không tìm thấy sản phẩm phù hợp</h5>
+            <p class="text-muted small">Vui lòng thử chọn bộ lọc mức giá hoặc thương hiệu khác.</p>
+            <a asp-action="Category" asp-route-slug="@Model.Category.Slug" class="btn btn-danger btn-sm px-4 fw-bold">
+                Xem tất cả sản phẩm @Model.Category.Name
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-md-3">
+            @foreach (var product in Model.Products)
+            {
+                <div class="col">
+                    <div class="cps-product-card">
+                        <div class="cps-card-badges">
+                            @if (product.HasInstallment0Percent)
+                            {
+                                <span class="cps-badge-installment">Trả góp 0%</span>
+                            }
+                            @if (product.DiscountPercent > 0)
+                            {
+                                <span class="cps-badge-discount ms-auto">-@product.DiscountPercent%</span>
+                            }
+                        </div>
+
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="cps-card-image">
+                            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                        </a>
+
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="cps-card-title">
+                            @product.Name
+                        </a>
+
+                        <div class="cps-card-price">
+                            <span class="cps-sale-price">@product.SalePrice.ToString("N0")₫</span>
+                            @if (product.OriginalPrice > product.SalePrice)
+                            {
+                                <span class="cps-origin-price">@product.OriginalPrice.ToString("N0")₫</span>
+                            }
+                        </div>
+
+                        @if (product.SmemberDiscount > 0)
+                        {
+                            <div class="cps-smember-tag">
+                                <i class="bi bi-gem me-1"></i> Smember giảm thêm @product.SmemberDiscount.ToString("N0")₫
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(product.PromotionInfo))
+                        {
+                            <div class="cps-promo-box">
+                                <i class="bi bi-gift-fill text-danger me-1"></i> @product.PromotionInfo
+                            </div>
+                        }
+
+                        <div class="cps-card-footer">
+                            <div class="cps-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <span><strong>@product.Rating.ToString("0.0")</strong> (@product.ReviewCount)</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <button type="button" class="btn cps-wishlist-btn p-1" data-product-id="@product.Id" onclick="toggleWishlist(@product.Id, this)" title="Lưu yêu thích">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-bold" onclick="addToCart(@product.Id, 1)">
+                                    <i class="bi bi-cart-plus"></i> Mua
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

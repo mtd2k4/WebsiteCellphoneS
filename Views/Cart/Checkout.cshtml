@@ -1,0 +1,352 @@
+@model WebsiteBanDienThoai.Models.Order
+
+@{
+    ViewData["Title"] = "Thanh Toán Đơn Hàng - CellphoneS";
+    var cart = ViewBag.Cart as List<WebsiteBanDienThoai.Models.CartItem> ?? new();
+    decimal totalAmount = ViewBag.TotalAmount ?? 0;
+    decimal defaultShipping = totalAmount >= 300000 ? 0 : 30000;
+    decimal initialTotal = totalAmount + defaultShipping;
+}
+
+<div class="container my-4" style="max-width: 900px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent p-0 mb-3" style="font-size: 12.5px;">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted"><i class="bi bi-house-door-fill me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index" class="text-muted">Giỏ hàng</a></li>
+            <li class="breadcrumb-item active text-danger fw-semibold">Thông tin thanh toán</li>
+        </ol>
+    </nav>
+
+    <div class="d-flex align-items-center mb-3">
+        <h4 class="fw-bold mb-0">
+            <i class="bi bi-credit-card-2-front-fill text-danger me-2"></i> THÔNG TIN ĐẶT HÀNG
+        </h4>
+    </div>
+
+    <!-- KHỐI XÁC NHẬN TÀI KHOẢN SMEMBER -->
+    <div class="alert alert-light border border-danger border-opacity-25 bg-danger bg-opacity-10 d-flex flex-wrap align-items-center justify-content-between p-2 px-3 mb-3 rounded-3 shadow-sm">
+        <div class="d-flex align-items-center gap-2 small">
+            <span class="badge bg-danger"><i class="bi bi-person-check-fill me-1"></i> Smember</span>
+            <span>Khách hàng: <strong>@User.Identity?.Name</strong></span>
+            @if (User.FindFirst(System.Security.Claims.ClaimTypes.MobilePhone) != null)
+            {
+                <span class="text-muted">(@User.FindFirst(System.Security.Claims.ClaimTypes.MobilePhone)?.Value)</span>
+            }
+        </div>
+        <div class="small text-danger fw-semibold">
+            <i class="bi bi-coin text-warning me-1"></i> Điểm tích lũy hiện có: <strong>@(User.FindFirst("SmemberPoints")?.Value ?? "0") PTS</strong>
+        </div>
+    </div>
+
+    <form asp-action="Checkout" method="post" id="checkoutForm">
+        @Html.AntiForgeryToken()
+
+        <div class="row g-4">
+            <!-- Form thông tin khách hàng -->
+            <div class="col-lg-7">
+                <div class="bg-white rounded-3 shadow-sm border p-4 mb-3">
+                    <h6 class="fw-bold mb-3 border-bottom pb-2">1. THÔNG TIN NGƯỜI NHẬN HÀNG</h6>
+
+                    <div class="mb-3">
+                        <label asp-for="CustomerName" class="form-label small fw-bold">Họ và tên người nhận <span class="text-danger">*</span></label>
+                        <input asp-for="CustomerName" class="form-control" placeholder="Ví dụ: Nguyễn Văn A" required />
+                        <span asp-validation-for="CustomerName" class="text-danger small"></span>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label asp-for="PhoneNumber" class="form-label small fw-bold">Số điện thoại <span class="text-danger">*</span></label>
+                            <input asp-for="PhoneNumber" class="form-control" placeholder="09xxxxxxxx" required />
+                            <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                        </div>
+                        <div class="col-6">
+                            <label asp-for="Email" class="form-label small fw-bold">Email (nhận hóa đơn điện tử)</label>
+                            <input asp-for="Email" type="email" class="form-control" placeholder="email@gmail.com" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <!-- KHU VỰC CHỌN ĐỊA CHỈ HÀNH CHÍNH VIỆT NAM (API TỈNH / HUYỆN / XÃ) -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small fw-bold mb-1">
+                                Tỉnh / Thành phố <span class="text-danger">*</span>
+                            </label>
+                            <select id="checkoutProvince" class="form-select form-select-sm" required>
+                                <option value="">-- Đang tải Tỉnh / Thành... --</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small fw-bold mb-1">
+                                Quận / Huyện <span class="text-danger">*</span>
+                            </label>
+                            <select id="checkoutDistrict" class="form-select form-select-sm" disabled required>
+                                <option value="">-- Chọn Quận / Huyện --</option>
+                            </select>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <label class="form-label small fw-bold mb-1">
+                                Phường / Xã <span class="text-danger">*</span>
+                            </label>
+                            <select id="checkoutWard" class="form-select form-select-sm" disabled required>
+                                <option value="">-- Chọn Phường / Xã --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- CHỈ CHO ĐỊA CHỈ CHI TIẾT NHẬP TAY -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold mb-1">
+                            Địa chỉ chi tiết (Số nhà, tên đường...) <span class="text-danger">*</span>
+                        </label>
+                        <input type="text" id="checkoutDetailAddress" class="form-control" placeholder="Ví dụ: 123 Lê Duẩn, Tòa nhà Vincom, Tầng 5..." required />
+                        <div class="form-text small text-muted" style="font-size: 11.5px;">
+                            <i class="bi bi-info-circle text-primary me-1"></i>Tỉnh, Quận, Phường được chọn từ danh mục hành chính Việt Nam; quý khách chỉ cần nhập số nhà và tên đường.
+                        </div>
+                    </div>
+
+                    <!-- Dữ liệu ẩn đồng bộ lên Order Model -->
+                    <input type="hidden" asp-for="Province" id="orderProvince" />
+                    <input type="hidden" asp-for="Address" id="orderAddress" />
+                    <span asp-validation-for="Province" class="text-danger small d-block"></span>
+                    <span asp-validation-for="Address" class="text-danger small d-block"></span>
+
+                    <div class="mb-3">
+                        <label asp-for="Notes" class="form-label small fw-bold">Ghi chú cho đơn hàng (tùy chọn)</label>
+                        <textarea asp-for="Notes" class="form-control" rows="2" placeholder="Giao hàng trong giờ hành chính, gọi trước khi đến..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Phương thức thanh toán -->
+                <div class="bg-white rounded-3 shadow-sm border p-4">
+                    <h6 class="fw-bold mb-3 border-bottom pb-2">2. HÌNH THỨC THANH TOÁN</h6>
+
+                    <div class="form-check mb-3 p-3 border rounded bg-light">
+                        <input class="form-check-input ms-0 me-2" type="radio" asp-for="PaymentMethod" value="COD" id="payCOD" checked>
+                        <label class="form-check-label fw-bold" for="payCOD">
+                            <i class="bi bi-cash-stack text-success me-1"></i> Thanh toán tiền mặt khi nhận hàng (COD)
+                            <div class="text-muted small fw-normal">Quý khách nhận máy, kiểm tra hàng chính hãng và thanh toán cho nhân viên giao hàng.</div>
+                        </label>
+                    </div>
+
+                    <div class="form-check p-3 border rounded">
+                        <input class="form-check-input ms-0 me-2" type="radio" asp-for="PaymentMethod" value="BankTransfer" id="payBank">
+                        <label class="form-check-label fw-bold" for="payBank">
+                            <i class="bi bi-qr-code-scan text-primary me-1"></i> Chuyển khoản ngân hàng qua mã VietQR
+                            <div class="text-muted small fw-normal">Quét mã QR qua ứng dụng ngân hàng bất kỳ, xác nhận đơn hàng tự động 24/7.</div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tóm tắt đơn hàng bên phải -->
+            <div class="col-lg-5">
+                <div class="bg-white rounded-3 shadow-sm border p-3 p-md-4 sticky-top" style="top: 75px; z-index: 20;">
+                    <h6 class="fw-bold mb-3 border-bottom pb-2">ĐƠN HÀNG CỦA BẠN (@cart.Sum(i => i.Quantity) sản phẩm)</h6>
+
+                    <div class="d-flex flex-column gap-3 mb-3" style="max-height: 180px; overflow-y: auto;">
+                        @foreach (var item in cart)
+                        {
+                            <div class="d-flex align-items-center gap-2">
+                                <img src="@item.ImageUrl" alt="@item.ProductName" style="width: 50px; height: 50px; object-fit: contain;" class="rounded border p-1" />
+                                <div class="flex-grow-1" style="font-size: 13px;">
+                                    <div class="fw-semibold text-truncate" style="max-width: 200px;">@item.ProductName</div>
+                                    <small class="text-muted">SL: @item.Quantity</small>
+                                </div>
+                                <div class="text-danger fw-bold" style="font-size: 13px;">
+                                    @item.TotalPrice.ToString("N0")₫
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- KHUNG MÃ GIẢM GIÁ (ÁP DỤNG ĐỒNG THỜI MÃ ĐƠN HÀNG & MÃ PHÍ SHIP) -->
+                    <div class="card border-danger-subtle rounded-3 mb-3 shadow-sm overflow-hidden">
+                        <div class="card-header bg-danger-subtle text-danger py-2 px-3 d-flex align-items-center justify-content-between">
+                            <span class="fw-bold small">
+                                <i class="bi bi-ticket-perforated-fill me-1"></i> KHUYẾN MÃI & MÃ GIẢM GIÁ
+                            </span>
+                            <button type="button" class="btn btn-sm btn-link text-danger p-0 text-decoration-none fw-semibold small" onclick="openCouponModal()">
+                                <i class="bi bi-gift me-1"></i> Chọn mã có sẵn
+                            </button>
+                        </div>
+                        <div class="card-body p-3 bg-white">
+                            <!-- 1. Mã giảm giá Đơn hàng -->
+                            <div class="mb-3">
+                                <label class="form-label small fw-semibold text-muted d-flex justify-content-between mb-1">
+                                    <span><i class="bi bi-tag-fill text-danger me-1"></i> Mã giảm giá đơn hàng:</span>
+                                    <span id="orderCouponStatus" class="badge bg-light text-muted border">Chưa áp dụng</span>
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" id="orderCouponInput" class="form-control fw-bold" style="text-transform: uppercase;" placeholder="Nhập mã đơn hàng..." />
+                                    <button type="button" id="btnApplyOrderCoupon" class="btn btn-danger fw-bold" onclick="applyCoupon('order')">Áp dụng</button>
+                                    <button type="button" id="btnRemoveOrderCoupon" class="btn btn-outline-secondary d-none" onclick="removeCoupon('order')" title="Bỏ áp dụng">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                                <div id="orderCouponMessage" class="small mt-1 d-none"></div>
+                            </div>
+
+                            <!-- 2. Mã giảm giá Phí vận chuyển -->
+                            <div>
+                                <label class="form-label small fw-semibold text-muted d-flex justify-content-between mb-1">
+                                    <span><i class="bi bi-truck text-success me-1"></i> Mã giảm phí vận chuyển:</span>
+                                    <span id="shippingCouponStatus" class="badge bg-light text-muted border">Chưa áp dụng</span>
+                                </label>
+                                <div class="input-group input-group-sm">
+                                    <input type="text" id="shippingCouponInput" class="form-control fw-bold" style="text-transform: uppercase;" placeholder="Nhập mã freeship..." />
+                                    <button type="button" id="btnApplyShippingCoupon" class="btn btn-success fw-bold" onclick="applyCoupon('shipping')">Áp dụng</button>
+                                    <button type="button" id="btnRemoveShippingCoupon" class="btn btn-outline-secondary d-none" onclick="removeCoupon('shipping')" title="Bỏ áp dụng">
+                                        <i class="bi bi-x-lg"></i>
+                                    </button>
+                                </div>
+                                <div id="shippingCouponMessage" class="small mt-1 d-none"></div>
+                            </div>
+
+                            <div class="alert alert-light border small text-muted mb-0 mt-2 p-2" style="font-size: 11px;">
+                                <i class="bi bi-check2-all text-success me-1"></i>Quý khách có thể sử dụng <strong>đồng thời cả 2 mã</strong> (1 mã đơn hàng + 1 mã freeship).
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-top pt-3">
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Tạm tính:</span>
+                            <span class="fw-bold" id="summarySubtotal">@totalAmount.ToString("N0")₫</span>
+                        </div>
+
+                        <!-- Giảm giá đơn hàng -->
+                        <div class="d-flex justify-content-between mb-2 small d-none" id="summaryOrderDiscountRow">
+                            <span class="text-danger fw-semibold">
+                                <i class="bi bi-tag-fill me-1"></i>Giảm giá đơn hàng (<span id="summaryOrderDiscountCode"></span>):
+                            </span>
+                            <span class="text-danger fw-bold" id="summaryOrderDiscountAmount">-0₫</span>
+                        </div>
+
+                        <!-- Phí giao hàng -->
+                        <div class="d-flex justify-content-between mb-2 small">
+                            <span class="text-muted">Phí giao hàng tiêu chuẩn:</span>
+                            <span class="fw-bold @(defaultShipping == 0 ? "text-success" : "text-dark")" id="summaryShippingFee">
+                                @(defaultShipping == 0 ? "MIỄN PHÍ" : "30.000₫")
+                            </span>
+                        </div>
+
+                        <!-- Giảm phí giao hàng -->
+                        <div class="d-flex justify-content-between mb-2 small d-none" id="summaryShippingDiscountRow">
+                            <span class="text-success fw-semibold">
+                                <i class="bi bi-truck me-1"></i>Giảm phí vận chuyển (<span id="summaryShippingDiscountCode"></span>):
+                            </span>
+                            <span class="text-success fw-bold" id="summaryShippingDiscountAmount">-0₫</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-3 border-top pt-2">
+                            <span class="fw-bold">Tổng thanh toán:</span>
+                            <span class="text-danger fw-bolder fs-5" id="summaryFinalTotal">@initialTotal.ToString("N0")₫</span>
+                        </div>
+
+                        <!-- Các trường ẩn lưu thông tin giảm giá gửi lên Order Model -->
+                        <input type="hidden" asp-for="SubtotalAmount" id="hiddenSubtotalAmount" value="@totalAmount" />
+                        <input type="hidden" asp-for="ShippingFee" id="hiddenShippingFee" value="@defaultShipping" />
+                        <input type="hidden" asp-for="OrderDiscountCode" id="hiddenOrderDiscountCode" value="" />
+                        <input type="hidden" asp-for="OrderDiscountAmount" id="hiddenOrderDiscountAmount" value="0" />
+                        <input type="hidden" asp-for="ShippingDiscountCode" id="hiddenShippingDiscountCode" value="" />
+                        <input type="hidden" asp-for="ShippingDiscountAmount" id="hiddenShippingDiscountAmount" value="0" />
+                        <input type="hidden" asp-for="TotalAmount" id="hiddenTotalAmount" value="@initialTotal" />
+
+                        <button type="submit" class="btn btn-danger w-100 py-3 fw-bold text-uppercase fs-6 shadow-sm">
+                            <i class="bi bi-check-circle-fill me-1"></i> XÁC NHẬN ĐẶT HÀNG
+                        </button>
+
+                        <p class="text-muted small text-center mt-3 mb-0" style="font-size: 11.5px;">
+                            Bằng cách đặt hàng, quý khách đồng ý với Điều khoản sử dụng và Chính sách mua hàng của CellphoneS.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- MODAL CHỌN MÃ GIẢM GIÁ (KHO VOUCHER CELLPHONES) -->
+<div class="modal fade" id="couponModal" tabindex="-1" aria-labelledby="couponModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h6 class="modal-title fw-bold" id="couponModalLabel">
+                    <i class="bi bi-ticket-perforated-fill me-2"></i> KHO VOUCHER ƯU ĐÃI CELLPHONES
+                </h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+            </div>
+            <div class="modal-body p-3 bg-light">
+                <ul class="nav nav-pills nav-fill mb-3" id="couponTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active fw-bold py-2" id="order-coupon-tab" data-bs-toggle="pill" data-bs-target="#orderCouponTabContent" type="button" role="tab">
+                            <i class="bi bi-tag-fill me-1 text-danger"></i> Mã Giảm Giá Đơn Hàng
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold py-2" id="shipping-coupon-tab" data-bs-toggle="pill" data-bs-target="#shippingCouponTabContent" type="button" role="tab">
+                            <i class="bi bi-truck me-1 text-success"></i> Mã Miễn Phí Vận Chuyển
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="couponTabContent">
+                    <!-- Tab 1: Mã đơn hàng -->
+                    <div class="tab-pane fade show active" id="orderCouponTabContent" role="tabpanel">
+                        <div id="orderCouponListContainer" class="p-1">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-danger spinner-border-sm me-2"></div> Đang tải danh sách voucher...
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tab 2: Mã Freeship -->
+                    <div class="tab-pane fade" id="shippingCouponTabContent" role="tabpanel">
+                        <div id="shippingCouponListContainer" class="p-1">
+                            <div class="text-center py-4">
+                                <div class="spinner-border text-success spinner-border-sm me-2"></div> Đang tải danh sách voucher...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-white border-top py-2 px-3 d-flex justify-content-between">
+                <small class="text-muted">
+                    <i class="bi bi-info-circle me-1 text-primary"></i>Bạn có thể chọn 1 mã đơn hàng và 1 mã freeship cùng lúc.
+                </small>
+                <button type="button" class="btn btn-secondary btn-sm px-3 fw-semibold" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="~/js/vietnam-address.js" asp-append-version="true"></script>
+    <script src="~/js/checkout-coupons.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Khởi tạo bộ chọn địa chỉ
+            if (typeof initVietnamAddressSelector === 'function') {
+                initVietnamAddressSelector({
+                    provinceSelect: '#checkoutProvince',
+                    districtSelect: '#checkoutDistrict',
+                    wardSelect: '#checkoutWard',
+                    detailInput: '#checkoutDetailAddress',
+                    hiddenProvince: '#orderProvince',
+                    hiddenAddress: '#orderAddress',
+                    initialProvince: '@Html.Raw(Model?.Province ?? "")',
+                    initialAddress: '@Html.Raw(Model?.Address ?? "")',
+                    form: '#checkoutForm'
+                });
+            }
+
+            // Khởi tạo bộ quản lý mã giảm giá
+            if (typeof initCheckoutCoupons === 'function') {
+                initCheckoutCoupons(@totalAmount);
+            }
+        });
+    </script>
+}

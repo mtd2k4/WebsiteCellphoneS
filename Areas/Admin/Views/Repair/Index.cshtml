@@ -1,0 +1,263 @@
+@model IEnumerable<WebsiteBanDienThoai.Models.RepairBooking>
+@{
+    ViewData["Title"] = "Quản Lý Đặt Lịch Sửa Chữa & Bảo Hành";
+    WebsiteBanDienThoai.Models.RepairStatus? currentStatus = ViewBag.Status;
+    string? currentSearch = ViewBag.Search;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h4 class="fw-bolder text-dark mb-1">
+            <i class="bi bi-wrench-adjustable-circle-fill text-danger me-2"></i> Quản Lý Lịch Hẹn Sửa Chữa & Bảo Hành
+        </h4>
+        <small class="text-muted">Theo dõi lịch hẹn khách hàng tại hệ thống Trung tâm sửa chữa Điện Thoại Vui & CellphoneS Care.</small>
+    </div>
+    <a asp-area="" asp-controller="Repair" asp-action="Booking" target="_blank" class="btn btn-danger fw-bold btn-sm shadow-sm">
+        <i class="bi bi-plus-circle me-1"></i> Mở Trang Đặt Lịch Khách
+    </a>
+</div>
+
+@if (TempData["SuccessMessage"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i>@TempData["SuccessMessage"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
+<!-- THẺ THỐNG KÊ NHANH -->
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="cps-admin-card p-3 border-start border-primary border-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">Tổng lịch hẹn</span>
+                    <h4 class="m-0 fw-bold text-dark mt-1">@ViewBag.TotalBookings</h4>
+                </div>
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white shadow-sm" style="width: 44px; height: 44px; font-size: 20px;">
+                    <i class="bi bi-calendar2-week"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="cps-admin-card p-3 border-start border-secondary border-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">Chờ tiếp nhận</span>
+                    <h4 class="m-0 fw-bold text-secondary mt-1">@ViewBag.PendingCount</h4>
+                </div>
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white shadow-sm" style="width: 44px; height: 44px; font-size: 20px;">
+                    <i class="bi bi-hourglass-split"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="cps-admin-card p-3 border-start border-info border-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">Đang xử lý / Đã nhận</span>
+                    <h4 class="m-0 fw-bold text-info mt-1">@ViewBag.RepairingCount</h4>
+                </div>
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-info text-white shadow-sm" style="width: 44px; height: 44px; font-size: 20px;">
+                    <i class="bi bi-wrench"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-sm-6 col-xl-3">
+        <div class="cps-admin-card p-3 border-start border-success border-4 shadow-sm">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="text-muted small fw-semibold">Đã sửa xong & Bàn giao</span>
+                    <h4 class="m-0 fw-bold text-success mt-1">@((int)ViewBag.ReadyCount + (int)ViewBag.CompletedCount)</h4>
+                </div>
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-success text-white shadow-sm" style="width: 44px; height: 44px; font-size: 20px;">
+                    <i class="bi bi-check2-all"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- THANH LỌC TRẠNG THÁI & TÌM KIẾM -->
+<div class="cps-admin-card p-3 mb-4">
+    <div class="d-flex flex-wrap gap-2 mb-3">
+        <a asp-action="Index" asp-route-search="@currentSearch" 
+           class="btn btn-sm @(!currentStatus.HasValue ? "btn-danger fw-bold" : "btn-outline-secondary") rounded-pill">
+            Tất cả
+        </a>
+        <a asp-action="Index" asp-route-status="0" asp-route-search="@currentSearch" 
+           class="btn btn-sm @(currentStatus == WebsiteBanDienThoai.Models.RepairStatus.Pending ? "btn-secondary text-white fw-bold" : "btn-outline-secondary") rounded-pill">
+            <i class="bi bi-hourglass-split me-1"></i>Chờ tiếp nhận
+        </a>
+        <a asp-action="Index" asp-route-status="1" asp-route-search="@currentSearch" 
+           class="btn btn-sm @(currentStatus == WebsiteBanDienThoai.Models.RepairStatus.Received ? "btn-warning text-dark fw-bold" : "btn-outline-warning text-dark") rounded-pill">
+            <i class="bi bi-box-seam me-1"></i>Đã tiếp nhận máy
+        </a>
+        <a asp-action="Index" asp-route-status="2" asp-route-search="@currentSearch" 
+           class="btn btn-sm @(currentStatus == WebsiteBanDienThoai.Models.RepairStatus.Repairing ? "btn-info text-dark fw-bold" : "btn-outline-info text-dark") rounded-pill">
+            <i class="bi bi-wrench me-1"></i>Đang sửa chữa
+        </a>
+        <a asp-action="Index" asp-route-status="3" asp-route-search="@currentSearch" 
+           class="btn btn-sm @(currentStatus == WebsiteBanDienThoai.Models.RepairStatus.ReadyForPickup ? "btn-primary text-white fw-bold" : "btn-outline-primary") rounded-pill">
+            <i class="bi bi-bell-fill me-1"></i>Chờ khách nhận
+        </a>
+        <a asp-action="Index" asp-route-status="4" asp-route-search="@currentSearch" 
+           class="btn btn-sm @(currentStatus == WebsiteBanDienThoai.Models.RepairStatus.Completed ? "btn-success text-white fw-bold" : "btn-outline-success") rounded-pill">
+            <i class="bi bi-check2-all me-1"></i>Đã bàn giao
+        </a>
+        <a asp-action="Index" asp-route-status="5" asp-route-search="@currentSearch" 
+           class="btn btn-sm @(currentStatus == WebsiteBanDienThoai.Models.RepairStatus.Cancelled ? "btn-danger text-white fw-bold" : "btn-outline-danger") rounded-pill">
+            <i class="bi bi-x-circle me-1"></i>Đã hủy
+        </a>
+    </div>
+
+    <form method="get" class="row g-2 align-items-center">
+        @if (currentStatus.HasValue)
+        {
+            <input type="hidden" name="status" value="@currentStatus" />
+        }
+        <div class="col-md-9">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="search" class="form-control" placeholder="Tìm theo mã phiếu (DTV-...), tên khách hàng, số điện thoại, tên thiết bị, IMEI..." value="@currentSearch" />
+            </div>
+        </div>
+        <div class="col-md-3 d-flex gap-2">
+            <button type="submit" class="btn btn-danger btn-sm w-100 fw-bold">
+                <i class="bi bi-search me-1"></i> Lọc Dữ Liệu
+            </button>
+            @if (!string.IsNullOrEmpty(currentSearch) || currentStatus.HasValue)
+            {
+                <a asp-action="Index" class="btn btn-outline-secondary btn-sm" title="Đặt lại bộ lọc">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </a>
+            }
+        </div>
+    </form>
+</div>
+
+<!-- BẢNG DANH SÁCH LỊCH HẸN -->
+<div class="cps-admin-card overflow-hidden shadow-sm mb-4">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle small m-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã Hẹn</th>
+                    <th>Khách Hàng</th>
+                    <th>Thiết Bị</th>
+                    <th>Dịch Vụ Sửa Chữa</th>
+                    <th>Thời Gian Hẹn</th>
+                    <th>Chi Nhánh Tiếp Nhận</th>
+                    <th>Chi Phí</th>
+                    <th>Trạng Thái</th>
+                    <th class="text-end">Hành Động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="9" class="text-center py-5 text-muted">
+                            <i class="bi bi-inbox fs-2 d-block mb-2"></i>
+                            Không tìm thấy lịch hẹn sửa chữa nào phù hợp.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <td>
+                                <a asp-action="Details" asp-route-id="@r.Id" class="fw-bold text-danger font-monospace text-decoration-none">
+                                    @r.BookingCode
+                                </a>
+                                <small class="text-muted d-block" style="font-size: 11px;">@r.CreatedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">@r.CustomerName</div>
+                                <small class="text-muted font-monospace">@r.PhoneNumber</small>
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">@r.DeviceName</div>
+                                @if (!string.IsNullOrEmpty(r.SerialNumber))
+                                {
+                                    <small class="text-muted font-monospace d-block" style="font-size: 11px;">@r.SerialNumber</small>
+                                }
+                                @if (r.HasWarranty)
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 10px;">Bảo hành CellphoneS</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="fw-semibold text-dark">@r.ServiceType</div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-dark">@r.BookingDate.ToString("dd/MM/yyyy")</div>
+                                <span class="badge bg-secondary-subtle text-dark border">@r.TimeSlot</span>
+                            </td>
+                            <td>
+                                <div class="text-truncate" style="max-width: 200px;" title="@r.StoreBranch">@r.StoreBranch</div>
+                            </td>
+                            <td>
+                                <strong class="text-danger">
+                                    @(r.HasWarranty ? "0₫ (Bảo hành)" : (r.EstimatedCost > 0 ? $"{r.EstimatedCost:N0}₫" : "Khám miễn phí"))
+                                </strong>
+                            </td>
+                            <td>
+                                @switch (r.Status)
+                                {
+                                    case WebsiteBanDienThoai.Models.RepairStatus.Completed:
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle">Hoàn thành</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.RepairStatus.ReadyForPickup:
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">Chờ lấy máy</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.RepairStatus.Repairing:
+                                        <span class="badge bg-info-subtle text-info border border-info-subtle">Đang sửa</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.RepairStatus.Received:
+                                        <span class="badge bg-warning-subtle text-warning border border-warning-subtle">Đã nhận máy</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.RepairStatus.Cancelled:
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">Đã hủy</span>
+                                        break;
+                                    default:
+                                        <span class="badge bg-secondary-subtle text-secondary border">Chờ tiếp nhận</span>
+                                        break;
+                                }
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Details" asp-route-id="@r.Id" class="btn btn-sm btn-outline-danger py-1 px-2 fw-semibold">
+                                    <i class="bi bi-eye"></i> Xử lý
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <!-- PHÂN TRANG -->
+    @if (ViewBag.TotalPages > 1)
+    {
+        <div class="card-footer bg-white p-3 d-flex justify-content-between align-items-center">
+            <span class="small text-muted">Hiển thị @Model.Count() / @ViewBag.TotalItems lịch hẹn</span>
+            <ul class="pagination pagination-sm m-0">
+                @for (int p = 1; p <= ViewBag.TotalPages; p++)
+                {
+                    <li class="page-item @(p == ViewBag.CurrentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Index" asp-route-page="@p" asp-route-status="@currentStatus" asp-route-search="@currentSearch">@p</a>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>

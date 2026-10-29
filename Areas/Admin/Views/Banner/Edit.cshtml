@@ -1,0 +1,240 @@
+@model WebsiteBanDienThoai.Areas.Admin.Models.BannerFormViewModel
+@{
+    ViewData["Title"] = "Chỉnh Sửa Banner #" + Model.Banner.Id + ": " + Model.Banner.Title;
+}
+
+<form asp-action="Edit" asp-route-id="@Model.Banner.Id" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="Banner.Id" />
+
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row g-4">
+        <!-- CỘT TRÁI: THÔNG TIN BANNER & HÌNH ẢNH -->
+        <div class="col-lg-8">
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-pencil-square text-danger me-2"></i>Chỉnh Sửa Thông Tin & Đổi Ảnh Banner</h5>
+                </div>
+                <div class="cps-admin-card-body p-4">
+                    <div class="mb-3">
+                        <label asp-for="Banner.Title" class="form-label fw-bold">Tiêu đề Banner <span class="text-danger">*</span></label>
+                        <input asp-for="Banner.Title" class="form-control" required />
+                        <span asp-validation-for="Banner.Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Banner.Subtitle" class="form-label fw-bold">Phụ đề / Thông điệp khuyến mãi</label>
+                        <input asp-for="Banner.Subtitle" class="form-control" />
+                        <span asp-validation-for="Banner.Subtitle" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">Hình ảnh Banner hiện tại & Thay đổi <span class="text-danger">*</span></label>
+                        
+                        <!-- PREVIEW BOX -->
+                        <div class="card bg-light border p-3 mb-3 text-center">
+                            <span class="small text-muted mb-2 d-block">Xem trước ảnh:</span>
+                            <div style="max-height: 240px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #fff; border-radius: 8px; border: 1px dashed #cbd5e1; padding: 10px;">
+                                <img id="banner-preview" src="@Model.Banner.ImageUrl" alt="Preview" style="max-width: 100%; max-height: 220px; object-fit: contain; border-radius: 6px;" onerror="this.src='/images/banners/banner-iphone16.jpg';" />
+                            </div>
+                        </div>
+
+                        <!-- TABS CHỌN ẢNH THAY ĐỔI -->
+                        <ul class="nav nav-tabs nav-fill mb-3" id="imgSourceTabs" role="tablist">
+                            <li class="nav-item">
+                                <button class="nav-link active fw-bold" id="tab-upload-btn" data-bs-toggle="tab" data-bs-target="#source-upload" type="button">
+                                    <i class="bi bi-cloud-arrow-up-fill me-1"></i> Tải ảnh mới từ máy tính
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link fw-bold" id="tab-preset-btn" data-bs-toggle="tab" data-bs-target="#source-preset" type="button">
+                                    <i class="bi bi-grid-3x3-gap-fill me-1"></i> Chọn ảnh mẫu CellphoneS
+                                </button>
+                            </li>
+                            <li class="nav-item">
+                                <button class="nav-link fw-bold" id="tab-url-btn" data-bs-toggle="tab" data-bs-target="#source-url" type="button">
+                                    <i class="bi bi-link-45deg me-1"></i> Nhập link ảnh trực tiếp
+                                </button>
+                            </li>
+                        </ul>
+
+                        <div class="tab-content border border-top-0 rounded-bottom p-3 bg-white">
+                            <!-- Tab 1: Upload -->
+                            <div class="tab-pane fade show active" id="source-upload">
+                                <label class="form-label small fw-semibold">Chọn file ảnh mới để thay thế (.jpg, .png, .webp):</label>
+                                <input asp-for="ImageFile" type="file" id="file-uploader" class="form-control" accept="image/*" onchange="handleFileSelect(event)" />
+                                <small class="text-muted d-block mt-1">Để trống nếu muốn giữ nguyên ảnh hiện tại.</small>
+                            </div>
+
+                            <!-- Tab 2: Preset -->
+                            <div class="tab-pane fade" id="source-preset">
+                                <label class="form-label small fw-semibold mb-2">Bấm chọn một ảnh CellphoneS chuẩn kích thước:</label>
+                                <div class="row g-2">
+                                    <div class="col-4">
+                                        <div class="p-1 border border-danger border-2 rounded text-center cursor-pointer preset-card bg-danger bg-opacity-10" onclick="applyPreset('/images/banners/banner-megasale.jpg')">
+                                            <img src="/images/banners/banner-megasale.jpg" class="img-fluid rounded mb-1" style="height: 50px; width: 100%; object-fit: cover;" />
+                                            <small class="d-block text-truncate fw-bold text-danger" style="font-size: 11px;">🔥 Đại Tiệc Deal 50%</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-1 border rounded text-center cursor-pointer preset-card" onclick="applyPreset('/images/banners/banner-iphone16.jpg')">
+                                            <img src="/images/banners/banner-iphone16.jpg" class="img-fluid rounded mb-1" style="height: 50px; width: 100%; object-fit: cover;" />
+                                            <small class="d-block text-truncate fw-semibold" style="font-size: 11px;">iPhone 16 Pro Max</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-1 border rounded text-center cursor-pointer preset-card" onclick="applyPreset('/images/banners/banner-s24ultra.jpg')">
+                                            <img src="/images/banners/banner-s24ultra.jpg" class="img-fluid rounded mb-1" style="height: 50px; width: 100%; object-fit: cover;" />
+                                            <small class="d-block text-truncate fw-semibold" style="font-size: 11px;">Galaxy S24 Ultra</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-1 border rounded text-center cursor-pointer preset-card" onclick="applyPreset('/images/banners/banner-khaitruong.jpg')">
+                                            <img src="/images/banners/banner-khaitruong.jpg" class="img-fluid rounded mb-1" style="height: 50px; width: 100%; object-fit: cover;" />
+                                            <small class="d-block text-truncate fw-semibold" style="font-size: 11px;">Mừng Khai Trương</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-1 border rounded text-center cursor-pointer preset-card" onclick="applyPreset('/images/banners/banner-laptop.jpg')">
+                                            <img src="/images/banners/banner-laptop.jpg" class="img-fluid rounded mb-1" style="height: 50px; width: 100%; object-fit: cover;" />
+                                            <small class="d-block text-truncate fw-semibold" style="font-size: 11px;">Laptop HSSV</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-1 border rounded text-center cursor-pointer preset-card" onclick="applyPreset('/images/banners/banner-tradein.jpg')">
+                                            <img src="/images/banners/banner-tradein.jpg" class="img-fluid rounded mb-1" style="height: 50px; width: 100%; object-fit: cover;" />
+                                            <small class="d-block text-truncate fw-semibold" style="font-size: 11px;">Thu Cũ Đổi Mới</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="p-1 border rounded text-center cursor-pointer preset-card" onclick="applyPreset('/images/banners/banner-smember.jpg')">
+                                            <img src="/images/banners/banner-smember.jpg" class="img-fluid rounded mb-1" style="height: 50px; width: 100%; object-fit: cover;" />
+                                            <small class="d-block text-truncate fw-semibold" style="font-size: 11px;">Đặc Quyền Smember</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Tab 3: URL -->
+                            <div class="tab-pane fade" id="source-url">
+                                <label class="form-label small fw-semibold">Đường dẫn ảnh:</label>
+                                <input asp-for="Banner.ImageUrl" id="image-url-input" class="form-control" oninput="handleUrlChange(this.value)" />
+                            </div>
+                        </div>
+
+                        <span asp-validation-for="Banner.ImageUrl" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Banner.LinkUrl" class="form-label fw-bold">Liên kết chuyển hướng (Link URL)</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-white"><i class="bi bi-link-45deg"></i></span>
+                            <input asp-for="Banner.LinkUrl" id="link-url-input" class="form-control" />
+                        </div>
+                        <small class="text-muted d-block mt-2">Gợi ý đường dẫn nhanh:</small>
+                        <div class="d-flex flex-wrap gap-2 mt-1">
+                            <button type="button" class="btn btn-sm btn-outline-danger" onclick="setLinkUrl('/TradeIn')">
+                                <i class="bi bi-arrow-repeat me-1"></i> Định giá Thu cũ đổi mới (/TradeIn)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setLinkUrl('/Product/Details/1')">
+                                <i class="bi bi-phone me-1"></i> iPhone 16 Pro Max (/Product/Details/1)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setLinkUrl('/Account/Profile')">
+                                <i class="bi bi-person-badge me-1"></i> Smember VIP (/Account/Profile)
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary" onclick="setLinkUrl('/#flashsale')">
+                                <i class="bi bi-lightning-charge me-1"></i> Hot Sale Giờ Vàng (/#flashsale)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI: VỊ TRÍ & THỨ TỰ -->
+        <div class="col-lg-4">
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-sliders text-danger me-2"></i>Thiết Lập Vị Trí</h5>
+                </div>
+                <div class="cps-admin-card-body p-4">
+                    <div class="mb-3">
+                        <label asp-for="Banner.Position" class="form-label fw-bold">Vị trí hiển thị <span class="text-danger">*</span></label>
+                        <select asp-for="Banner.Position" class="form-select" required>
+                            <option value="Popup">🔥 Popup quảng cáo khi vào trang chủ (Popup Banner)</option>
+                            <option value="BigBanner">Banner to ngang trang chủ (BigBanner)</option>
+                            <option value="MainSlider">Slider chính giữa trang chủ (MainSlider)</option>
+                            <option value="RightWidget">Banner phụ bên phải (RightWidget)</option>
+                            <option value="MiddleBanner">Banner ngang giữa trang (MiddleBanner)</option>
+                        </select>
+                        <small class="text-muted d-block mt-1">
+                            - <strong>Popup quảng cáo</strong>: Kích thước khuyến nghị 800x600 hoặc 700x700 px (tự động bật popup khi khách vào trang chủ)<br />
+                            - <strong>Banner to trang chủ</strong>: Kích thước khuyến nghị 1200x250 đến 1200x350 px<br />
+                            - <strong>Slider chính</strong>: Kích thước khuyến nghị 690x300 px<br />
+                            - <strong>Banner phụ phải</strong>: Kích thước khuyến nghị 300x150 px
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Banner.DisplayOrder" class="form-label fw-bold">Thứ tự hiển thị</label>
+                        <input asp-for="Banner.DisplayOrder" type="number" class="form-control" />
+                        <small class="text-muted">Số càng nhỏ sẽ xuất hiện trước (1, 2, 3...)</small>
+                    </div>
+
+                    <div class="form-check form-switch mb-4">
+                        <input asp-for="Banner.IsActive" class="form-check-input" type="checkbox" id="isActiveCheck" />
+                        <label class="form-check-label fw-bold" for="isActiveCheck">Kích hoạt hiển thị</label>
+                    </div>
+
+                    <hr />
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger btn-lg fw-bold">
+                            <i class="bi bi-check-circle me-1"></i> Lưu Cập Nhật Banner
+                        </button>
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('banner-preview').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function applyPreset(url) {
+            document.getElementById('banner-preview').src = url;
+            document.getElementById('image-url-input').value = url;
+            document.getElementById('file-uploader').value = '';
+            
+            // Switch to URL tab so form submits the imageUrl
+            var triggerEl = document.querySelector('#tab-url-btn');
+            var tab = new bootstrap.Tab(triggerEl);
+            tab.show();
+        }
+
+        function handleUrlChange(val) {
+            if (val && val.trim() !== '') {
+                document.getElementById('banner-preview').src = val.trim();
+            }
+        }
+
+        function setLinkUrl(url) {
+            document.getElementById('link-url-input').value = url;
+        }
+    </script>
+}

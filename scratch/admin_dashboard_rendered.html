@@ -1,0 +1,2093 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>B&#x1EA3;ng &#x110;i&#x1EC1;u Khi&#x1EC3;n &amp; Th&#x1ED1;ng K&#xEA; - CellphoneS Admin Enterprise Portal</title>
+
+    <!-- Google Fonts Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap 5.3.3 & Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --cps-red: #D70018;
+            --cps-red-gradient: linear-gradient(135deg, #e51028 0%, #b30014 100%);
+            --cps-red-subtle: rgba(215, 0, 24, 0.1);
+            --cps-sidebar-bg: #0f172a;
+            --cps-sidebar-hover: rgba(255, 255, 255, 0.06);
+            --cps-sidebar-border: rgba(255, 255, 255, 0.08);
+            --cps-bg-surface: #f8fafc;
+            --cps-border-color: #e2e8f0;
+            --cps-text-main: #1e293b;
+            --cps-text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--cps-bg-surface);
+            color: var(--cps-text-main);
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Layout Structure */
+        .cps-admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+            width: 100%;
+        }
+
+        /* ========================================================
+           1. MODERN ENTERPRISE SIDEBAR
+           ======================================================== */
+        .cps-admin-sidebar {
+            width: 270px;
+            background: var(--cps-sidebar-bg);
+            color: #f1f5f9;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            position: sticky;
+            top: 0;
+            height: 100vh;
+            z-index: 1040;
+            border-right: 1px solid var(--cps-sidebar-border);
+            transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 4px 0 24px rgba(0, 0, 0, 0.12);
+        }
+
+        /* Sidebar Brand Header */
+        .cps-admin-brand {
+            padding: 18px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid var(--cps-sidebar-border);
+            text-decoration: none;
+            color: #fff;
+            background: rgba(15, 23, 42, 0.95);
+            transition: padding 0.25s ease;
+        }
+
+        .cps-admin-brand-icon {
+            background: var(--cps-red-gradient);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 800;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(215, 0, 24, 0.45);
+            flex-shrink: 0;
+            letter-spacing: -0.5px;
+        }
+
+        .cps-admin-brand-text {
+            line-height: 1.25;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .cps-admin-brand-title {
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cps-admin-brand-badge {
+            font-size: 9px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(215, 0, 24, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(215, 0, 24, 0.4);
+            letter-spacing: 0.5px;
+        }
+
+        .cps-admin-status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 2px;
+            font-weight: 500;
+        }
+
+        .cps-status-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+            display: inline-block;
+            animation: pulse-dot 2s infinite;
+        }
+
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.15); }
+        }
+
+        /* Sidebar Quick Search */
+        .cps-admin-search-box {
+            padding: 12px 16px 6px 16px;
+        }
+
+        .cps-sidebar-search-input {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #f8fafc;
+            padding: 7px 12px 7px 34px;
+            border-radius: 8px;
+            font-size: 12.5px;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .cps-sidebar-search-input:focus {
+            background: rgba(255, 255, 255, 0.09);
+            border-color: rgba(215, 0, 24, 0.6);
+            box-shadow: 0 0 0 2px rgba(215, 0, 24, 0.2);
+        }
+
+        .cps-sidebar-search-input::placeholder {
+            color: #64748b;
+        }
+
+        .cps-sidebar-search-wrapper {
+            position: relative;
+        }
+
+        .cps-sidebar-search-icon {
+            position: absolute;
+            left: 11px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 13px;
+            pointer-events: none;
+        }
+
+        /* Scrollable Nav Menu */
+        .cps-admin-nav-scroll {
+            flex-grow: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 10px 14px 20px 14px;
+        }
+
+        .cps-admin-nav-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .cps-admin-nav-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .cps-admin-nav-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+
+        .cps-admin-nav-scroll::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        /* Navigation Groups / Categories */
+        .cps-nav-group {
+            margin-bottom: 16px;
+        }
+
+        .cps-nav-group-title {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: #64748b;
+            padding: 8px 10px 4px 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .cps-nav-group-title i {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        .cps-nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .cps-admin-nav-item {
+            position: relative;
+        }
+
+        .cps-admin-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 9px 12px;
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 13.5px;
+            font-weight: 500;
+            border-radius: 9px;
+            transition: all 0.18s ease-in-out;
+            position: relative;
+        }
+
+        .cps-nav-icon {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            flex-shrink: 0;
+            color: #94a3b8;
+            transition: all 0.18s ease-in-out;
+        }
+
+        .cps-nav-label {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cps-admin-nav-link:hover {
+            color: #ffffff;
+            background: var(--cps-sidebar-hover);
+            transform: translateX(3px);
+        }
+
+        .cps-admin-nav-link:hover .cps-nav-icon {
+            color: #ffffff;
+        }
+
+        /* Active State */
+        .cps-admin-nav-link.active {
+            background: var(--cps-red-gradient);
+            color: #ffffff;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(215, 0, 24, 0.38);
+        }
+
+        .cps-admin-nav-link.active .cps-nav-icon {
+            color: #ffffff;
+        }
+
+        .cps-admin-nav-link.active::after {
+            content: '';
+            position: absolute;
+            right: 10px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #ffffff;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.8);
+        }
+
+        .cps-nav-pill-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 12px;
+            margin-left: auto;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
+        }
+
+        .cps-badge-accent {
+            background: rgba(215, 0, 24, 0.25);
+            color: #ff8585;
+            border: 1px solid rgba(215, 0, 24, 0.4);
+        }
+
+        .cps-badge-blue {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+        }
+
+        .cps-badge-emerald {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            border: 1px solid rgba(16, 185, 129, 0.4);
+        }
+
+        /* External Storefront Link */
+        .cps-storefront-link {
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.12) 0%, rgba(249, 115, 22, 0.12) 100%);
+            border: 1px dashed rgba(234, 179, 8, 0.4);
+            color: #fde047 !important;
+            margin-top: 6px;
+        }
+
+        .cps-storefront-link:hover {
+            background: linear-gradient(135deg, rgba(234, 179, 8, 0.2) 0%, rgba(249, 115, 22, 0.2) 100%) !important;
+            color: #fff !important;
+            transform: translateX(3px);
+            border-color: rgba(234, 179, 8, 0.6);
+        }
+
+        /* Sidebar Footer / User Profile */
+        .cps-admin-sidebar-footer {
+            padding: 14px 16px;
+            border-top: 1px solid var(--cps-sidebar-border);
+            background: rgba(15, 23, 42, 0.98);
+        }
+
+        .cps-admin-user-card {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+        .cps-admin-user-card:hover {
+            background: rgba(255, 255, 255, 0.07);
+        }
+
+        .cps-admin-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+            flex-shrink: 0;
+        }
+
+        .cps-admin-user-name {
+            font-size: 13px;
+            font-weight: 700;
+            color: #ffffff;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cps-admin-user-role {
+            font-size: 10.5px;
+            color: #94a3b8;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .cps-logout-btn {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .cps-logout-btn:hover {
+            background: #ef4444;
+            color: #fff;
+            transform: scale(1.05);
+        }
+
+        /* ========================================================
+           2. SIDEBAR COLLAPSED (MINI-SIDEBAR) MODE
+           ======================================================== */
+        body.sidebar-collapsed .cps-admin-sidebar {
+            width: 72px !important;
+        }
+
+        /* Brand icon centered */
+        body.sidebar-collapsed .cps-admin-brand {
+            padding: 16px 0 !important;
+            justify-content: center !important;
+        }
+        body.sidebar-collapsed .cps-admin-brand-icon {
+            margin: 0 auto !important;
+        }
+        body.sidebar-collapsed .cps-admin-brand-text {
+            display: none !important;
+        }
+
+        /* Hide search box */
+        body.sidebar-collapsed .cps-admin-search-box {
+            display: none !important;
+        }
+
+        /* Navigation menu scroll */
+        body.sidebar-collapsed .cps-admin-nav-scroll {
+            padding: 10px 8px !important;
+        }
+
+        /* Group title hidden, domain separated by clean divider */
+        body.sidebar-collapsed .cps-nav-group-title {
+            display: none !important;
+        }
+        body.sidebar-collapsed .cps-nav-group {
+            margin-bottom: 8px !important;
+            padding-bottom: 8px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+        body.sidebar-collapsed .cps-nav-group:last-child {
+            border-bottom: none !important;
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
+        }
+
+        /* Links: square icon buttons */
+        body.sidebar-collapsed .cps-admin-nav-link {
+            width: 44px !important;
+            height: 44px !important;
+            padding: 0 !important;
+            margin: 0 auto 4px auto !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border-radius: 10px !important;
+            transform: none !important;
+            position: relative !important;
+        }
+
+        /* Hide text labels and pill badges */
+        body.sidebar-collapsed .cps-nav-label,
+        body.sidebar-collapsed .cps-nav-pill-badge,
+        body.sidebar-collapsed .cps-storefront-link i.bi-box-arrow-up-right {
+            display: none !important;
+        }
+
+        /* Keep icon fully visible, centered & sharp */
+        body.sidebar-collapsed .cps-nav-icon {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            font-size: 19px !important;
+            color: #94a3b8;
+        }
+        body.sidebar-collapsed .cps-nav-icon i {
+            font-size: 19px !important;
+            line-height: 1 !important;
+        }
+        body.sidebar-collapsed .cps-admin-nav-link:hover .cps-nav-icon {
+            color: #ffffff !important;
+        }
+        body.sidebar-collapsed .cps-admin-nav-link.active .cps-nav-icon {
+            color: #ffffff !important;
+        }
+
+        /* Active indicator */
+        body.sidebar-collapsed .cps-admin-nav-link.active {
+            background: var(--cps-red-gradient) !important;
+            box-shadow: 0 4px 14px rgba(215, 0, 24, 0.45) !important;
+        }
+        body.sidebar-collapsed .cps-admin-nav-link.active::after {
+            display: none !important;
+        }
+
+        /* Storefront link in collapsed mode */
+        body.sidebar-collapsed .cps-storefront-link {
+            width: 44px !important;
+            height: 44px !important;
+            padding: 0 !important;
+            margin: 4px auto 0 auto !important;
+            justify-content: center !important;
+        }
+        body.sidebar-collapsed .cps-storefront-link .cps-nav-icon {
+            color: #fde047 !important;
+        }
+
+        /* Floating Tooltip on Hover in Collapsed Mode */
+        body.sidebar-collapsed .cps-admin-nav-link:hover::before {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: calc(100% + 14px);
+            top: 50%;
+            transform: translateY(-50%);
+            background: #1e293b;
+            color: #ffffff;
+            font-size: 12.5px;
+            font-weight: 600;
+            white-space: nowrap;
+            padding: 7px 12px;
+            border-radius: 8px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 1;
+        }
+
+        body.sidebar-collapsed .cps-admin-nav-link:hover::after {
+            content: '' !important;
+            position: absolute !important;
+            left: calc(100% + 8px) !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            width: 0 !important;
+            height: 0 !important;
+            border-width: 6px 6px 6px 0 !important;
+            border-style: solid !important;
+            border-color: transparent #1e293b transparent transparent !important;
+            background: transparent !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            z-index: 9999 !important;
+            pointer-events: none !important;
+            display: block !important;
+        }
+
+        /* Footer in Collapsed Mode */
+        body.sidebar-collapsed .cps-admin-sidebar-footer {
+            padding: 14px 0 !important;
+            display: flex !important;
+            justify-content: center !important;
+        }
+        body.sidebar-collapsed .cps-admin-user-card {
+            background: transparent !important;
+            border: none !important;
+            padding: 0 !important;
+            margin: 0 auto !important;
+            justify-content: center !important;
+            width: auto !important;
+        }
+        body.sidebar-collapsed .cps-admin-avatar {
+            width: 40px !important;
+            height: 40px !important;
+            margin: 0 auto !important;
+        }
+        body.sidebar-collapsed .cps-admin-user-info,
+        body.sidebar-collapsed .cps-logout-btn {
+            display: none !important;
+        }
+
+        /* ========================================================
+           3. MAIN WORKSPACE AREA & TOPBAR
+           ======================================================== */
+        .cps-admin-main {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            background-color: var(--cps-bg-surface);
+        }
+
+        /* Top Header */
+        .cps-admin-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            height: 64px;
+            border-bottom: 1px solid var(--cps-border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 28px;
+            position: sticky;
+            top: 0;
+            z-index: 1020;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+        }
+
+        .cps-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .cps-sidebar-toggle-btn {
+            background: transparent;
+            border: 1px solid var(--cps-border-color);
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--cps-text-main);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cps-sidebar-toggle-btn:hover {
+            background: #f1f5f9;
+            color: var(--cps-red);
+        }
+
+        .cps-breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-size: 13px;
+        }
+
+        .cps-breadcrumb-item {
+            color: var(--cps-text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cps-breadcrumb-item a {
+            color: var(--cps-text-muted);
+            text-decoration: none;
+            transition: color 0.15s;
+        }
+
+        .cps-breadcrumb-item a:hover {
+            color: var(--cps-red);
+        }
+
+        .cps-breadcrumb-item.active {
+            color: var(--cps-text-main);
+            font-weight: 700;
+        }
+
+        .cps-topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* Action Buttons */
+        .btn-cps-quickadd {
+            background: var(--cps-red-gradient);
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 10px rgba(215, 0, 24, 0.25);
+            text-decoration: none;
+        }
+
+        .btn-cps-quickadd:hover {
+            background: linear-gradient(135deg, #c40016 0%, #9e0012 100%);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 14px rgba(215, 0, 24, 0.35);
+        }
+
+        .btn-cps-store-preview {
+            background: #fff;
+            border: 1px solid var(--cps-border-color);
+            color: var(--cps-text-main);
+            font-weight: 600;
+            font-size: 13px;
+            padding: 7px 14px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-cps-store-preview:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: var(--cps-red);
+        }
+
+        /* Content Canvas */
+        .cps-admin-content {
+            padding: 28px;
+            flex-grow: 1;
+        }
+
+        /* Cards & Tables */
+        .cps-admin-card {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid var(--cps-border-color);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.025);
+            margin-bottom: 24px;
+            overflow: hidden;
+            transition: box-shadow 0.2s ease;
+        }
+
+        .cps-admin-card:hover {
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.045);
+        }
+
+        .cps-admin-card-header {
+            padding: 16px 22px;
+            border-bottom: 1px solid var(--cps-border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #ffffff;
+        }
+
+        .cps-admin-card-header h5 {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--cps-text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cps-admin-card-body {
+            padding: 22px;
+        }
+
+        /* Stat KPI Card */
+        .cps-kpi-card {
+            background: #ffffff;
+            border-radius: 14px;
+            border: 1px solid var(--cps-border-color);
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.025);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cps-kpi-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+        }
+
+        .cps-kpi-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .cps-kpi-card:hover .cps-kpi-icon {
+            transform: scale(1.08);
+        }
+
+        .cps-kpi-icon.revenue { 
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%); 
+            color: #dc2626; 
+        }
+        .cps-kpi-icon.orders { 
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%); 
+            color: #2563eb; 
+        }
+        .cps-kpi-icon.products { 
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%); 
+            color: #16a34a; 
+        }
+        .cps-kpi-icon.alert { 
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); 
+            color: #d97706; 
+        }
+        .cps-kpi-icon.customers {
+            background: linear-gradient(135deg, #f3e8ff 0%, #e9d5ff 100%);
+            color: #9333ea;
+        }
+        .cps-kpi-icon.services {
+            background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
+            color: #0891b2;
+        }
+
+        .cps-kpi-info h4 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--cps-text-main);
+            letter-spacing: -0.5px;
+        }
+
+        .cps-kpi-info span {
+            font-size: 13px;
+            color: var(--cps-text-muted);
+            font-weight: 500;
+        }
+
+        /* Buttons & Forms */
+        .btn-cps-admin {
+            background: var(--cps-red-gradient);
+            color: #fff;
+            border: none;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .btn-cps-admin:hover {
+            background: linear-gradient(135deg, #c40016 0%, #9e0012 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(215, 0, 24, 0.35);
+        }
+
+        .table-cps th {
+            background-color: #f8fafc;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #475569;
+            font-weight: 700;
+            padding: 12px 16px;
+            border-bottom: 2px solid var(--cps-border-color);
+        }
+
+        .table-cps td {
+            font-size: 13px;
+            padding: 14px 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--cps-border-color);
+        }
+
+        /* Responsive Mobile Drawer */
+        @media (max-width: 991.98px) {
+            .cps-admin-sidebar {
+                position: fixed;
+                left: -280px;
+                box-shadow: none;
+            }
+            body.sidebar-mobile-open .cps-admin-sidebar {
+                left: 0;
+                box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+            }
+            .cps-sidebar-backdrop {
+                display: none;
+                position: fixed;
+                inset: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: 1030;
+                backdrop-filter: blur(2px);
+            }
+            body.sidebar-mobile-open .cps-sidebar-backdrop {
+                display: block;
+            }
+            .cps-admin-header {
+                padding: 0 16px;
+            }
+            .cps-admin-content {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="cps-admin-wrapper">
+        <!-- Backdrop for mobile -->
+        <div class="cps-sidebar-backdrop" id="sidebarBackdrop"></div>
+
+        <!-- ========================================================
+             1. MODERN SIDEBAR - ORGANIZED BY BUSINESS DOMAINS
+             ======================================================== -->
+        <aside class="cps-admin-sidebar" id="adminSidebar">
+            <!-- Brand Logo & System Status -->
+            <a href="/Admin/Dashboard" class="cps-admin-brand">
+                <div class="cps-admin-brand-icon">S</div>
+                <div class="cps-admin-brand-text">
+                    <div class="cps-admin-brand-title">
+                        CellphoneS
+                        <span class="cps-admin-brand-badge">ENTERPRISE</span>
+                    </div>
+                    <div class="cps-admin-status-indicator">
+                        <span class="cps-status-dot"></span>
+                        <span>Quản Trị Hệ Thống v3.0</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Quick Filter in Sidebar -->
+            <div class="cps-admin-search-box">
+                <div class="cps-sidebar-search-wrapper">
+                    <i class="bi bi-search cps-sidebar-search-icon"></i>
+                    <input type="text" id="sidebarMenuFilter" class="cps-sidebar-search-input" placeholder="Tìm nghiệp vụ (Ctrl+K)..." autocomplete="off" />
+                </div>
+            </div>
+
+            <!-- Scrollable Nav List Grouped by Business Functions -->
+            <div class="cps-admin-nav-scroll" id="sidebarNavScroll">
+
+                <!-- DOMAIN 1: TỔNG QUAN & PHÂN TÍCH -->
+                <div class="cps-nav-group" data-nav-group="overview">
+                    <div class="cps-nav-group-title">
+                        <span>Tổng Quan & Phân Tích</span>
+                        <i class="bi bi-speedometer2"></i>
+                    </div>
+                    <ul class="cps-nav-list">
+                        <li class="cps-admin-nav-item" data-keywords="dashboard tong quan thong ke kpi">
+                            <a class="cps-admin-nav-link active" data-tooltip="Tổng Quan Dashboard" href="/Admin">
+                                <span class="cps-nav-icon"><i class="bi bi-grid-1x2-fill"></i></span>
+                                <span class="cps-nav-label">Tổng Quan Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="cps-admin-nav-item" data-keywords="bao cao doanh thu tai chinh tien lai revenue report">
+                            <a class="cps-admin-nav-link " data-tooltip="Báo Cáo Doanh Thu" href="/Admin/RevenueReport">
+                                <span class="cps-nav-icon"><i class="bi bi-graph-up-arrow"></i></span>
+                                <span class="cps-nav-label">Báo Cáo Doanh Thu</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- DOMAIN 2: BÁN HÀNG & GIAO DỊCH -->
+                <div class="cps-nav-group" data-nav-group="sales">
+                    <div class="cps-nav-group-title">
+                        <span>Bán Hàng & Giao Dịch</span>
+                        <i class="bi bi-cart3"></i>
+                    </div>
+                    <ul class="cps-nav-list">
+                        <li class="cps-admin-nav-item" data-keywords="don hang hoa don van chuyen giao hang order">
+                            <a class="cps-admin-nav-link " data-tooltip="Quản Lý Đơn Hàng" href="/Admin/Order">
+                                <span class="cps-nav-icon"><i class="bi bi-receipt-cutoff"></i></span>
+                                <span class="cps-nav-label">Quản Lý Đơn Hàng</span>
+                                <span class="cps-nav-pill-badge cps-badge-accent">Orders</span>
+                            </a>
+                        </li>
+                        <li class="cps-admin-nav-item" data-keywords="ma giam gia coupon voucher khuyen mai discount code">
+                            <a class="cps-admin-nav-link " data-tooltip="Mã Giảm Giá & Voucher" href="/Admin/Coupon">
+                                <span class="cps-nav-icon"><i class="bi bi-ticket-perforated-fill"></i></span>
+                                <span class="cps-nav-label">Mã Giảm Giá & Voucher</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- DOMAIN 3: SẢN PHẨM & KHO BÃI -->
+                <div class="cps-nav-group" data-nav-group="inventory">
+                    <div class="cps-nav-group-title">
+                        <span>Kho Hàng & Sản Phẩm</span>
+                        <i class="bi bi-boxes"></i>
+                    </div>
+                    <ul class="cps-nav-list">
+                        <li class="cps-admin-nav-item" data-keywords="san pham dien thoai phu kien product category brand">
+                            <a class="cps-admin-nav-link " data-tooltip="Quản Lý Sản Phẩm" href="/Admin/Product">
+                                <span class="cps-nav-icon"><i class="bi bi-box-seam-fill"></i></span>
+                                <span class="cps-nav-label">Quản Lý Sản Phẩm</span>
+                            </a>
+                        </li>
+                        <li class="cps-admin-nav-item" data-keywords="kho hang nhap kho phieu nhap ton kho warehouse inventory">
+                            <a class="cps-admin-nav-link " data-tooltip="Kho Hàng & Nhập Kho" href="/Admin/Warehouse">
+                                <span class="cps-nav-icon"><i class="bi bi-building-fill-check"></i></span>
+                                <span class="cps-nav-label">Kho Hàng & Nhập Kho</span>
+                                <span class="cps-nav-pill-badge cps-badge-blue">Stock</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- DOMAIN 4: DỊCH VỤ & BẢO HÀNH (CELLPHONES CARE) -->
+                <div class="cps-nav-group" data-nav-group="care">
+                    <div class="cps-nav-group-title">
+                        <span>Dịch Vụ & Hậu Mãi</span>
+                        <i class="bi bi-shield-shaded"></i>
+                    </div>
+                    <ul class="cps-nav-list">
+                        <li class="cps-admin-nav-item" data-keywords="bao hanh phieu bao hanh imei warranty">
+                            <a class="cps-admin-nav-link " data-tooltip="Phiếu Bảo Hành" href="/Admin/Warranty">
+                                <span class="cps-nav-icon"><i class="bi bi-shield-check"></i></span>
+                                <span class="cps-nav-label">Phiếu Bảo Hành</span>
+                                <span class="cps-nav-pill-badge cps-badge-emerald">IMEI</span>
+                            </a>
+                        </li>
+                        <li class="cps-admin-nav-item" data-keywords="sua chua lich hen dien thoai vui repair booking">
+                            <a class="cps-admin-nav-link " data-tooltip="Đặt Lịch Sửa Chữa" href="/Admin/Repair">
+                                <span class="cps-nav-icon"><i class="bi bi-wrench-adjustable-circle-fill"></i></span>
+                                <span class="cps-nav-label">Đặt Lịch Sửa Chữa</span>
+                            </a>
+                        </li>
+                        <li class="cps-admin-nav-item" data-keywords="thu cu doi moi tro gia len doi trade in">
+                            <a class="cps-admin-nav-link " data-tooltip="Thu Cũ Đổi Mới" href="/Admin/TradeIn">
+                                <span class="cps-nav-icon"><i class="bi bi-arrow-repeat"></i></span>
+                                <span class="cps-nav-label">Thu Cũ Đổi Mới</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- DOMAIN 5: KHÁCH HÀNG & TIẾP THỊ (CRM & MARKETING) -->
+                <div class="cps-nav-group" data-nav-group="marketing">
+                    <div class="cps-nav-group-title">
+                        <span>Khách Hàng & Tiếp Thị</span>
+                        <i class="bi bi-megaphone-fill"></i>
+                    </div>
+                    <ul class="cps-nav-list">
+                        <li class="cps-admin-nav-item" data-keywords="khach hang smember user thanh vien customer crm">
+                            <a class="cps-admin-nav-link " data-tooltip="Quản Lý Khách Hàng" href="/Admin/Customer">
+                                <span class="cps-nav-icon"><i class="bi bi-people-fill"></i></span>
+                                <span class="cps-nav-label">Quản Lý Khách Hàng</span>
+                            </a>
+                        </li>
+                        <li class="cps-admin-nav-item" data-keywords="banner slider quang cao hinh anh banner">
+                            <a class="cps-admin-nav-link " data-tooltip="Quản Lý Banner" href="/Admin/Banner">
+                                <span class="cps-nav-icon"><i class="bi bi-images"></i></span>
+                                <span class="cps-nav-label">Quản Lý Banner</span>
+                            </a>
+                        </li>
+                        <li class="cps-admin-nav-item" data-keywords="tin tuc bai viet cong nghe sforum news article">
+                            <a class="cps-admin-nav-link " data-tooltip="Quản Lý Tin Tức" href="/Admin/News">
+                                <span class="cps-nav-icon"><i class="bi bi-newspaper"></i></span>
+                                <span class="cps-nav-label">Quản Lý Tin Tức</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- DOMAIN 6: LIÊN KẾT NHANH WEBSITE -->
+                <div class="cps-nav-group" data-nav-group="external">
+                    <div class="cps-nav-group-title">
+                        <span>Cửa Hàng Trực Tuyến</span>
+                        <i class="bi bi-shop"></i>
+                    </div>
+                    <ul class="cps-nav-list">
+                        <li class="cps-admin-nav-item" data-keywords="xem trang web trang chu cua hang storefront">
+                            <a href="/" target="_blank" class="cps-admin-nav-link cps-storefront-link" data-tooltip="Xem Trang Bán Hàng">
+                                <span class="cps-nav-icon"><i class="bi bi-shop-window"></i></span>
+                                <span class="cps-nav-label fw-semibold">Xem Trang Bán Hàng</span>
+                                <i class="bi bi-box-arrow-up-right ms-auto" style="font-size: 11px;"></i>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+
+            <!-- Modern Sidebar Footer Profile -->
+            <div class="cps-admin-sidebar-footer">
+                <div class="cps-admin-user-card" title="Qu&#x1EA3;n Tr&#x1ECB; Vi&#xEA;n CellphoneS">
+                    <div class="cps-admin-avatar">
+                        QU
+                    </div>
+                    <div class="cps-admin-user-info overflow-hidden flex-grow-1">
+                        <div class="cps-admin-user-name" title="Qu&#x1EA3;n Tr&#x1ECB; Vi&#xEA;n CellphoneS">
+                            Qu&#x1EA3;n Tr&#x1ECB; Vi&#xEA;n CellphoneS
+                        </div>
+                        <div class="cps-admin-user-role">
+                            <span class="badge bg-danger bg-opacity-25 text-danger border border-danger border-opacity-25 py-0 px-1" style="font-size: 9px;">ADMIN</span>
+                            <span class="text-secondary text-truncate" style="font-size: 11px;">admin@cellphones.com.vn</span>
+                        </div>
+                    </div>
+                    <a class="cps-logout-btn" title="Đăng xuất khỏi hệ thống" id="sidebarLogoutBtn" href="/Account/Logout">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ========================================================
+             3. MAIN WORKSPACE CONTENT & TOPBAR
+             ======================================================== -->
+        <div class="cps-admin-main">
+            <!-- Modern Topbar -->
+            <header class="cps-admin-header">
+                <div class="cps-topbar-left">
+                    <button type="button" class="cps-sidebar-toggle-btn" id="sidebarToggle" title="Thu gọn / Mở rộng Menu">
+                        <i class="bi bi-list fs-5"></i>
+                    </button>
+                    <nav aria-label="breadcrumb">
+                        <ol class="cps-breadcrumb">
+                            <li class="cps-breadcrumb-item">
+                                <a href="/Admin/Dashboard"><i class="bi bi-house-door-fill"></i></a>
+                            </li>
+                            <li class="cps-breadcrumb-item">
+                                <span class="text-muted">/</span>
+                                <a href="/Admin/Dashboard">Admin</a>
+                            </li>
+                            <li class="cps-breadcrumb-item active" aria-current="page">
+                                <span class="text-muted">/</span>
+                                <span>B&#x1EA3;ng &#x110;i&#x1EC1;u Khi&#x1EC3;n &amp; Th&#x1ED1;ng K&#xEA;</span>
+                            </li>
+                        </ol>
+                    </nav>
+                </div>
+
+                <div class="cps-topbar-right">
+                    <!-- Quick Storefront Button -->
+                    <a href="/" target="_blank" class="btn-cps-store-preview d-none d-md-inline-flex" title="Mở trang chủ bán hàng khách hàng">
+                        <span class="cps-status-dot me-1"></span>
+                        <span>Trang Bán Hàng</span>
+                        <i class="bi bi-box-arrow-up-right ms-1 text-muted" style="font-size: 11px;"></i>
+                    </a>
+
+                    <!-- Quick Action "+ Thêm Mới" Dropdown -->
+                    <div class="dropdown">
+                        <button class="btn-cps-quickadd dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-plus-circle-fill"></i>
+                            <span class="d-none d-sm-inline">Tạo Mới Nhanh</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2 py-2" style="min-width: 210px; font-size: 13.5px;">
+                            <li class="dropdown-header text-uppercase fw-bold text-muted" style="font-size: 10.5px; letter-spacing: 0.5px;">Tác Vụ Quản Trị</li>
+                            <li>
+                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="/Admin/Product/Create">
+                                    <i class="bi bi-phone-fill text-danger"></i>
+                                    <span>Thêm Sản Phẩm Mới</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="/Admin/Warehouse/CreateReceipt">
+                                    <i class="bi bi-building-fill-add text-primary"></i>
+                                    <span>Tạo Phiếu Nhập Kho</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="/Admin/Coupon/Create">
+                                    <i class="bi bi-ticket-perforated-fill text-warning"></i>
+                                    <span>Tạo Mã Giảm Giá</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="/Admin/News/Create">
+                                    <i class="bi bi-newspaper text-info"></i>
+                                    <span>Đăng Bản Tin Sforum</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2 d-flex align-items-center gap-2" href="/Admin/Banner/Create">
+                                    <i class="bi bi-images text-success"></i>
+                                    <span>Thêm Banner Quảng Cáo</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- User Account Dropdown -->
+                    <div class="dropdown ms-1">
+                        <button class="btn p-0 border-0 d-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <div class="cps-admin-avatar" style="width: 36px; height: 36px; font-size: 13px;">
+                                QU
+                            </div>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg border-0 rounded-3 mt-2 py-2" style="min-width: 200px; font-size: 13.5px;">
+                            <li class="px-3 py-2 border-bottom">
+                                <div class="fw-bold text-dark">Qu&#x1EA3;n Tr&#x1ECB; Vi&#xEA;n CellphoneS</div>
+                                <div class="text-muted small">admin@cellphones.com.vn</div>
+                            </li>
+                            <li>
+                                <a class="dropdown-item py-2 d-flex align-items-center gap-2 text-danger mt-1" href="/Account/Logout">
+                                    <i class="bi bi-box-arrow-right"></i>
+                                    <span>Đăng Xuất</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Body Content Area -->
+            <main class="cps-admin-content">
+
+
+                
+<style>
+    /* Executive Welcome Banner */
+    .cps-dashboard-hero {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border-radius: 16px;
+        padding: 24px 28px;
+        color: #ffffff;
+        margin-bottom: 24px;
+        position: relative;
+        overflow: hidden;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+    }
+
+    .cps-dashboard-hero::after {
+        content: '';
+        position: absolute;
+        right: -40px;
+        top: -40px;
+        width: 240px;
+        height: 240px;
+        background: radial-gradient(circle, rgba(215, 0, 24, 0.25) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .cps-hero-title {
+        font-size: 20px;
+        font-weight: 800;
+        margin: 0 0 6px 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cps-hero-desc {
+        color: #94a3b8;
+        font-size: 13.5px;
+        margin: 0;
+        max-width: 750px;
+        line-height: 1.5;
+    }
+
+    .cps-hero-badge {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #f1f5f9;
+        font-size: 11.5px;
+        padding: 6px 12px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    /* Shortcut Card */
+    .cps-shortcut-card {
+        background: #ffffff;
+        border: 1px solid var(--cps-border-color);
+        border-radius: 12px;
+        padding: 14px 16px;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        text-decoration: none;
+        color: var(--cps-text-main);
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    }
+
+    .cps-shortcut-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+        border-color: rgba(215, 0, 24, 0.3);
+        color: var(--cps-red);
+    }
+
+    .cps-shortcut-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        flex-shrink: 0;
+    }
+
+    .cps-shortcut-title {
+        font-size: 13.5px;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1.25;
+    }
+
+    .cps-shortcut-sub {
+        font-size: 11.5px;
+        color: var(--cps-text-muted);
+        margin-top: 2px;
+    }
+
+    /* Rank Badge for Top Products */
+    .cps-rank-badge {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+    .cps-rank-1 { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+    .cps-rank-2 { background: #f1f5f9; color: #475569; border: 1px solid #e2e8f0; }
+    .cps-rank-3 { background: #ffedd5; color: #c2410c; border: 1px solid #fed7aa; }
+    .cps-rank-other { background: #f8fafc; color: #94a3b8; }
+</style>
+
+<!-- 1. EXECUTIVE WELCOME BANNER -->
+<div class="cps-dashboard-hero">
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3">
+        <div>
+            <h4 class="cps-hero-title">
+                <span>Trung Tâm Quản Trị CellphoneS Enterprise</span>
+                <span class="badge bg-danger text-white py-1 px-2" style="font-size: 10px; letter-spacing: 0.5px;">LIVE</span>
+            </h4>
+            <p class="cps-hero-desc">
+                Xin chào <strong>Qu&#x1EA3;n Tr&#x1ECB; Vi&#xEA;n CellphoneS</strong> 👋 — Hệ thống đang vận hành theo thời gian thực.
+                Hôm nay ghi nhận <strong>7 đơn hàng</strong>, doanh thu <strong>115.460.000₫</strong>, 
+                và có <strong>1 đơn hàng mới</strong> cần phê duyệt xử lý.
+            </p>
+        </div>
+        <div class="d-flex align-items-center gap-2 flex-shrink-0">
+            <span class="cps-hero-badge">
+                <i class="bi bi-clock-history text-warning"></i>
+                <span>Cập nhật: 28/10/2026 11:03</span>
+            </span>
+        </div>
+    </div>
+</div>
+
+<!-- 2. MAIN 4 KPI CARDS -->
+<div class="row g-3 mb-4">
+    <!-- KPI 1: Doanh Thu -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="cps-kpi-card">
+            <div class="cps-kpi-icon revenue">
+                <i class="bi bi-wallet2"></i>
+            </div>
+            <div class="cps-kpi-info overflow-hidden">
+                <h4>115.460.000₫</h4>
+                <span>Tổng Doanh Thu</span>
+                <div class="d-flex align-items-center gap-1 mt-1">
+                    <span class="badge bg-success bg-opacity-10 text-success fw-bold" style="font-size: 11px;">
+                        <i class="bi bi-arrow-up-right"></i> Tăng trưởng tốt
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI 2: Đơn Hàng -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="cps-kpi-card">
+            <div class="cps-kpi-icon orders">
+                <i class="bi bi-bag-check-fill"></i>
+            </div>
+            <div class="cps-kpi-info overflow-hidden">
+                <h4>7</h4>
+                <span>Tổng Đơn Bán Ra</span>
+                <div class="d-flex align-items-center gap-1 mt-1">
+                    <a class="badge bg-warning bg-opacity-15 text-warning fw-bold text-decoration-none" style="font-size: 11px;" href="/Admin/Order">
+                        1 đơn chờ duyệt <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI 3: Kho Hàng & Sản Phẩm -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="cps-kpi-card">
+            <div class="cps-kpi-icon products">
+                <i class="bi bi-box-seam-fill"></i>
+            </div>
+            <div class="cps-kpi-info overflow-hidden">
+                <h4>19</h4>
+                <span>Sản Phẩm Đang Bán</span>
+                <div class="d-flex align-items-center gap-1 mt-1">
+                        <a class="badge bg-danger bg-opacity-10 text-danger fw-bold text-decoration-none" style="font-size: 11px;" href="/Admin/Warehouse">
+                            2 mã tồn thấp <i class="bi bi-exclamation-circle"></i>
+                        </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- KPI 4: Khách Hàng & Dịch Vụ -->
+    <div class="col-sm-6 col-xl-3">
+        <div class="cps-kpi-card">
+            <div class="cps-kpi-icon customers">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <div class="cps-kpi-info overflow-hidden">
+                <h4>5</h4>
+                <span>Hội Viên Smember</span>
+                <div class="d-flex align-items-center gap-1 mt-1">
+                    <span class="badge bg-info bg-opacity-10 text-info fw-bold" style="font-size: 11px;">
+                        7 lịch sửa chờ hẹn
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 3. BUSINESS SHORTCUT ACTION BAR (LỐI TẮT NGHIỆP VỤ NHANH) -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <a class="cps-shortcut-card" href="/Admin/Order">
+            <div class="cps-shortcut-icon bg-warning bg-opacity-10 text-warning">
+                <i class="bi bi-receipt"></i>
+            </div>
+            <div>
+                <h6 class="cps-shortcut-title">Duyệt Đơn Hàng</h6>
+                <div class="cps-shortcut-sub">1 đơn đang chờ</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <a class="cps-shortcut-card" href="/Admin/Warehouse/CreateReceipt">
+            <div class="cps-shortcut-icon bg-primary bg-opacity-10 text-primary">
+                <i class="bi bi-building-fill-add"></i>
+            </div>
+            <div>
+                <h6 class="cps-shortcut-title">Tạo Phiếu Nhập Kho</h6>
+                <div class="cps-shortcut-sub">Bổ sung hàng hóa</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <a class="cps-shortcut-card" href="/Admin/Warranty">
+            <div class="cps-shortcut-icon bg-success bg-opacity-10 text-success">
+                <i class="bi bi-shield-check"></i>
+            </div>
+            <div>
+                <h6 class="cps-shortcut-title">Phiếu Bảo Hành</h6>
+                <div class="cps-shortcut-sub">Tra cứu theo IMEI máy</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="col-6 col-lg-3">
+        <a class="cps-shortcut-card" href="/Admin/Repair">
+            <div class="cps-shortcut-icon bg-danger bg-opacity-10 text-danger">
+                <i class="bi bi-tools"></i>
+            </div>
+            <div>
+                <h6 class="cps-shortcut-title">Điện Thoại Vui Care</h6>
+                <div class="cps-shortcut-sub">7 lịch sửa chữa</div>
+            </div>
+        </a>
+    </div>
+</div>
+
+<!-- 4. ANALYTICS CHARTS -->
+<div class="row g-3 mb-4">
+    <!-- Chart Doanh Thu -->
+    <div class="col-lg-8">
+        <div class="cps-admin-card h-100">
+            <div class="cps-admin-card-header">
+                <h5><i class="bi bi-graph-up-arrow text-danger"></i> Doanh Thu 7 Ngày Gần Nhất</h5>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-danger bg-opacity-10 text-danger fw-bold py-1 px-2" style="font-size: 11px;">VNĐ</span>
+                </div>
+            </div>
+            <div class="cps-admin-card-body">
+                <div style="height: 290px; width: 100%;">
+                    <canvas id="revenueChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart Trạng Thái Đơn -->
+    <div class="col-lg-4">
+        <div class="cps-admin-card h-100">
+            <div class="cps-admin-card-header">
+                <h5><i class="bi bi-pie-chart-fill text-primary"></i> Phân Bổ Đơn Hàng</h5>
+                <span class="text-muted small">Tất cả thời gian</span>
+            </div>
+            <div class="cps-admin-card-body d-flex flex-column align-items-center justify-content-center">
+                <div style="width: 200px; height: 200px; position: relative;">
+                    <canvas id="orderStatusChart"></canvas>
+                </div>
+                <div class="row g-2 w-100 mt-3 pt-3 border-top text-center" style="font-size: 12px;">
+                    <div class="col-3">
+                        <strong class="text-warning d-block fs-6">1</strong>
+                        <span class="text-muted">Chờ duyệt</span>
+                    </div>
+                    <div class="col-3">
+                        <strong class="text-primary d-block fs-6">1</strong>
+                        <span class="text-muted">Đang giao</span>
+                    </div>
+                    <div class="col-3">
+                        <strong class="text-success d-block fs-6">3</strong>
+                        <span class="text-muted">Hoàn tất</span>
+                    </div>
+                    <div class="col-3">
+                        <strong class="text-secondary d-block fs-6">1</strong>
+                        <span class="text-muted">Đã huỷ</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 5. RECENT ORDERS & TOP PRODUCTS -->
+<div class="row g-3">
+    <!-- Cột Trái: Bảng Đơn Hàng Mới Nhất -->
+    <div class="col-lg-8">
+        <div class="cps-admin-card mb-0">
+            <div class="cps-admin-card-header">
+                <h5><i class="bi bi-receipt-cutoff text-danger"></i> Đơn Hàng Mới Nhất</h5>
+                <a class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-1" style="font-size: 12.5px;" href="/Admin/Order">
+                    <span>Tất cả đơn hàng</span>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="cps-admin-card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-cps m-0">
+                        <thead>
+                            <tr>
+                                <th>Mã Đơn</th>
+                                <th>Khách Hàng</th>
+                                <th>Tổng Tiền</th>
+                                <th>Thanh Toán</th>
+                                <th>Trạng Thái</th>
+                                <th class="text-end">Thao Tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-danger">#CPS-132682</div>
+                                        <div class="text-muted" style="font-size: 11px;">28/10/2026 09:15</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">Ph&#x1EA1;m Thu H&#xE0;</div>
+                                        <div class="text-muted small">0978901234</div>
+                                    </td>
+                                    <td>
+                                        <strong class="text-dark">10.290.000₫</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-secondary border">BankTransfer</span>
+                                    </td>
+                                    <td>
+                                                <span class="badge bg-secondary"><i class="bi bi-x-lg me-1"></i>Đã huỷ</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a class="btn btn-sm btn-light border py-1 px-2 text-primary" title="Xem chi tiết đơn" href="/Admin/Order/Details/3">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-danger">#CPS-641240</div>
+                                        <div class="text-muted" style="font-size: 11px;">28/10/2026 07:15</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">&#x110;&#x1EB7;ng Qu&#x1ED1;c B&#x1EA3;o</div>
+                                        <div class="text-muted small">0945678901</div>
+                                    </td>
+                                    <td>
+                                        <strong class="text-dark">6.990.000₫</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-secondary border">COD</span>
+                                    </td>
+                                    <td>
+                                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Chờ duyệt</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a class="btn btn-sm btn-light border py-1 px-2 text-primary" title="Xem chi tiết đơn" href="/Admin/Order/Details/4">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-danger">#CPS202610265350</div>
+                                        <div class="text-muted" style="font-size: 11px;">28/10/2026 05:15</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">Nguyen Van Khach</div>
+                                        <div class="text-muted small">0987654321</div>
+                                    </td>
+                                    <td>
+                                        <strong class="text-dark">61.980.000₫</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-secondary border">COD</span>
+                                    </td>
+                                    <td>
+                                                <span class="badge bg-info text-dark"><i class="bi bi-check2-circle me-1"></i>Đã duyệt</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a class="btn btn-sm btn-light border py-1 px-2 text-primary" title="Xem chi tiết đơn" href="/Admin/Order/Details/1002">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-danger">#CPS202610273961</div>
+                                        <div class="text-muted" style="font-size: 11px;">28/10/2026 03:15</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">Kh&#xE1;ch H&#xE0;ng Th&#x1EED; Nghi&#x1EC7;m</div>
+                                        <div class="text-muted small">0987654321</div>
+                                    </td>
+                                    <td>
+                                        <strong class="text-dark">29.490.000₫</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-secondary border">COD</span>
+                                    </td>
+                                    <td>
+                                                <span class="badge bg-primary"><i class="bi bi-truck me-1"></i>Đang giao</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a class="btn btn-sm btn-light border py-1 px-2 text-primary" title="Xem chi tiết đơn" href="/Admin/Order/Details/2002">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-danger">#CPS202610275698</div>
+                                        <div class="text-muted" style="font-size: 11px;">28/10/2026 01:15</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">Kh&#xE1;ch H&#xE0;ng Th&#x1EED; Nghi&#x1EC7;m</div>
+                                        <div class="text-muted small">0987654321</div>
+                                    </td>
+                                    <td>
+                                        <strong class="text-dark">29.490.000₫</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-secondary border">COD</span>
+                                    </td>
+                                    <td>
+                                                <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Hoàn thành</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a class="btn btn-sm btn-light border py-1 px-2 text-primary" title="Xem chi tiết đơn" href="/Admin/Order/Details/2003">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-danger">#CPS-656841</div>
+                                        <div class="text-muted" style="font-size: 11px;">28/10/2026 00:02</div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">Tr&#x1EA7;n Th&#x1ECB; Mai</div>
+                                        <div class="text-muted small">0912345678</div>
+                                    </td>
+                                    <td>
+                                        <strong class="text-dark">25.490.000₫</strong>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-secondary border">COD</span>
+                                    </td>
+                                    <td>
+                                                <span class="badge bg-success"><i class="bi bi-check-lg me-1"></i>Hoàn thành</span>
+                                    </td>
+                                    <td class="text-end">
+                                        <a class="btn btn-sm btn-light border py-1 px-2 text-primary" title="Xem chi tiết đơn" href="/Admin/Order/Details/2">
+                                            <i class="bi bi-eye-fill"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cột Phải: Top Sản Phẩm Bán Chạy -->
+    <div class="col-lg-4">
+        <div class="cps-admin-card mb-0">
+            <div class="cps-admin-card-header">
+                <h5><i class="bi bi-fire text-danger"></i> Top Sản Phẩm Nổi Bật</h5>
+                <a class="btn btn-sm btn-outline-secondary" style="font-size: 12.5px;" href="/Admin/Product">
+                    Kho hàng <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+            <div class="cps-admin-card-body p-0">
+                <div class="list-group list-group-flush">
+                        <div class="list-group-item d-flex align-items-center gap-3 py-3">
+                            <span class="cps-rank-badge cps-rank-1">1</span>
+                            <img src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/a/n/anker-511-nano-3-30w.png" alt="C&#x1EE7; s&#x1EA1;c nhanh Anker 511 Nano 3 30W USB-C GaN" style="width: 44px; height: 44px; object-fit: contain; border-radius: 8px; border: 1px solid #e2e8f0; padding: 2px;" />
+                            <div class="flex-grow-1 overflow-hidden">
+                                <a class="text-dark fw-bold text-decoration-none d-block text-truncate" style="font-size: 13px;" href="/Admin/Product/Edit/1006">
+                                    C&#x1EE7; s&#x1EA1;c nhanh Anker 511 Nano 3 30W USB-C GaN
+                                </a>
+                                <div class="d-flex align-items-center justify-content-between mt-1">
+                                    <span class="text-danger fw-bold small">320.000₫</span>
+                                    <span class="text-muted small">Tồn: <strong>200</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-center gap-3 py-3">
+                            <span class="cps-rank-badge cps-rank-2">2</span>
+                            <img src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi-redmi-note-13_1_.png" alt="Xiaomi Redmi Note 13" style="width: 44px; height: 44px; object-fit: contain; border-radius: 8px; border: 1px solid #e2e8f0; padding: 2px;" />
+                            <div class="flex-grow-1 overflow-hidden">
+                                <a class="text-dark fw-bold text-decoration-none d-block text-truncate" style="font-size: 13px;" href="/Admin/Product/Edit/8">
+                                    Xiaomi Redmi Note 13
+                                </a>
+                                <div class="d-flex align-items-center justify-content-between mt-1">
+                                    <span class="text-danger fw-bold small">4.190.000₫</span>
+                                    <span class="text-muted small">Tồn: <strong>120</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-center gap-3 py-3">
+                            <span class="cps-rank-badge cps-rank-3">3</span>
+                            <img src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/a/p/apple-airpods-pro-2-usb-c_1.png" alt="Tai nghe Bluetooth Apple AirPods Pro 2 2023 Type-C" style="width: 44px; height: 44px; object-fit: contain; border-radius: 8px; border: 1px solid #e2e8f0; padding: 2px;" />
+                            <div class="flex-grow-1 overflow-hidden">
+                                <a class="text-dark fw-bold text-decoration-none d-block text-truncate" style="font-size: 13px;" href="/Admin/Product/Edit/11">
+                                    Tai nghe Bluetooth Apple AirPods Pro 2 2023 Type-C
+                                </a>
+                                <div class="d-flex align-items-center justify-content-between mt-1">
+                                    <span class="text-danger fw-bold small">5.190.000₫</span>
+                                    <span class="text-muted small">Tồn: <strong>50</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-center gap-3 py-3">
+                            <span class="cps-rank-badge cps-rank-other">4</span>
+                            <img src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max.png" alt="iPhone 16 Pro Max" style="width: 44px; height: 44px; object-fit: contain; border-radius: 8px; border: 1px solid #e2e8f0; padding: 2px;" />
+                            <div class="flex-grow-1 overflow-hidden">
+                                <a class="text-dark fw-bold text-decoration-none d-block text-truncate" style="font-size: 13px;" href="/Admin/Product/Edit/1">
+                                    iPhone 16 Pro Max
+                                </a>
+                                <div class="d-flex align-items-center justify-content-between mt-1">
+                                    <span class="text-danger fw-bold small">30.990.000₫</span>
+                                    <span class="text-muted small">Tồn: <strong>113</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-group-item d-flex align-items-center gap-3 py-3">
+                            <span class="cps-rank-badge cps-rank-other">5</span>
+                            <img src="https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/m/a/marshall-emberton-ii.png" alt="Loa Bluetooth Marshall Emberton II Ch&#xED;nh H&#xE3;ng" style="width: 44px; height: 44px; object-fit: contain; border-radius: 8px; border: 1px solid #e2e8f0; padding: 2px;" />
+                            <div class="flex-grow-1 overflow-hidden">
+                                <a class="text-dark fw-bold text-decoration-none d-block text-truncate" style="font-size: 13px;" href="/Admin/Product/Edit/1004">
+                                    Loa Bluetooth Marshall Emberton II Ch&#xED;nh H&#xE3;ng
+                                </a>
+                                <div class="d-flex align-items-center justify-content-between mt-1">
+                                    <span class="text-danger fw-bold small">3.890.000₫</span>
+                                    <span class="text-muted small">Tồn: <strong>35</strong></span>
+                                </div>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+            </main>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS Bundle & SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        // ========================================================
+        // 1. SIDEBAR TOGGLE & RESPONSIVENESS WITH LOCALSTORAGE
+        // ========================================================
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+
+        // Restore saved collapsed state
+        if (localStorage.getItem('cps_admin_sidebar_collapsed') === 'true' && window.innerWidth > 991.98) {
+            document.body.classList.add('sidebar-collapsed');
+        }
+
+        if (sidebarToggle) {
+            sidebarToggle.addEventListener('click', function () {
+                if (window.innerWidth <= 991.98) {
+                    document.body.classList.toggle('sidebar-mobile-open');
+                } else {
+                    document.body.classList.toggle('sidebar-collapsed');
+                    const isCollapsed = document.body.classList.contains('sidebar-collapsed');
+                    localStorage.setItem('cps_admin_sidebar_collapsed', isCollapsed);
+                }
+            });
+        }
+
+        if (sidebarBackdrop) {
+            sidebarBackdrop.addEventListener('click', function () {
+                document.body.classList.remove('sidebar-mobile-open');
+            });
+        }
+
+        // ========================================================
+        // 2. LIVE INTERACTIVE MENU SEARCH / FILTER
+        // ========================================================
+        const menuFilterInput = document.getElementById('sidebarMenuFilter');
+        if (menuFilterInput) {
+            menuFilterInput.addEventListener('input', function () {
+                const query = this.value.toLowerCase().trim();
+                const navItems = document.querySelectorAll('.cps-admin-nav-item');
+                const navGroups = document.querySelectorAll('.cps-nav-group');
+
+                if (!query) {
+                    navItems.forEach(item => item.style.display = '');
+                    navGroups.forEach(group => group.style.display = '');
+                    return;
+                }
+
+                navGroups.forEach(group => {
+                    let groupHasVisibleItems = false;
+                    const itemsInGroup = group.querySelectorAll('.cps-admin-nav-item');
+
+                    itemsInGroup.forEach(item => {
+                        const text = item.textContent.toLowerCase();
+                        const keywords = (item.getAttribute('data-keywords') || '').toLowerCase();
+                        const match = text.includes(query) || keywords.includes(query);
+
+                        if (match) {
+                            item.style.display = '';
+                            groupHasVisibleItems = true;
+                        } else {
+                            item.style.display = 'none';
+                        }
+                    });
+
+                    group.style.display = groupHasVisibleItems ? '' : 'none';
+                });
+            });
+
+            // Keyboard shortcut Ctrl + K
+            window.addEventListener('keydown', function (e) {
+                if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+                    e.preventDefault();
+                    if (document.body.classList.contains('sidebar-collapsed')) {
+                        document.body.classList.remove('sidebar-collapsed');
+                        localStorage.setItem('cps_admin_sidebar_collapsed', 'false');
+                    }
+                    menuFilterInput.focus();
+                    menuFilterInput.select();
+                }
+            });
+        }
+
+        // ========================================================
+        // 3. SWEETALERT2 NOTIFICATION SYSTEM
+        // ========================================================
+        const Toast = Swal.mixin({
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 2600,
+            timerProgressBar: true,
+            didOpen: (toast) => {
+                toast.addEventListener('mouseenter', Swal.stopTimer);
+                toast.addEventListener('mouseleave', Swal.resumeTimer);
+            }
+        });
+
+        function showToast(message, icon = 'success') {
+            Toast.fire({
+                icon: icon,
+                title: message
+            });
+        }
+
+        function showAlert(arg1, arg2 = 'info', arg3 = '') {
+            let message = arg1;
+            let icon = 'info';
+            let title = 'Thông báo';
+
+            if (['success', 'error', 'warning', 'info', 'question'].includes(arg2)) {
+                icon = arg2;
+                title = arg3 || (icon === 'success' ? 'Thành công' : icon === 'error' ? 'Lỗi' : icon === 'warning' ? 'Chú ý' : 'Thông báo');
+            } else if (arg2) {
+                title = arg1;
+                message = arg2;
+                icon = arg3 || 'info';
+            }
+
+            return Swal.fire({
+                icon: icon,
+                title: title,
+                text: message,
+                confirmButtonColor: '#d70018',
+                confirmButtonText: 'Đồng ý',
+                customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                }
+            });
+        }
+
+        function showSuccess(arg1, arg2) {
+            if (arg2) return showAlert(arg1, arg2, 'success');
+            return showAlert(arg1, 'success', 'Thành công');
+        }
+
+        function showError(arg1, arg2) {
+            if (arg2) return showAlert(arg1, arg2, 'error');
+            return showAlert(arg1, 'error', 'Thông báo lỗi');
+        }
+
+        function showWarning(arg1, arg2) {
+            if (arg2) return showAlert(arg1, arg2, 'warning');
+            return showAlert(arg1, 'warning', 'Chú ý');
+        }
+
+        function showConfirm(title, text, confirmBtnText = 'Đồng ý', cancelBtnText = 'Hủy bỏ') {
+            return Swal.fire({
+                title: title,
+                text: text,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d70018',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: confirmBtnText,
+                cancelButtonText: cancelBtnText,
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-4 shadow-lg'
+                }
+            });
+        }
+
+        window.alert = function (message) {
+            showAlert(message, 'info', 'Thông báo quản trị');
+        };
+    </script>
+
+
+    
+    <script>
+        // 1. Chart Doanh Thu 7 Ngày Gần Nhất
+        const revCtx = document.getElementById('revenueChart').getContext('2d');
+        const revenueChart = new Chart(revCtx, {
+            type: 'bar',
+            data: {
+                labels: ["22/10","23/10","24/10","25/10","26/10","27/10","28/10"],
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: [0,0,0,0,0,0,153440000.00],
+                    backgroundColor: 'rgba(215, 0, 24, 0.85)',
+                    hoverBackgroundColor: '#D70018',
+                    borderColor: '#D70018',
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    maxBarThickness: 40
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        titleFont: { size: 13, weight: 'bold' },
+                        bodyFont: { size: 12 },
+                        padding: 10,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return 'Doanh thu: ' + Number(context.raw).toLocaleString('vi-VN') + ' ₫';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#f1f5f9'
+                        },
+                        ticks: {
+                            font: { size: 11 },
+                            callback: function(val) {
+                                if (val >= 1000000000) return (val / 1000000000).toFixed(1) + ' tỷ';
+                                if (val >= 1000000) return (val / 1000000).toFixed(0) + 'M';
+                                return val;
+                            }
+                        }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11 } }
+                    }
+                }
+            }
+        });
+
+        // 2. Doughnut Chart Tỉ lệ Trạng thái Đơn hàng
+        const statusCtx = document.getElementById('orderStatusChart').getContext('2d');
+        const orderStatusChart = new Chart(statusCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Chờ duyệt', 'Đang giao', 'Hoàn thành', 'Đã huỷ'],
+                datasets: [{
+                    data: [1, 1, 3, 1],
+                    backgroundColor: ['#f59e0b', '#3b82f6', '#10b981', '#94a3b8'],
+                    borderWidth: 2,
+                    borderColor: '#ffffff',
+                    hoverOffset: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#0f172a',
+                        padding: 10,
+                        cornerRadius: 8
+                    }
+                },
+                cutout: '72%'
+            }
+        });
+    </script>
+
+</body>
+</html>

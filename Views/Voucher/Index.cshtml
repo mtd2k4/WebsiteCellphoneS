@@ -1,0 +1,1545 @@
+@model WebsiteBanDienThoai.Models.ViewModels.VoucherViewModel
+
+@{
+    ViewData["Title"] = "Kho Voucher Miễn Phí Mỗi Ngày - Săn Mã Giảm Đến 500K | CellphoneS";
+    var streakRewards = new[]
+    {
+        new { Day = 1, Code = "FREESHIP30K", Title = "Freeship 30K", Desc = "Đơn từ 200K", Icon = "bi-truck", Color = "#10b981" },
+        new { Day = 2, Code = "DAILYGIFT20K", Title = "Giảm 20K", Desc = "Đơn từ 100K", Icon = "bi-gift", Color = "#f59e0b" },
+        new { Day = 3, Code = "LUCKYBOX50K", Title = "Giảm 50K", Desc = "Đơn từ 300K", Icon = "bi-box2-heart", Color = "#ec4899" },
+        new { Day = 4, Code = "FREESHIP50K", Title = "Freeship Hỏa Tốc", Desc = "Đơn từ 1Tr", Icon = "bi-lightning-charge", Color = "#06b6d4" },
+        new { Day = 5, Code = "GIAM10PT", Title = "Giảm 10%", Desc = "Tối đa 200K", Icon = "bi-percent", Color = "#8b5cf6" },
+        new { Day = 6, Code = "GIAM100K", Title = "Giảm 100K", Desc = "Đơn từ 1Tr", Icon = "bi-cash-coin", Color = "#f97316" },
+        new { Day = 7, Code = "CPSVIP500K", Title = "Siêu VIP 500K", Desc = "Đơn từ 5Tr", Icon = "bi-gem", Color = "#ef4444" }
+    };
+}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+
+<style>
+    :root {
+        --cps-primary: #d70018;
+        --cps-primary-dark: #b30014;
+        --cps-gold: #f59e0b;
+        --cps-gold-light: #fef3c7;
+        --cps-border: #f1f5f9;
+        --cps-card-bg: #ffffff;
+    }
+
+    body {
+        background-color: #f8fafc;
+    }
+
+    /* 1. HERO BANNER */
+    .cps-voucher-hero {
+        background: linear-gradient(135deg, #d70018 0%, #b30014 45%, #7f000e 100%);
+        border-radius: 20px;
+        padding: 36px 30px;
+        color: #ffffff;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(215, 0, 24, 0.22);
+        margin-bottom: 28px;
+    }
+
+    .cps-voucher-hero::before {
+        content: "";
+        position: absolute;
+        top: -60px;
+        right: -60px;
+        width: 240px;
+        height: 240px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.15) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .cps-voucher-hero::after {
+        content: "";
+        position: absolute;
+        bottom: -50px;
+        left: 20%;
+        width: 180px;
+        height: 180px;
+        background: radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, transparent 70%);
+        border-radius: 50%;
+        pointer-events: none;
+    }
+
+    .cps-hero-tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: rgba(255, 255, 255, 0.18);
+        backdrop-filter: blur(8px);
+        padding: 6px 14px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        margin-bottom: 14px;
+    }
+
+    .cps-hero-title {
+        font-size: 2.2rem;
+        font-weight: 900;
+        line-height: 1.2;
+        letter-spacing: -0.5px;
+        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .cps-hero-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+        margin-top: 20px;
+    }
+
+    .cps-hero-stat-item {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        padding: 8px 16px;
+        border-radius: 12px;
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    /* 2. DAILY CHECK-IN SECTION */
+    .cps-checkin-card {
+        background: #ffffff;
+        border-radius: 20px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.04);
+        padding: 26px;
+        margin-bottom: 32px;
+        position: relative;
+    }
+
+    .cps-streak-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 12px;
+        margin-top: 20px;
+        margin-bottom: 24px;
+    }
+
+    @@media (max-width: 991px) {
+        .cps-streak-grid {
+            display: flex;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scroll-snap-type: x mandatory;
+        }
+        .cps-streak-item {
+            min-width: 110px;
+            scroll-snap-align: start;
+        }
+    }
+
+    .cps-streak-item {
+        background: #f8fafc;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 14px 10px;
+        text-align: center;
+        position: relative;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .cps-streak-item.claimed {
+        background: #f0fdf4;
+        border-color: #86efac;
+    }
+
+    .cps-streak-item.current {
+        background: #fffbeb;
+        border-color: #f59e0b;
+        box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        transform: translateY(-3px);
+    }
+
+    .cps-streak-item.day-7 {
+        background: linear-gradient(135deg, #fff1f2 0%, #fee2e2 100%);
+        border-color: #fca5a5;
+    }
+
+    .cps-streak-item.day-7.current {
+        border-color: #d70018;
+        box-shadow: 0 0 0 3px rgba(215, 0, 24, 0.25);
+    }
+
+    .cps-streak-day-badge {
+        font-size: 11px;
+        font-weight: 700;
+        color: #64748b;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        display: block;
+    }
+
+    .cps-streak-icon-wrap {
+        width: 44px;
+        height: 44px;
+        margin: 0 auto 8px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        background: #ffffff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .cps-streak-reward {
+        font-size: 12.5px;
+        font-weight: 800;
+        color: #1e293b;
+        line-height: 1.2;
+    }
+
+    .cps-streak-desc {
+        font-size: 10.5px;
+        color: #64748b;
+        margin-top: 2px;
+    }
+
+    .cps-streak-status {
+        margin-top: 8px;
+        font-size: 10px;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 10px;
+        display: inline-block;
+    }
+
+    /* Interactive Gift Box Centerpiece */
+    .cps-giftbox-container {
+        background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+        border: 2px dashed #fb923c;
+        border-radius: 18px;
+        padding: 24px;
+        text-align: center;
+        position: relative;
+    }
+
+    .cps-giftbox-anim {
+        width: 86px;
+        height: 86px;
+        margin: 0 auto 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: #d70018;
+        filter: drop-shadow(0 6px 12px rgba(215, 0, 24, 0.25));
+        animation: giftBounce 2.5s infinite ease-in-out;
+        cursor: pointer;
+    }
+
+    @@keyframes giftBounce {
+        0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+        30% { transform: translateY(-8px) scale(1.05) rotate(-3deg); }
+        50% { transform: translateY(0) scale(0.98) rotate(3deg); }
+        70% { transform: translateY(-4px) scale(1.02) rotate(-1deg); }
+    }
+
+    .cps-btn-claim-gift {
+        background: linear-gradient(135deg, #d70018 0%, #b30014 100%);
+        color: #ffffff;
+        font-size: 16px;
+        font-weight: 800;
+        padding: 12px 36px;
+        border-radius: 30px;
+        border: none;
+        box-shadow: 0 6px 20px rgba(215, 0, 24, 0.35);
+        transition: all 0.2s;
+    }
+
+    .cps-btn-claim-gift:hover {
+        background: linear-gradient(135deg, #b30014 0%, #8b000f 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(215, 0, 24, 0.45);
+        color: #ffffff;
+    }
+
+    .cps-btn-claim-gift:active {
+        transform: scale(0.98);
+    }
+
+    /* 3. FLASH VOUCHER HOUR SLOTS */
+    .cps-flash-bar {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        padding: 18px 22px;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03);
+    }
+
+    .cps-time-slot-pill {
+        padding: 10px 18px;
+        border-radius: 12px;
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        font-weight: 700;
+        font-size: 13.5px;
+        color: #475569;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2px;
+        transition: all 0.2s;
+    }
+
+    .cps-time-slot-pill.active {
+        background: #d70018;
+        color: #ffffff;
+        border-color: #d70018;
+        box-shadow: 0 4px 14px rgba(215, 0, 24, 0.25);
+    }
+
+    .cps-time-slot-pill.active .slot-sub {
+        color: #fef08a;
+    }
+
+    .cps-countdown-box {
+        background: #0f172a;
+        color: #ffffff;
+        border-radius: 10px;
+        padding: 6px 12px;
+        font-family: monospace;
+        font-size: 15px;
+        font-weight: 800;
+        letter-spacing: 1px;
+    }
+
+    /* 4. VOUCHER CARDS GRID */
+    .cps-filter-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 24px;
+    }
+
+    .cps-filter-btn {
+        padding: 8px 18px;
+        border-radius: 24px;
+        font-size: 13px;
+        font-weight: 700;
+        background: #ffffff;
+        color: #475569;
+        border: 1px solid #cbd5e1;
+        cursor: pointer;
+        transition: all 0.15s;
+    }
+
+    .cps-filter-btn:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+
+    .cps-filter-btn.active {
+        background: #d70018;
+        color: #ffffff;
+        border-color: #d70018;
+        box-shadow: 0 4px 12px rgba(215, 0, 24, 0.2);
+    }
+
+    /* Genuine Coupon Ticket Geometry */
+    .cps-voucher-card {
+        background: #ffffff;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+        display: flex;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.25s ease;
+        height: 100%;
+    }
+
+    .cps-voucher-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        border-color: #cbd5e1;
+    }
+
+    .cps-ticket-stub {
+        width: 125px;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, #d70018 0%, #b30014 100%);
+        color: #ffffff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 16px 10px;
+        text-align: center;
+        position: relative;
+    }
+
+    .cps-ticket-stub.shipping {
+        background: linear-gradient(135deg, #059669 0%, #047857 100%);
+    }
+
+    .cps-ticket-stub.smember {
+        background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+    }
+
+    /* Ticket half-circle notches */
+    .cps-ticket-stub::after {
+        content: "";
+        position: absolute;
+        right: -8px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        background: #f8fafc;
+        border-radius: 50%;
+        box-shadow: inset 1px 0 2px rgba(0, 0, 0, 0.08);
+        z-index: 2;
+    }
+
+    .cps-stub-badge {
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        background: rgba(255, 255, 255, 0.22);
+        padding: 2px 8px;
+        border-radius: 10px;
+        margin-bottom: 6px;
+        letter-spacing: 0.3px;
+    }
+
+    .cps-stub-val {
+        font-size: 18px;
+        font-weight: 900;
+        line-height: 1.1;
+    }
+
+    .cps-ticket-body {
+        flex-grow: 1;
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .cps-voucher-title {
+        font-size: 14.5px;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
+        line-height: 1.3;
+    }
+
+    .cps-voucher-desc {
+        font-size: 12px;
+        color: #64748b;
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+
+    .cps-voucher-meta {
+        font-size: 11.5px;
+        color: #475569;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .cps-progress-wrap {
+        margin-bottom: 12px;
+    }
+
+    .cps-progress-label {
+        font-size: 10.5px;
+        color: #64748b;
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 3px;
+    }
+
+    .cps-progress-bar {
+        height: 6px;
+        border-radius: 6px;
+        background: #e2e8f0;
+        overflow: hidden;
+    }
+
+    .cps-progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #d70018 0%, #f59e0b 100%);
+        border-radius: 6px;
+    }
+
+    .cps-btn-save-code {
+        font-size: 12.5px;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 8px;
+        border: 1px solid #d70018;
+        background: #ffffff;
+        color: #d70018;
+        transition: all 0.15s;
+    }
+
+    .cps-btn-save-code:hover {
+        background: #d70018;
+        color: #ffffff;
+    }
+
+    .cps-btn-save-code.saved {
+        background: #10b981;
+        border-color: #10b981;
+        color: #ffffff;
+    }
+
+    .cps-btn-use-code {
+        font-size: 12.5px;
+        font-weight: 700;
+        padding: 6px 14px;
+        border-radius: 8px;
+        background: #d70018;
+        color: #ffffff;
+        border: none;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        transition: all 0.15s;
+    }
+
+    .cps-btn-use-code:hover {
+        background: #b30014;
+        color: #ffffff;
+    }
+
+    .cps-code-pill {
+        background: #f1f5f9;
+        border: 1px dashed #cbd5e1;
+        padding: 4px 8px;
+        border-radius: 6px;
+        font-family: monospace;
+        font-weight: 700;
+        font-size: 12px;
+        color: #0f172a;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .cps-code-pill:hover {
+        background: #e2e8f0;
+    }
+
+    /* 5. CELEBRATION MODAL */
+    .cps-confetti-canvas {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        pointer-events: none;
+        z-index: 99999;
+    }
+
+    /* 6. HOW TO USE */
+    .cps-step-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 16px;
+        padding: 20px;
+        text-align: center;
+        height: 100%;
+    }
+
+    .cps-step-num {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #d70018;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 15px;
+        margin: 0 auto 12px;
+    }
+
+    /* Sticky Floating Wallet Button */
+    .cps-wallet-float-btn {
+        position: fixed;
+        left: 24px;
+        bottom: 24px;
+        background: #0f172a;
+        color: #ffffff;
+        border: 2px solid #334155;
+        border-radius: 30px;
+        padding: 10px 20px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        font-size: 13.5px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        z-index: 1050;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .cps-wallet-float-btn:hover {
+        background: #1e293b;
+        color: #ffffff;
+        transform: translateY(-2px);
+    }
+</style>
+
+<!-- Canvas for celebration confetti -->
+<canvas id="cpsConfettiCanvas" class="cps-confetti-canvas"></canvas>
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb mb-0" style="font-size: 13px;">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted text-decoration-none"><i class="bi bi-house-door me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Kho Voucher Miễn Phí Mỗi Ngày</li>
+        </ol>
+    </nav>
+
+    <!-- 1. HERO BANNER -->
+    <div class="cps-voucher-hero">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="cps-hero-tag">
+                    <i class="bi bi-gift-fill text-warning"></i>
+                    <span>KHO VOUCHER MIỄN PHÍ MỖI NGÀY</span>
+                </div>
+                <h1 class="cps-hero-title mb-2">Điểm Danh Nhận Mã Giảm 500K & Freeship 0Đ</h1>
+                <p class="mb-0 text-white-50" style="font-size: 15px; max-width: 650px;">
+                    Mở hộp quà bí mật mỗi ngày, tích lũy chuỗi 7 ngày liên tục nhận ngay Siêu Voucher 500.000₫. Áp dụng song song cả mã giảm đơn hàng và mã miễn phí vận chuyển!
+                </p>
+
+                <div class="cps-hero-stats">
+                    <div class="cps-hero-stat-item">
+                        <i class="bi bi-ticket-detailed-fill text-warning fs-5"></i>
+                        <span><strong>@Model.TotalClaimedCountToday.ToString("N0")</strong> voucher đã phát hôm nay</span>
+                    </div>
+                    <div class="cps-hero-stat-item">
+                        <i class="bi bi-shield-fill-check text-success fs-5"></i>
+                        <span><strong>100%</strong> Mã chính hãng CellphoneS</span>
+                    </div>
+                    <div class="cps-hero-stat-item">
+                        <i class="bi bi-truck text-info fs-5"></i>
+                        <span>Freeship 0Đ toàn quốc</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4 text-center text-lg-end mt-4 mt-lg-0">
+                <button type="button" class="btn btn-warning fw-bold px-4 py-3 rounded-pill shadow-lg text-dark" onclick="openWalletModal()">
+                    <i class="bi bi-wallet2 me-2"></i>
+                    <span>Ví Voucher Của Tôi (<span id="walletBadgeCount">@Model.SavedCouponCodes.Count</span>)</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. DAILY CHECK-IN 7 DAYS SECTION -->
+    <div class="cps-checkin-card" id="dailyCheckinSection">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 border-bottom pb-3">
+            <div>
+                <h4 class="fw-bold mb-1 d-flex align-items-center gap-2">
+                    <i class="bi bi-calendar2-check-fill text-danger"></i>
+                    <span>Điểm Danh 7 Ngày - Nhận Quà Khủng Mỗi Ngày</span>
+                </h4>
+                <p class="text-muted small mb-0">Điểm danh liên tiếp 7 ngày để rinh ngay Siêu Voucher 500.000₫ & Freeship trọn đời</p>
+            </div>
+
+            <div class="d-flex flex-wrap align-items-center gap-2">
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <span class="badge bg-success-subtle text-success px-3 py-2 rounded-pill fw-bold" style="font-size: 12.5px;">
+                        <i class="bi bi-person-check-fill me-1"></i> Smember: @User.Identity.Name
+                    </span>
+                    <span class="badge bg-danger-subtle text-danger px-3 py-2 rounded-pill fw-bold" style="font-size: 13px;">
+                        <i class="bi bi-fire me-1"></i> Chuỗi hiện tại: <span id="currentStreakBadge">@Model.DailyStreak</span>/7 Ngày
+                    </span>
+                }
+                else
+                {
+                    <span class="badge bg-warning-subtle text-dark border border-warning px-3 py-2 rounded-pill fw-bold" style="font-size: 12.5px;">
+                        <i class="bi bi-shield-lock-fill text-danger me-1"></i> Bắt buộc đăng nhập để điểm danh
+                    </span>
+                }
+            </div>
+        </div>
+
+        <!-- 7-Day Timeline -->
+        <div class="cps-streak-grid">
+            @for (int i = 0; i < streakRewards.Length; i++)
+            {
+                var r = streakRewards[i];
+                var isAuthenticated = User.Identity != null && User.Identity.IsAuthenticated;
+                var isClaimed = isAuthenticated && (Model.HasClaimedToday ? (r.Day <= Model.DailyStreak) : (r.Day < Model.DailyStreak));
+                var isCurrent = isAuthenticated && (Model.DailyStreak == r.Day);
+                var isDay7 = r.Day == 7;
+
+                <div class="cps-streak-item @(isClaimed ? "claimed" : "") @(isCurrent ? "current" : "") @(isDay7 ? "day-7" : "")" id="streakItemDay@(r.Day)">
+                    <span class="cps-streak-day-badge">Ngày @r.Day</span>
+                    <div class="cps-streak-icon-wrap" style="color: @r.Color;">
+                        <i class="bi @r.Icon"></i>
+                    </div>
+                    <div class="cps-streak-reward">@r.Title</div>
+                    <div class="cps-streak-desc">@r.Desc</div>
+
+                    <div class="mt-2">
+                        @if (isClaimed)
+                        {
+                            <span class="cps-streak-status bg-success-subtle text-success">
+                                <i class="bi bi-check-circle-fill me-1"></i>Đã nhận
+                            </span>
+                        }
+                        else if (isCurrent)
+                        {
+                            <span class="cps-streak-status bg-warning-subtle text-warning-emphasis">
+                                <i class="bi bi-star-fill me-1"></i>Hôm nay
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="cps-streak-status bg-light text-muted border">
+                                <i class="bi bi-lock-fill me-1"></i>Chưa mở
+                            </span>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Centerpiece Mystery Box -->
+        <div class="cps-giftbox-container" id="giftBoxContainer">
+            @if (User.Identity == null || !User.Identity.IsAuthenticated)
+            {
+                <div id="boxRequireLoginState">
+                    <div class="cps-giftbox-anim" onclick="promptLoginForCheckin()">
+                        <i class="bi bi-shield-lock-fill text-danger"></i>
+                    </div>
+                    <h5 class="fw-bold text-danger mb-1">
+                        <i class="bi bi-lock-fill me-1"></i> Vui Lòng Đăng Nhập Tài Khoản Để Điểm Danh!
+                    </h5>
+                    <p class="text-muted small mb-3 mx-auto" style="max-width: 580px;">
+                        Chương trình <strong>Điểm Danh 7 Ngày Nhận Siêu Voucher 500.000₫</strong> và cộng thêm <strong>+10 điểm thưởng Smember</strong> mỗi ngày bắt buộc đăng nhập tài khoản để ghi nhận và bảo lưu chuỗi điểm danh của bạn.
+                    </p>
+                    <div class="d-flex flex-wrap justify-content-center align-items-center gap-3">
+                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="/Voucher" class="cps-btn-claim-gift text-decoration-none d-inline-flex align-items-center">
+                            <i class="bi bi-box-arrow-in-right me-2"></i> ĐĂNG NHẬP ĐỂ ĐIỂM DANH NGAY
+                        </a>
+                    </div>
+                    <div class="mt-3 small">
+                        <span class="text-muted">Chưa có tài khoản Smember?</span>
+                        <a asp-controller="Account" asp-action="Register" asp-route-returnUrl="/Voucher" class="text-danger fw-bold text-decoration-none ms-1">
+                            Đăng ký miễn phí ngay (Tặng 50 điểm) <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+            else if (Model.HasClaimedToday)
+            {
+                <div id="boxClaimedState">
+                    <div class="cps-giftbox-anim" style="animation: none; transform: scale(1.05);">
+                        <i class="bi bi-patch-check-fill text-success" style="font-size: 64px;"></i>
+                    </div>
+                    <h5 class="fw-bold text-success mb-1">🎉 Bạn Đã Điểm Danh Ngày @Model.DailyStreak Thành Công!</h5>
+                    @if (Model.TodayGift != null)
+                    {
+                        <p class="text-dark small mb-3">
+                            Phần quà hôm nay: <strong>@Model.TodayGift.Title</strong> (Mã: <code class="fw-bold text-danger">@Model.TodayGift.Code</code>) • Đã cộng <strong>+10 PTS Smember</strong>
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="text-dark small mb-3">Voucher quà tặng hôm nay đã được lưu sẵn trong ví của bạn.</p>
+                    }
+
+                    <div class="d-flex flex-wrap justify-content-center gap-2">
+                        <button type="button" class="btn btn-outline-secondary rounded-pill px-4 py-2 small fw-bold" disabled>
+                            <i class="bi bi-clock-history me-1"></i> Quay lại vào ngày mai để nhận quà tiếp theo
+                        </button>
+                        <a asp-controller="Cart" asp-action="Index" class="btn btn-danger rounded-pill px-4 py-2 small fw-bold">
+                            <i class="bi bi-cart3 me-1"></i> Dùng mã trong Giỏ hàng
+                        </a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div id="boxUnclaimedState">
+                    <div class="cps-giftbox-anim" id="giftBoxIcon" onclick="claimDailyReward()">
+                        <i class="bi bi-gift-fill"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark mb-1">Hôm Nay Bạn Chưa Nhận Quà Điểm Danh!</h5>
+                    <p class="text-muted small mb-3">Nhấn vào nút bên dưới để mở hộp quà bí mật nhận voucher lên tới 500.000₫ & +10 điểm Smember ngay bây giờ</p>
+                    <button type="button" id="btnClaimDaily" class="cps-btn-claim-gift" onclick="claimDailyReward()">
+                        <i class="bi bi-box2-heart me-2"></i> MỞ HỘP QUÀ HÔM NAY
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- 3. FLASH VOUCHER DROP SECTION -->
+    <div class="cps-flash-bar">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-4">
+                <div class="d-flex align-items-center gap-2">
+                    <div class="badge bg-danger p-2 rounded-3 text-white fs-5">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                    </div>
+                    <div>
+                        <h5 class="fw-bold mb-0">Khung Giờ Săn Voucher</h5>
+                        <span class="text-muted small">Cập nhật mỗi khung giờ vàng</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="d-flex align-items-center justify-content-around gap-2">
+                    <div class="cps-time-slot-pill @(Model.CurrentFlashSlot == "00:00" ? "active" : "")">
+                        <span>00:00</span>
+                        <span class="slot-sub small" style="font-size: 10px;">Đêm khuya</span>
+                    </div>
+                    <div class="cps-time-slot-pill @(Model.CurrentFlashSlot == "09:00" ? "active" : "")">
+                        <span>09:00</span>
+                        <span class="slot-sub small" style="font-size: 10px;">Chào sáng</span>
+                    </div>
+                    <div class="cps-time-slot-pill @(Model.CurrentFlashSlot == "12:00" ? "active" : "")">
+                        <span>12:00</span>
+                        <span class="slot-sub small" style="font-size: 10px;">Trưa vàng</span>
+                    </div>
+                    <div class="cps-time-slot-pill @(Model.CurrentFlashSlot == "18:00" ? "active" : "")">
+                        <span>18:00</span>
+                        <span class="slot-sub small" style="font-size: 10px;">Tan ca</span>
+                    </div>
+                    <div class="cps-time-slot-pill @(Model.CurrentFlashSlot == "21:00" ? "active" : "")">
+                        <span>21:00</span>
+                        <span class="slot-sub small" style="font-size: 10px;">Đêm muộn</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 text-lg-end text-center">
+                <div class="small text-muted mb-1">Khung giờ kế tiếp bắt đầu sau:</div>
+                <div class="d-inline-flex align-items-center gap-1">
+                    <span class="cps-countdown-box" id="flashCountdown">01:45:20</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. VOUCHERS CATALOG & FILTER TABS -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-3 mb-3">
+        <h4 class="fw-bold mb-0 d-flex align-items-center gap-2">
+            <i class="bi bi-tags-fill text-danger"></i>
+            <span>Kho Voucher Khả Dụng (@Model.AllCoupons.Count mã)</span>
+        </h4>
+
+        <!-- Search voucher -->
+        <div style="max-width: 280px; width: 100%;">
+            <div class="input-group input-group-sm">
+                <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" id="voucherSearchInput" class="form-control border-start-0" placeholder="Tìm theo tên hoặc mã voucher..." onkeyup="filterVouchers()" />
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter Buttons -->
+    <div class="cps-filter-pills">
+        <button type="button" class="cps-filter-btn active" data-filter="all" onclick="setCategoryFilter('all', this)">
+            <i class="bi bi-grid-fill me-1"></i> Tất cả (@Model.AllCoupons.Count)
+        </button>
+        <button type="button" class="cps-filter-btn" data-filter="order" onclick="setCategoryFilter('order', this)">
+            <i class="bi bi-tag-fill me-1"></i> Mã giảm đơn hàng (@Model.OrderCoupons.Count)
+        </button>
+        <button type="button" class="cps-filter-btn" data-filter="shipping" onclick="setCategoryFilter('shipping', this)">
+            <i class="bi bi-truck me-1"></i> Mã Freeship (@Model.ShippingCoupons.Count)
+        </button>
+        <button type="button" class="cps-filter-btn" data-filter="smember" onclick="setCategoryFilter('smember', this)">
+            <i class="bi bi-gem me-1"></i> Đặc quyền Smember (@Model.SmemberCoupons.Count)
+        </button>
+        <button type="button" class="cps-filter-btn" data-filter="flash" onclick="setCategoryFilter('flash', this)">
+            <i class="bi bi-lightning-fill me-1"></i> Flash Sale
+        </button>
+    </div>
+
+    <!-- Vouchers Grid -->
+    <div class="row g-3" id="vouchersGrid">
+        @foreach (var c in Model.AllCoupons)
+        {
+            var isSaved = Model.SavedCouponCodes.Contains(c.Code);
+            var isShipping = c.Type == WebsiteBanDienThoai.Models.CouponType.ShippingDiscount;
+            var isSmember = c.Code.Contains("SMEMBER") || c.Code.Contains("VIP") || c.Title.Contains("Smember", StringComparison.OrdinalIgnoreCase);
+            var isFlash = c.Code.Contains("FLASH") || c.Code.Contains("LUCKY") || c.DiscountValue >= 100000;
+
+            var stubClass = isShipping ? "shipping" : (isSmember ? "smember" : "");
+            var categoryClass = (isShipping ? "cat-shipping " : "cat-order ") + (isSmember ? "cat-smember " : "") + (isFlash ? "cat-flash " : "");
+
+            // Calculate mock usage percentage based on code hash for realism
+            var progressPercent = Math.Clamp(50 + (Math.Abs(c.Code.GetHashCode()) % 45), 55, 96);
+
+            <div class="col-md-6 col-lg-6 voucher-item @categoryClass" data-code="@c.Code.ToLower()" data-title="@c.Title.ToLower()" data-desc="@c.Description.ToLower()">
+                <div class="cps-voucher-card">
+                    <!-- Ticket Stub Left -->
+                    <div class="cps-ticket-stub @stubClass">
+                        <span class="cps-stub-badge">
+                            @(isShipping ? "FREESHIP" : (c.IsPercentage ? "GIẢM %" : "GIẢM GIÁ"))
+                        </span>
+                        <div class="cps-stub-val">
+                            @if (isShipping)
+                            {
+                                <span>30K</span>
+                            }
+                            else if (c.IsPercentage)
+                            {
+                                <span>@c.DiscountValue.ToString("N0")%</span>
+                            }
+                            else if (c.DiscountValue >= 1000000)
+                            {
+                                <span>@((c.DiscountValue / 1000000m).ToString("0.#"))Tr</span>
+                            }
+                            else
+                            {
+                                <span>@((c.DiscountValue / 1000m).ToString("N0"))K</span>
+                            }
+                        </div>
+                        <span style="font-size: 10px; opacity: 0.85; margin-top: 4px;">
+                            @(isShipping ? "Vận chuyển" : "Đơn hàng")
+                        </span>
+                    </div>
+
+                    <!-- Ticket Body Right -->
+                    <div class="cps-ticket-body">
+                        <div>
+                            <div class="d-flex align-items-start justify-content-between gap-2">
+                                <h6 class="cps-voucher-title">@c.Title</h6>
+                                <span class="cps-code-pill" onclick="copyCode('@c.Code')" title="Nhấn để sao chép mã">
+                                    <span>@c.Code</span>
+                                    <i class="bi bi-clipboard text-muted" id="icon-@c.Code"></i>
+                                </span>
+                            </div>
+                            <p class="cps-voucher-desc">@c.Description</p>
+                        </div>
+
+                        <div>
+                            <!-- Meta Info -->
+                            <div class="cps-voucher-meta">
+                                <span>
+                                    <i class="bi bi-cart-check text-muted me-1"></i>
+                                    Đơn từ: <strong>@(c.MinOrderAmount > 0 ? c.MinOrderAmount.ToString("N0") + "₫" : "0₫")</strong>
+                                </span>
+                                <span>
+                                    <i class="bi bi-clock-history text-muted me-1"></i>
+                                    HSD: @c.ExpiryDate.ToString("dd/MM/yyyy")
+                                </span>
+                            </div>
+
+                            <!-- Progress Bar -->
+                            <div class="cps-progress-wrap">
+                                <div class="cps-progress-label">
+                                    <span>Đã dùng @progressPercent%</span>
+                                    <span class="text-danger fw-bold">Sắp hết</span>
+                                </div>
+                                <div class="cps-progress-bar">
+                                    <div class="cps-progress-fill" style="width: @progressPercent%;"></div>
+                                </div>
+                            </div>
+
+                            <!-- Actions -->
+                            <div class="d-flex align-items-center justify-content-between pt-1">
+                                <button type="button" class="cps-btn-save-code @(isSaved ? "saved" : "")" id="btnSave-@c.Code" onclick="saveCouponCode('@c.Code')">
+                                    @if (isSaved)
+                                    {
+                                        <i class="bi bi-check2-circle me-1"></i>
+                                        <span>Đã lưu vào ví</span>
+                                    }
+                                    else
+                                    {
+                                        <i class="bi bi-bookmark-plus me-1"></i>
+                                        <span>Lưu mã</span>
+                                    }
+                                </button>
+
+                                <a asp-controller="Cart" asp-action="Index" class="cps-btn-use-code" title="Dùng mã ngay tại giỏ hàng">
+                                    <span>Dùng ngay</span>
+                                    <i class="bi bi-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Empty search placeholder -->
+    <div id="noVouchersFound" class="bg-white rounded-3 p-5 text-center my-4 border d-none">
+        <i class="bi bi-ticket-perforated text-muted" style="font-size: 48px;"></i>
+        <h6 class="fw-bold mt-2">Không tìm thấy voucher phù hợp</h6>
+        <p class="text-muted small mb-0">Vui lòng thử tìm kiếm với từ khóa khác hoặc chuyển sang danh mục Tất cả.</p>
+    </div>
+
+    <!-- 5. HOW TO USE VOUCHERS -->
+    <div class="my-5">
+        <div class="text-center mb-4">
+            <h4 class="fw-bold">Hướng Dẫn 3 Bước Săn & Dùng Voucher</h4>
+            <p class="text-muted small">Cực kỳ đơn giản - Tiết kiệm tối đa cho mọi hóa đơn tại CellphoneS</p>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="cps-step-card">
+                    <div class="cps-step-num">1</div>
+                    <h6 class="fw-bold">Điểm Danh & Lưu Mã</h6>
+                    <p class="text-muted small mb-0">Mở hộp quà may mắn mỗi ngày để nhận voucher bí mật và nhấn "Lưu mã" các ưu đãi yêu thích vào Ví Voucher.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="cps-step-card">
+                    <div class="cps-step-num">2</div>
+                    <h6 class="fw-bold">Chọn Sản Phẩm Yêu Thích</h6>
+                    <p class="text-muted small mb-0">Khám phá điện thoại, iPad, laptop hoặc phụ kiện chính hãng tại CellphoneS và thêm vào Giỏ hàng.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="cps-step-card">
+                    <div class="cps-step-num">3</div>
+                    <h6 class="fw-bold">Áp Dụng Mã Tại Thanh Toán</h6>
+                    <p class="text-muted small mb-0">Tại trang Thanh toán, chọn mã có sẵn từ ví hoặc dán mã. Hệ thống hỗ trợ dùng song song 1 mã đơn hàng + 1 mã Freeship!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. FAQS ACCORDION -->
+    <div class="bg-white rounded-3 p-4 border shadow-sm mb-5">
+        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+            <i class="bi bi-question-circle-fill text-danger"></i>
+            <span>Câu Hỏi Thường Gặp Về Voucher Điểm Danh</span>
+        </h5>
+
+        <div class="accordion accordion-flush" id="faqAccordion">
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingOne">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne">
+                        1. Voucher điểm danh có thời hạn sử dụng trong bao lâu?
+                    </button>
+                </h2>
+                <div id="flush-collapseOne" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-muted small">
+                        Tất cả các voucher nhận được từ chương trình Điểm Danh Hàng Ngày có thời hạn sử dụng lên đến 30 ngày kể từ ngày mở quà. Quý khách có thể kiểm tra danh sách và thời hạn trong phần "Ví Voucher Của Tôi".
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingTwo">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseTwo">
+                        2. Tôi có thể áp dụng cùng lúc nhiều voucher cho một đơn hàng không?
+                    </button>
+                </h2>
+                <div id="flush-collapseTwo" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-muted small">
+                        <strong>Có!</strong> Hệ thống CellphoneS độc quyền hỗ trợ áp dụng đồng thời: <strong>01 Mã giảm giá đơn hàng</strong> + <strong>01 Mã miễn phí vận chuyển</strong> trong cùng 1 lần thanh toán giúp quý khách tiết kiệm tối đa.
+                    </div>
+                </div>
+            </div>
+
+            <div class="accordion-item">
+                <h2 class="accordion-header" id="flush-headingThree">
+                    <button class="accordion-button collapsed fw-bold" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseThree">
+                        3. Nếu tôi quên điểm danh 1 ngày thì chuỗi 7 ngày có bị mất không?
+                    </button>
+                </h2>
+                <div id="flush-collapseThree" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                    <div class="accordion-body text-muted small">
+                        Để đạt được Siêu Voucher 500K vào Ngày thứ 7, quý khách cần điểm danh liên tục mỗi ngày. Nếu bỏ lỡ một ngày, chuỗi sẽ bắt đầu lại từ Ngày 1, nhưng các voucher đã nhận trước đó vẫn được giữ nguyên trong ví voucher của quý khách!
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FLOATING WALLET BUTTON -->
+<a href="javascript:void(0)" class="cps-wallet-float-btn" onclick="openWalletModal()" title="Xem ví voucher của bạn">
+    <i class="bi bi-wallet2 text-warning fs-5"></i>
+    <span>Ví voucher (<span id="floatWalletCount">@Model.SavedCouponCodes.Count</span>)</span>
+</a>
+
+<!-- MODAL VÍ VOUCHER -->
+<div class="modal fade" id="walletModal" tabindex="-1" aria-labelledby="walletModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-danger text-white rounded-top-4">
+                <h5 class="modal-title fw-bold" id="walletModalLabel">
+                    <i class="bi bi-wallet2 me-2"></i> Ví Voucher Của Bạn
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <div id="walletLoading" class="text-center py-4 d-none">
+                    <div class="spinner-border text-danger" role="status"></div>
+                    <div class="text-muted small mt-2">Đang tải danh sách voucher của bạn...</div>
+                </div>
+                <div id="walletEmptyState" class="text-center py-4 @(Model.SavedCouponCodes.Count > 0 ? "d-none" : "")">
+                    <i class="bi bi-ticket-detailed text-muted" style="font-size: 56px;"></i>
+                    <h6 class="fw-bold mt-2">Ví voucher của bạn đang trống</h6>
+                    <p class="text-muted small">Hãy nhấn "Lưu mã" hoặc mở hộp quà điểm danh để nhận mã giảm giá ngay nhé!</p>
+                </div>
+                <div id="walletListContent" class="row g-3">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+            <div class="modal-footer bg-light rounded-bottom-4">
+                <button type="button" class="btn btn-secondary rounded-pill px-4 small fw-bold" data-bs-dismiss="modal">Đóng</button>
+                <a asp-controller="Cart" asp-action="Index" class="btn btn-danger rounded-pill px-4 small fw-bold">
+                    <i class="bi bi-cart3 me-1"></i> Đến Giỏ Hàng Sử Dụng
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CELEBRATION REVEAL DAILY GIFT -->
+<div class="modal fade" id="celebrationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-2xl rounded-4 text-center overflow-hidden">
+            <div class="p-4" style="background: linear-gradient(135deg, #d70018 0%, #b30014 100%); color: #ffffff;">
+                <div class="mb-2" style="font-size: 52px; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.3));">🎁</div>
+                <h4 class="fw-bold mb-1">CHÚC MỪNG BẠN!</h4>
+                <p class="small text-white-50 mb-0" id="revealStreakText">Bạn vừa hoàn thành điểm danh ngày hôm nay</p>
+            </div>
+            <div class="modal-body p-4 bg-white">
+                <div class="bg-light p-3 rounded-3 border mb-3">
+                    <span class="badge bg-danger mb-2" id="revealTypeText">Mã giảm giá</span>
+                    <h5 class="fw-bold text-dark mb-1" id="revealTitle">Voucher Giảm Giá</h5>
+                    <p class="text-muted small mb-2" id="revealDesc">Áp dụng cho đơn hàng</p>
+                    <div class="d-inline-flex align-items-center gap-2 bg-white px-3 py-2 rounded-2 border">
+                        <span class="fw-bold text-danger fs-5" id="revealCode">CODE</span>
+                        <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-bold" onclick="copyCodeFromModal()">
+                            <i class="bi bi-clipboard"></i> Sao chép
+                        </button>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <button type="button" class="btn btn-outline-secondary w-50 rounded-pill fw-bold" data-bs-dismiss="modal">Lưu để dùng sau</button>
+                    <a asp-controller="Cart" asp-action="Index" class="btn btn-danger w-50 rounded-pill fw-bold">
+                        Dùng ngay <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- TOAST NOTIFICATION CONTAINER -->
+<div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11000;">
+    <div id="voucherToast" class="toast align-items-center text-white bg-dark border-0 rounded-3 shadow-lg" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body d-flex align-items-center gap-2" id="voucherToastMessage">
+                <i class="bi bi-check-circle-fill text-success fs-5"></i>
+                <span>Thông báo</span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    // 1. Toast Notification Helper
+    function showToast(msg, isSuccess = true) {
+        const toastEl = document.getElementById('voucherToast');
+        const msgEl = document.getElementById('voucherToastMessage');
+        if (toastEl && msgEl) {
+            msgEl.innerHTML = `
+                <i class="bi ${isSuccess ? 'bi-check-circle-fill text-success' : 'bi-exclamation-circle-fill text-warning'} fs-5"></i>
+                <span>${msg}</span>
+            `;
+            const toast = new bootstrap.Toast(toastEl, { delay: 3500 });
+            toast.show();
+        }
+    }
+
+    // 2. Copy Code to Clipboard
+    let _lastRevealedCode = "";
+    function copyCode(code) {
+        navigator.clipboard.writeText(code).then(() => {
+            const icon = document.getElementById('icon-' + code);
+            if (icon) {
+                icon.className = 'bi bi-check-lg text-success';
+                setTimeout(() => { icon.className = 'bi bi-clipboard text-muted'; }, 2000);
+            }
+            showToast(`Đã sao chép mã <strong>${code}</strong> vào bộ nhớ tạm!`);
+        }).catch(() => {
+            showToast(`Mã của bạn: ${code}`);
+        });
+    }
+
+    function copyCodeFromModal() {
+        if (_lastRevealedCode) {
+            copyCode(_lastRevealedCode);
+        }
+    }
+
+    // 3. Save Voucher to Session & Cookie
+    async function saveCouponCode(code) {
+        try {
+            const formData = new FormData();
+            formData.append('code', code);
+
+            const res = await fetch('/Voucher/SaveVoucher', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                const btn = document.getElementById('btnSave-' + code);
+                if (btn) {
+                    btn.classList.add('saved');
+                    btn.innerHTML = '<i class="bi bi-check2-circle me-1"></i><span>Đã lưu vào ví</span>';
+                }
+
+                // Increment counts
+                updateWalletCounts(1);
+                showToast(`Đã lưu mã <strong>${code}</strong> vào ví voucher thành công!`);
+            } else {
+                showToast(data.message || 'Không thể lưu mã', false);
+            }
+        } catch (e) {
+            showToast('Lỗi khi lưu mã voucher', false);
+        }
+    }
+
+    function updateWalletCounts(delta = 0) {
+        const wb = document.getElementById('walletBadgeCount');
+        const fb = document.getElementById('floatWalletCount');
+        if (wb) {
+            let current = parseInt(wb.innerText) || 0;
+            wb.innerText = Math.max(0, current + delta);
+        }
+        if (fb) {
+            let current = parseInt(fb.innerText) || 0;
+            fb.innerText = Math.max(0, current + delta);
+        }
+    }
+
+    // 4. Claim Daily Reward
+    function promptLoginForCheckin() {
+        Swal.fire({
+            title: 'Yêu cầu đăng nhập Smember',
+            html: 'Quý khách vui lòng đăng nhập tài khoản <strong>Smember</strong> để điểm danh mở hộp quà bí mật và tích lũy chuỗi 7 ngày!',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d70018',
+            cancelButtonColor: '#64748b',
+            confirmButtonText: '<i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập ngay',
+            cancelButtonText: 'Để sau',
+            customClass: {
+                popup: 'rounded-4 shadow-lg'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/Account/Login?returnUrl=/Voucher';
+            }
+        });
+    }
+
+    async function claimDailyReward() {
+        const btn = document.getElementById('btnClaimDaily');
+        if (btn) {
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Đang mở quà...';
+        }
+
+        try {
+            const res = await fetch('/Voucher/ClaimDaily', {
+                method: 'POST'
+            });
+
+            const data = await res.json();
+            if (data.requireLogin) {
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-box2-heart me-2"></i> MỞ HỘP QUÀ HÔM NAY';
+                }
+                promptLoginForCheckin();
+                return;
+            }
+            if (data.success && data.voucher) {
+                // Trigger Confetti!
+                fireConfetti();
+
+                // Update UI state
+                const container = document.getElementById('giftBoxContainer');
+                if (container) {
+                    container.innerHTML = `
+                        <div id="boxClaimedState">
+                            <div class="cps-giftbox-anim" style="animation: none; transform: scale(1.05);">
+                                <i class="bi bi-patch-check-fill text-success" style="font-size: 64px;"></i>
+                            </div>
+                            <h5 class="fw-bold text-success mb-1">🎉 Bạn Đã Điểm Danh Ngày ${data.streak} Thành Công!</h5>
+                            <p class="text-dark small mb-3">
+                                Phần quà hôm nay: <strong>${data.voucher.title}</strong> (Mã: <code class="fw-bold text-danger">${data.voucher.code}</code>)
+                            </p>
+                            <div class="d-flex flex-wrap justify-content-center gap-2">
+                                <button type="button" class="btn btn-outline-secondary rounded-pill px-4 py-2 small fw-bold" disabled>
+                                    <i class="bi bi-clock-history me-1"></i> Quay lại vào ngày mai để nhận quà tiếp theo
+                                </button>
+                                <a href="/Cart" class="btn btn-danger rounded-pill px-4 py-2 small fw-bold">
+                                    <i class="bi bi-cart3 me-1"></i> Dùng mã trong Giỏ hàng
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Update Streak Item
+                const streakItem = document.getElementById('streakItemDay' + data.streak);
+                if (streakItem) {
+                    streakItem.className = 'cps-streak-item claimed current' + (data.streak === 7 ? ' day-7' : '');
+                    const statusEl = streakItem.querySelector('.cps-streak-status');
+                    if (statusEl) {
+                        statusEl.className = 'cps-streak-status bg-success-subtle text-success';
+                        statusEl.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i>Đã nhận';
+                    }
+                }
+
+                // Update badge
+                const badge = document.getElementById('currentStreakBadge');
+                if (badge) badge.innerText = data.streak;
+
+                // Update button if code is displayed on page
+                const btnSave = document.getElementById('btnSave-' + data.voucher.code);
+                if (btnSave) {
+                    btnSave.classList.add('saved');
+                    btnSave.innerHTML = '<i class="bi bi-check2-circle me-1"></i><span>Đã lưu vào ví</span>';
+                }
+
+                updateWalletCounts(1);
+
+                // Show Reveal Modal
+                _lastRevealedCode = data.voucher.code;
+                document.getElementById('revealStreakText').innerText = `Chúc mừng bạn đã hoàn thành điểm danh Ngày ${data.streak}/7!`;
+                document.getElementById('revealTypeText').innerText = data.voucher.typeText;
+                document.getElementById('revealTitle').innerText = data.voucher.title;
+                document.getElementById('revealDesc').innerText = data.voucher.description;
+                document.getElementById('revealCode').innerText = data.voucher.code;
+
+                const modal = new bootstrap.Modal(document.getElementById('celebrationModal'));
+                modal.show();
+            } else {
+                showToast(data.message || 'Không thể nhận quà hôm nay', false);
+                if (btn) {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-box2-heart me-2"></i> MỞ HỘP QUÀ HÔM NAY';
+                }
+            }
+        } catch (e) {
+            showToast('Lỗi kết nối khi mở hộp quà', false);
+            if (btn) {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-box2-heart me-2"></i> MỞ HỘP QUÀ HÔM NAY';
+            }
+        }
+    }
+
+    // 5. Open Wallet Modal & Fetch My Vouchers
+    async function openWalletModal() {
+        const modal = new bootstrap.Modal(document.getElementById('walletModal'));
+        modal.show();
+
+        const loading = document.getElementById('walletLoading');
+        const empty = document.getElementById('walletEmptyState');
+        const list = document.getElementById('walletListContent');
+
+        loading.classList.remove('d-none');
+        list.innerHTML = '';
+        empty.classList.add('d-none');
+
+        try {
+            const res = await fetch('/Voucher/GetMyVouchers');
+            const data = await res.json();
+            loading.classList.add('d-none');
+
+            if (data.success && data.coupons && data.coupons.length > 0) {
+                data.coupons.forEach(c => {
+                    const col = document.createElement('div');
+                    col.className = 'col-md-6';
+                    col.innerHTML = `
+                        <div class="border rounded-3 p-3 bg-white shadow-sm h-100 d-flex flex-column justify-content-between">
+                            <div>
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <span class="badge ${c.type === 1 ? 'bg-success' : 'bg-danger'}">${c.typeText}</span>
+                                    <span class="cps-code-pill" onclick="copyCode('${c.code}')">${c.code} <i class="bi bi-clipboard"></i></span>
+                                </div>
+                                <h6 class="fw-bold mb-1" style="font-size: 14px;">${c.title}</h6>
+                                <p class="text-muted small mb-2">${c.description}</p>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between border-top pt-2">
+                                <span class="small text-muted">HSD: ${c.expiryDate}</span>
+                                <a href="/Cart" class="btn btn-sm btn-danger rounded-pill fw-bold px-3">
+                                    Dùng ngay
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                    list.appendChild(col);
+                });
+            } else {
+                empty.classList.remove('d-none');
+            }
+        } catch (e) {
+            loading.classList.add('d-none');
+            empty.classList.remove('d-none');
+        }
+    }
+
+    // 6. Category Filter Tabs & Search
+    let _currentCategory = 'all';
+    function setCategoryFilter(cat, btn) {
+        _currentCategory = cat;
+        document.querySelectorAll('.cps-filter-btn').forEach(b => b.classList.remove('active'));
+        if (btn) btn.classList.add('active');
+        filterVouchers();
+    }
+
+    function filterVouchers() {
+        const query = (document.getElementById('voucherSearchInput').value || '').trim().toLowerCase();
+        const items = document.querySelectorAll('.voucher-item');
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const code = item.getAttribute('data-code') || '';
+            const title = item.getAttribute('data-title') || '';
+            const desc = item.getAttribute('data-desc') || '';
+
+            let matchesCat = true;
+            if (_currentCategory === 'order') {
+                matchesCat = item.classList.contains('cat-order');
+            } else if (_currentCategory === 'shipping') {
+                matchesCat = item.classList.contains('cat-shipping');
+            } else if (_currentCategory === 'smember') {
+                matchesCat = item.classList.contains('cat-smember');
+            } else if (_currentCategory === 'flash') {
+                matchesCat = item.classList.contains('cat-flash');
+            }
+
+            const matchesQuery = !query || code.includes(query) || title.includes(query) || desc.includes(query);
+
+            if (matchesCat && matchesQuery) {
+                item.style.display = 'block';
+                visibleCount++;
+            } else {
+                item.style.display = 'none';
+            }
+        });
+
+        const noFound = document.getElementById('noVouchersFound');
+        if (noFound) {
+            if (visibleCount === 0) noFound.classList.remove('d-none');
+            else noFound.classList.add('d-none');
+        }
+    }
+
+    // 7. Flash Countdown Timer Simulation
+    let remainingSeconds = @((int)Model.TimeUntilNextFlash.TotalSeconds);
+    function updateCountdown() {
+        if (remainingSeconds <= 0) {
+            remainingSeconds = 7200; // Reset 2 hours
+        }
+        remainingSeconds--;
+
+        const h = Math.floor(remainingSeconds / 3600);
+        const m = Math.floor((remainingSeconds % 3600) / 60);
+        const s = remainingSeconds % 60;
+
+        const str = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        const el = document.getElementById('flashCountdown');
+        if (el) el.innerText = str;
+    }
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+
+    // 8. Pure JS Canvas Confetti Generator
+    function fireConfetti() {
+        const canvas = document.getElementById('cpsConfettiCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const colors = ['#d70018', '#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#ffffff'];
+        const particles = [];
+
+        for (let i = 0; i < 160; i++) {
+            particles.push({
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                w: Math.random() * 8 + 4,
+                h: Math.random() * 8 + 4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                vx: (Math.random() - 0.5) * 16,
+                vy: (Math.random() - 0.8) * 18,
+                rot: Math.random() * 360,
+                rotSpeed: (Math.random() - 0.5) * 10,
+                opacity: 1
+            });
+        }
+
+        let frame = 0;
+        function render() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let active = false;
+
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.45; // gravity
+                p.vx *= 0.98;
+                p.rot += p.rotSpeed;
+                p.opacity -= 0.007;
+
+                if (p.opacity > 0 && p.y < canvas.height) {
+                    active = true;
+                    ctx.save();
+                    ctx.globalAlpha = p.opacity;
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rot * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+                    ctx.restore();
+                }
+            });
+
+            frame++;
+            if (active && frame < 200) {
+                requestAnimationFrame(render);
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        render();
+    }
+</script>
+}

@@ -1,0 +1,463 @@
+@model WebsiteBanDienThoai.Models.NewsArticle
+@{
+    ViewData["Title"] = Model.Title + " - Sforum CellphoneS";
+    var relatedNews = ViewBag.RelatedNews as List<WebsiteBanDienThoai.Models.NewsArticle> ?? new();
+    var relatedProducts = ViewBag.RelatedProducts as List<WebsiteBanDienThoai.Models.Product> ?? new();
+}
+
+<style>
+    .cps-article-detail-page {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        color: #1e293b;
+    }
+
+    .cps-breadcrumb {
+        font-size: 13px;
+        padding: 10px 0;
+    }
+
+    .cps-breadcrumb a {
+        color: #64748b;
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+
+    .cps-breadcrumb a:hover {
+        color: #d70018;
+    }
+
+    /* Article Header */
+    .cps-detail-header {
+        margin-bottom: 24px;
+    }
+
+    .cps-detail-cat-badge {
+        display: inline-block;
+        background: #fee2e2;
+        color: #d70018;
+        font-weight: 700;
+        font-size: 12px;
+        padding: 4px 12px;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 12px;
+    }
+
+    .cps-detail-title {
+        font-size: 30px;
+        font-weight: 800;
+        line-height: 1.35;
+        color: #0f172a;
+        margin-bottom: 16px;
+    }
+
+    .cps-detail-meta {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 16px;
+        padding: 12px 0;
+        border-top: 1px solid #f1f5f9;
+        border-bottom: 1px solid #f1f5f9;
+        font-size: 13px;
+        color: #64748b;
+    }
+
+    .cps-detail-meta .author-info {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        color: #0f172a;
+    }
+
+    .cps-detail-meta .author-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background: #fee2e2;
+        color: #d70018;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+    }
+
+    /* Summary Box */
+    .cps-summary-callout {
+        background: #f8fafc;
+        border-left: 4px solid #d70018;
+        padding: 16px 20px;
+        border-radius: 0 10px 10px 0;
+        font-size: 15px;
+        font-weight: 500;
+        line-height: 1.6;
+        color: #334155;
+        margin: 20px 0 28px 0;
+    }
+
+    /* Main Featured Image */
+    .cps-detail-featured-img {
+        width: 100%;
+        border-radius: 12px;
+        overflow: hidden;
+        margin-bottom: 28px;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+    }
+
+    .cps-detail-featured-img img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+    }
+
+    /* Article Body Typography */
+    .cps-article-body {
+        font-size: 16px;
+        line-height: 1.8;
+        color: #1e293b;
+    }
+
+    .cps-article-body p {
+        margin-bottom: 18px;
+    }
+
+    .cps-article-body h2 {
+        font-size: 22px;
+        font-weight: 700;
+        margin-top: 32px;
+        margin-bottom: 14px;
+        color: #0f172a;
+        position: relative;
+        padding-left: 12px;
+        border-left: 4px solid #d70018;
+    }
+
+    .cps-article-body h3 {
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 24px;
+        margin-bottom: 12px;
+        color: #1e293b;
+    }
+
+    .cps-article-body img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 10px;
+        margin: 16px 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    /* Share & Source Box */
+    .cps-share-box {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-top: 36px;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .cps-share-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        border-radius: 8px;
+        font-size: 13px;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.2s;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        background: #f8fafc;
+    }
+
+    .cps-share-btn:hover {
+        background: #f1f5f9;
+        color: #0f172a;
+    }
+
+    /* Sidebar Widgets */
+    .cps-sidebar-card {
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 18px;
+        margin-bottom: 20px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+
+    .cps-sidebar-title {
+        font-size: 15px;
+        font-weight: 700;
+        color: #0f172a;
+        padding-bottom: 10px;
+        margin-bottom: 14px;
+        border-bottom: 2px solid #fee2e2;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .cps-related-item {
+        display: flex;
+        gap: 12px;
+        padding: 10px 0;
+        border-bottom: 1px solid #f1f5f9;
+        text-decoration: none;
+        transition: transform 0.2s;
+    }
+
+    .cps-related-item:last-child {
+        border-bottom: none;
+    }
+
+    .cps-related-item:hover {
+        transform: translateX(4px);
+    }
+
+    .cps-related-thumb {
+        width: 85px;
+        height: 60px;
+        border-radius: 8px;
+        object-fit: cover;
+        flex-shrink: 0;
+        background: #f1f5f9;
+    }
+
+    .cps-related-text h6 {
+        font-size: 13px;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0 0 4px 0;
+        line-height: 1.35;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .cps-related-item:hover .cps-related-text h6 {
+        color: #d70018;
+    }
+
+    /* Product Mini Card in Sidebar */
+    .cps-side-prod-card {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #f1f5f9;
+        background: #fafafa;
+        margin-bottom: 10px;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .cps-side-prod-card:hover {
+        background: #fff;
+        border-color: #fca5a5;
+        box-shadow: 0 4px 12px rgba(215, 0, 24, 0.08);
+    }
+
+    .cps-side-prod-img {
+        width: 60px;
+        height: 60px;
+        object-fit: contain;
+        background: #fff;
+        border-radius: 8px;
+        padding: 4px;
+    }
+</style>
+
+<div class="container cps-article-detail-page my-3">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="cps-breadcrumb">
+        <ol class="breadcrumb m-0">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index"><i class="bi bi-house-door-fill me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="News" asp-action="Index">Tin công nghệ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="News" asp-action="Index" asp-route-category="@Model.Category">@Model.Category</a></li>
+            <li class="breadcrumb-item active text-truncate" style="max-width: 320px;" aria-current="page">@Model.Title</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4 mt-1">
+        <!-- CỘT TRÁI: NỘI DUNG BÀI VIẾT (8 CỘT) -->
+        <div class="col-lg-8">
+            <div class="bg-white p-4 p-md-5 rounded-3 border shadow-sm">
+                <!-- Article Header -->
+                <div class="cps-detail-header">
+                    <span class="cps-detail-cat-badge">@Model.Category</span>
+                    <h1 class="cps-detail-title">@Model.Title</h1>
+
+                    <div class="cps-detail-meta">
+                        <div class="author-info">
+                            <div class="author-avatar">@(string.IsNullOrEmpty(Model.Author) ? "S" : Model.Author[0].ToString().ToUpper())</div>
+                            <span>@Model.Author</span>
+                        </div>
+                        <div><i class="bi bi-calendar3 me-1 text-danger"></i>@Model.PublishedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                        <div><i class="bi bi-eye me-1 text-primary"></i>@Model.ViewCount.ToString("N0") lượt xem</div>
+                    </div>
+                </div>
+
+                <!-- Summary Callout -->
+                @if (!string.IsNullOrWhiteSpace(Model.Summary))
+                {
+                    <div class="cps-summary-callout">
+                        <i class="bi bi-quote fs-4 text-danger me-1"></i>@Model.Summary
+                    </div>
+                }
+
+                <!-- Hero / Main Image -->
+                @if (!string.IsNullOrWhiteSpace(Model.ThumbnailUrl))
+                {
+                    <div class="cps-detail-featured-img">
+                        <img src="@Model.ThumbnailUrl" alt="@Model.Title" onerror="this.src='/images/banners/banner-iphone16.jpg';" />
+                    </div>
+                }
+
+                <!-- Main Article Content (Loaded directly from Database) -->
+                <article class="cps-article-body">
+                    @if (!string.IsNullOrWhiteSpace(Model.Content))
+                    {
+                        @Html.Raw(Model.Content)
+                    }
+                    else
+                    {
+                        <p>@Model.Summary</p>
+                        <p>Bài viết đang tiếp tục được cập nhật thêm thông tin chi tiết. Quý độc giả có thể theo dõi thêm các bài viết công nghệ mới nhất cùng chủ đề @Model.Category tại hệ thống CellphoneS Sforum.</p>
+                    }
+                </article>
+
+                <!-- Share & Reference Footer -->
+                <div class="cps-share-box">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="fw-bold small text-dark"><i class="bi bi-share me-1 text-danger"></i>Chia sẻ:</span>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u=@Context.Request.Scheme://@Context.Request.Host@Context.Request.Path" target="_blank" class="cps-share-btn">
+                            <i class="bi bi-facebook text-primary"></i> Facebook
+                        </a>
+                        <button type="button" class="cps-share-btn" onclick="navigator.clipboard.writeText(window.location.href); showToast('Đã sao chép liên kết bài viết!', 'success');">
+                            <i class="bi bi-link-45deg"></i> Sao chép link
+                        </button>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(Model.SourceUrl))
+                    {
+                        <a href="@Model.SourceUrl" target="_blank" class="btn btn-outline-danger btn-sm fw-semibold">
+                            <i class="bi bi-box-arrow-up-right me-1"></i> Xem bài viết gốc trên CellphoneS Sforum
+                        </a>
+                    }
+                </div>
+
+                <!-- Back to News button -->
+                <div class="mt-4 pt-3 border-top text-center">
+                    <a asp-action="Index" class="btn btn-light border px-4 fw-bold">
+                        <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách tin công nghệ
+                    </a>
+                </div>
+            </div>
+
+            <!-- Bài viết liên quan cùng chuyên mục -->
+            @if (relatedNews.Any())
+            {
+                <div class="mt-4 bg-white p-4 rounded-3 border shadow-sm">
+                    <h5 class="fw-bold mb-3 text-dark">
+                        <i class="bi bi-grid-fill text-danger me-2"></i>Bài Viết Cùng Chuyên Mục "@Model.Category"
+                    </h5>
+                    <div class="row g-3">
+                        @foreach (var rel in relatedNews)
+                        {
+                            <div class="col-md-6">
+                                <a asp-action="Details" asp-route-slug="@rel.Slug" class="cps-related-item bg-light p-2 rounded-2">
+                                    <img src="@rel.ThumbnailUrl" alt="@rel.Title" class="cps-related-thumb" onerror="this.src='/images/banners/banner-iphone16.jpg';" />
+                                    <div class="cps-related-text overflow-hidden">
+                                        <h6>@rel.Title</h6>
+                                        <div class="text-muted small"><i class="bi bi-clock me-1"></i>@rel.TimeAgo</div>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- CỘT PHẢI: WIDGETS BỔ SUNG (4 CỘT) -->
+        <div class="col-lg-4">
+            <!-- Widget 1: Sản phẩm HOT liên quan -->
+            @if (relatedProducts.Any())
+            {
+                <div class="cps-sidebar-card">
+                    <div class="cps-sidebar-title">
+                        <i class="bi bi-lightning-charge-fill text-danger"></i>
+                        <span>Sản Phẩm Đang Giảm Giá HOT</span>
+                    </div>
+
+                    @foreach (var p in relatedProducts)
+                    {
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="cps-side-prod-card">
+                            <img src="@p.ImageUrl" alt="@p.Name" class="cps-side-prod-img" onerror="this.src='/images/banners/banner-iphone16.jpg';" />
+                            <div class="overflow-hidden flex-grow-1">
+                                <h6 class="mb-1 text-truncate font-weight-bold" style="font-size: 13px; color: #1e293b;">@p.Name</h6>
+                                <div class="text-danger fw-bold" style="font-size: 13px;">@p.SalePrice.ToString("N0")₫</div>
+                                @if (p.OriginalPrice > p.SalePrice)
+                                {
+                                    <small class="text-muted text-decoration-line-through" style="font-size: 11px;">@p.OriginalPrice.ToString("N0")₫</small>
+                                }
+                            </div>
+                        </a>
+                    }
+
+                    <div class="mt-3 text-center">
+                        <a asp-controller="Product" asp-action="Category" asp-route-slug="dien-thoai" class="btn btn-outline-danger btn-sm w-100 fw-bold">
+                            Khám phá tất cả sản phẩm <i class="bi bi-chevron-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            }
+
+            <!-- Widget 2: Banner Thu Cũ Đổi Mới -->
+            <div class="cps-sidebar-card p-0 overflow-hidden">
+                <a asp-controller="TradeIn" asp-action="Index">
+                    <img src="/images/banners/banner-tradein.jpg" alt="Thu cũ đổi mới CellphoneS" class="img-fluid w-100" />
+                </a>
+            </div>
+
+            <!-- Widget 3: Bài viết đọc nhiều nhất -->
+            <div class="cps-sidebar-card">
+                <div class="cps-sidebar-title">
+                    <i class="bi bi-fire text-danger"></i>
+                    <span>Bài Viết Xem Nhiều Nhất</span>
+                </div>
+
+                @foreach (var hot in relatedNews.Take(4))
+                {
+                    <a asp-action="Details" asp-route-slug="@hot.Slug" class="cps-related-item">
+                        <img src="@hot.ThumbnailUrl" alt="@hot.Title" class="cps-related-thumb" onerror="this.src='/images/banners/banner-s24ultra.jpg';" />
+                        <div class="cps-related-text overflow-hidden">
+                            <h6>@hot.Title</h6>
+                            <div class="text-muted small"><i class="bi bi-eye me-1"></i>@hot.ViewCount.ToString("N0") xem</div>
+                        </div>
+                    </a>
+                }
+            </div>
+
+            <!-- Widget 4: Banner Smember -->
+            <div class="cps-sidebar-card p-0 overflow-hidden">
+                <a asp-controller="Account" asp-action="Profile">
+                    <img src="/images/banners/banner-smember.jpg" alt="Smember CellphoneS" class="img-fluid w-100" />
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

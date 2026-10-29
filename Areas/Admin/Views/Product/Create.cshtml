@@ -1,0 +1,215 @@
+@model WebsiteBanDienThoai.Areas.Admin.Models.ProductFormViewModel
+@{
+    ViewData["Title"] = "Thêm Mới Sản Phẩm";
+}
+
+<form asp-action="Create" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row g-3">
+        <!-- CỘT TRÁI: THÔNG TIN CHÍNH & GIÁ -->
+        <div class="col-lg-8">
+            <!-- 1. Thông tin cơ bản -->
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-info-circle-fill text-danger"></i> Thông Tin Sản Phẩm Cơ Bản</h5>
+                </div>
+                <div class="cps-admin-card-body">
+                    <div class="mb-3">
+                        <label asp-for="Product.Name" class="form-label fw-bold">Tên sản phẩm <span class="text-danger">*</span></label>
+                        <input asp-for="Product.Name" class="form-control" placeholder="Ví dụ: vivo V40 Lite hoặc iPhone 16 Pro Max (không kèm dung lượng)" required />
+                        <span asp-validation-for="Product.Name" class="text-danger small"></span>
+                        <div class="form-text small text-muted">Lưu ý: Chỉ nhập tên máy, dung lượng/RAM sẽ được cấu hình trong phần biến thể.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.Slug" class="form-label fw-bold">Slug URL (Để trống sẽ tự động tạo từ tên)</label>
+                        <input asp-for="Product.Slug" class="form-control" placeholder="vivo-v40-lite" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.ImageUrl" class="form-label fw-bold">Đường dẫn hình ảnh (URL) <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <input asp-for="Product.ImageUrl" id="image-url-input" class="form-control" placeholder="https://cdn2.cellphones.com.vn/..." required />
+                            <button type="button" class="btn btn-outline-secondary" onclick="previewImage()">Xem trước</button>
+                        </div>
+                        <div class="mt-2 text-center p-2 bg-light border rounded" style="max-height: 160px; overflow: hidden;">
+                            <img id="image-preview" src="@(string.IsNullOrEmpty(Model.Product.ImageUrl) ? "https://via.placeholder.com/150" : Model.Product.ImageUrl)" 
+                                 alt="Preview" style="max-height: 140px; object-fit: contain;" />
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.TechnicalSpecs" class="form-label fw-bold">Thông số kỹ thuật tóm tắt</label>
+                        <textarea asp-for="Product.TechnicalSpecs" class="form-control" rows="3" 
+                                  placeholder="Màn hình: 6.9 inch OLED | Chip: A18 Pro | RAM: 8GB | Pin: 4685 mAh | Sạc: 25W"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.Description" class="form-label fw-bold">Mô tả bài viết giới thiệu chi tiết</label>
+                        <textarea asp-for="Product.Description" class="form-control" rows="5" 
+                                  placeholder="Nội dung đánh giá, tính năng nổi bật của thiết bị..."></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Giá cả & Khuyến mãi -->
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-tag-fill text-danger"></i> Thiết Lập Giá Cả & Khuyến Mãi</h5>
+                </div>
+                <div class="cps-admin-card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label asp-for="Product.OriginalPrice" class="form-label fw-bold">Giá niêm yết (Gốc) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="Product.OriginalPrice" type="number" class="form-control" required />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.SalePrice" class="form-label fw-bold">Giá bán hiện tại <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input asp-for="Product.SalePrice" type="number" class="form-control" required />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.SmemberDiscount" class="form-label fw-bold">Đặc quyền Smember giảm thêm</label>
+                            <div class="input-group">
+                                <input asp-for="Product.SmemberDiscount" type="number" class="form-control" value="0" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Product.PromotionInfo" class="form-label fw-bold">Quà tặng / Khuyến mãi kèm theo</label>
+                            <input asp-for="Product.PromotionInfo" class="form-control" placeholder="Tặng củ sạc 20W, phiếu mua hàng 500k..." />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CỘT PHẢI: PHÂN LOẠI & THIẾT LẬP -->
+        <div class="col-lg-4">
+            <!-- 1. Danh mục & Thương hiệu -->
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-folder-fill text-primary"></i> Phân Loại</h5>
+                </div>
+                <div class="cps-admin-card-body">
+                    <div class="mb-3">
+                        <label asp-for="Product.CategoryId" class="form-label fw-bold">Danh mục <span class="text-danger">*</span></label>
+                        <select asp-for="Product.CategoryId" class="form-select" asp-items="Model.CategoryList" required>
+                            <option value="">-- Chọn danh mục --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.BrandId" class="form-label fw-bold">Thương hiệu <span class="text-danger">*</span></label>
+                        <select asp-for="Product.BrandId" class="form-select" asp-items="Model.BrandList" required>
+                            <option value="">-- Chọn thương hiệu --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Kho hàng & Bảo hành -->
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-box-fill text-warning"></i> Kho & Bảo Hành</h5>
+                </div>
+                <div class="cps-admin-card-body">
+                    <div class="mb-3">
+                        <label asp-for="Product.StockQuantity" class="form-label fw-bold d-flex justify-content-between align-items-center">
+                            <span>Số lượng tồn kho</span>
+                            <span class="badge bg-secondary-subtle text-secondary border"><i class="bi bi-lock-fill"></i> Tự động qua Nhập kho</span>
+                        </label>
+                        <div class="input-group">
+                            <input asp-for="Product.StockQuantity" type="number" class="form-control bg-light text-muted fw-bold" value="0" readonly />
+                            <span class="input-group-text text-muted bg-light"><i class="bi bi-boxes"></i></span>
+                        </div>
+                        <small class="text-muted d-block mt-1" style="font-size: 11.5px;">
+                            <i class="bi bi-info-circle text-primary me-1"></i> Số lượng được quản lý dựa trên Kho hàng. Sau khi tạo sản phẩm, vui lòng vào mục <b>Quản lý Kho Hàng -> Nhập hàng</b> để nhập số lượng thực tế.
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Product.Warranty" class="form-label fw-bold">Chính sách bảo hành</label>
+                        <input asp-for="Product.Warranty" class="form-control" value="12 tháng chính hãng" />
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Đặc quyền & Flash Sale -->
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-sliders text-success"></i> Đặc Quyền & Flash Sale</h5>
+                </div>
+                <div class="cps-admin-card-body">
+                    <div class="form-check form-switch mb-2">
+                        <input asp-for="Product.HasInstallment0Percent" class="form-check-input" type="checkbox" id="chk0Percent" />
+                        <label class="form-check-label fw-bold" for="chk0Percent">Hỗ trợ Trả góp 0%</label>
+                    </div>
+
+                    <div class="form-check form-switch mb-2">
+                        <input asp-for="Product.IsHot" class="form-check-input" type="checkbox" id="chkHot" />
+                        <label class="form-check-label fw-bold" for="chkHot">Gắn nhãn HOT / Bán chạy</label>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input asp-for="Product.IsFlashSale" class="form-check-input" type="checkbox" id="chkFlashSale" onchange="toggleFlashSaleFields()" />
+                        <label class="form-check-label fw-bold" for="chkFlashSale">Kích hoạt Flash Sale giờ vàng</label>
+                    </div>
+
+                    <div id="flashsale-options" style="display: none;" class="p-3 bg-light rounded border">
+                        <div class="mb-2">
+                            <label asp-for="Product.FlashSalePrice" class="form-label small fw-bold">Giá Flash Sale</label>
+                            <input asp-for="Product.FlashSalePrice" type="number" class="form-control form-control-sm" />
+                        </div>
+                        <div class="mb-2">
+                            <label asp-for="Product.FlashSaleQuantity" class="form-label small fw-bold">Số lượng mở bán Flash Sale</label>
+                            <input asp-for="Product.FlashSaleQuantity" type="number" class="form-control form-control-sm" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Nút Hành Động -->
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-danger py-2 fw-bold fs-6">
+                    <i class="bi bi-check-circle-fill me-1"></i> Lưu Sản Phẩm Mới
+                </button>
+                <a asp-area="Admin" asp-controller="Product" asp-action="Index" class="btn btn-outline-secondary py-2">
+                    <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+                </a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function previewImage() {
+            const url = document.getElementById("image-url-input").value;
+            const preview = document.getElementById("image-preview");
+            if (url) {
+                preview.src = url;
+            }
+        }
+
+        function toggleFlashSaleFields() {
+            const chk = document.getElementById("chkFlashSale");
+            const box = document.getElementById("flashsale-options");
+            box.style.display = chk.checked ? "block" : "none";
+        }
+
+        document.getElementById("image-url-input")?.addEventListener("change", previewImage);
+        toggleFlashSaleFields();
+    </script>
+}

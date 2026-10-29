@@ -1,0 +1,189 @@
+@{
+    ViewData["Title"] = "Chính Sách Bảo Hành & Đổi Trả Chính Hãng - CellphoneS";
+}
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-transparent p-0 small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted"><i class="bi bi-house-door"></i> Trang chủ</a></li>
+            <li class="breadcrumb-item"><span class="text-muted">Thông tin & Chính sách</span></li>
+            <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Chính sách bảo hành</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- CỘT TRÁI: SIDEBAR ĐIỀU HƯỚNG -->
+        <div class="col-lg-3">
+            <partial name="_PolicySidebar" />
+        </div>
+
+        <!-- CỘT PHẢI: NỘI DUNG CHÍNH SÁCH BẢO HÀNH -->
+        <div class="col-lg-9">
+            <div class="bg-white p-4 p-md-5 rounded-3 shadow-sm cps-policy-article">
+                <!-- Tiêu đề chính -->
+                <div class="border-bottom pb-4 mb-4">
+                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-bold mb-2">
+                        <i class="bi bi-shield-shaded me-1"></i> BẢO HÀNH CHÍNH HÃNG TOÀN DIỆN
+                    </span>
+                    <h2 class="fw-bolder text-dark mb-2">Chính Sách Bảo Hành & Đổi Trả Sản Phẩm</h2>
+                    <p class="text-muted mb-0">
+                        CellphoneS cam kết mang đến chính sách hậu mãi và bảo hành vượt trội: 100% sản phẩm phân phối chính hãng, chính sách <strong>1 ĐỔI 1 TRONG 30 NGÀY ĐẦU</strong> nếu có lỗi nhà sản xuất, tiếp nhận bảo hành tại hơn 180 chi nhánh toàn quốc và các trung tâm ủy quyền chính hãng.
+                    </p>
+                </div>
+
+                <!-- 1. CAM KẾT VÀNG 1 ĐỔI 1 TRONG 30 NGÀY -->
+                <div class="card border border-danger-subtle rounded-3 p-4 mb-5 shadow-sm bg-danger bg-opacity-10">
+                    <div class="d-flex flex-column flex-md-row align-items-center gap-3">
+                        <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center flex-shrink-0" style="width: 60px; height: 60px; font-size: 28px;">
+                            <i class="bi bi-arrow-repeat"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bolder text-danger mb-1">Chính Sách 1 Đổi 1 Trong 30 Ngày Đầu</h4>
+                            <p class="small text-dark mb-0">
+                                Nếu sản phẩm (Điện thoại, Tablet, Laptop, Phụ kiện) gặp lỗi phần cứng phát sinh từ nhà sản xuất trong vòng <strong>30 ngày đầu tiên</strong> kể từ ngày mua hàng, CellphoneS sẽ đổi ngay một sản phẩm mới cùng loại 100% nguyên seal cho quý khách mà không mất thêm bất kỳ chi phí nào.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. BẢNG THỜI HẠN BẢO HÀNH THEO DANH MỤC -->
+                <div class="mb-5">
+                    <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 14px;">1</span>
+                        Bảng Thời Hạn Bảo Hành Chuẩn
+                    </h4>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 25%;">Nhóm sản phẩm</th>
+                                    <th style="width: 25%;">Thời hạn bảo hành</th>
+                                    <th style="width: 25%;">Hình thức xử lý</th>
+                                    <th>Nơi bảo hành</th>
+                                </tr>
+                            </thead>
+                            <tbody class="small">
+                                <tr>
+                                    <td class="fw-bold text-dark">Điện thoại iPhone / iPad / Mac</td>
+                                    <td><span class="badge bg-danger fs-6 py-1 px-2">12 Tháng</span></td>
+                                    <td>1 đổi 1 30 ngày, sau đó bảo hành thay thế linh kiện chính hãng Apple</td>
+                                    <td>Hệ thống Apple CareS (AASP) hoặc mọi chi nhánh CellphoneS</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold text-dark">Điện thoại Android (Samsung, Xiaomi, OPPO)</td>
+                                    <td><span class="badge bg-danger fs-6 py-1 px-2">12 - 18 Tháng</span></td>
+                                    <td>1 đổi 1 30 ngày, bảo hành sửa chữa/thay thế chính hãng</td>
+                                    <td>Trung tâm bảo hành ủy quyền của hãng hoặc CellphoneS</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold text-dark">Laptop (MacBook, Asus, Dell, Lenovo)</td>
+                                    <td><span class="badge bg-danger fs-6 py-1 px-2">12 - 24 Tháng</span></td>
+                                    <td>1 đổi 1 30 ngày, bảo hành tại hãng hoặc tận nhà (nếu hãng hỗ trợ)</td>
+                                    <td>Trung tâm bảo hành ủy quyền chính hãng</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold text-dark">Đồng hồ thông minh (Apple Watch, Garmin, Galaxy Watch)</td>
+                                    <td><span class="badge bg-danger fs-6 py-1 px-2">12 Tháng</span></td>
+                                    <td>1 đổi 1 30 ngày lỗi phần cứng</td>
+                                    <td>Trung tâm bảo hành ủy quyền của hãng</td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold text-dark">Phụ kiện (Củ sạc, Cáp, Tai nghe, Sạc dự phòng)</td>
+                                    <td><span class="badge bg-success fs-6 py-1 px-2">12 - 24 Tháng</span></td>
+                                    <td><strong>ĐỔI MỚI 100%</strong> trong suốt thời gian bảo hành</td>
+                                    <td>Tất cả các cửa hàng CellphoneS toàn quốc</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 3. CÁC GÓI BẢO HÀNH MỞ RỘNG (DỊCH VỤ VIP) -->
+                <div class="mb-5">
+                    <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 14px;">2</span>
+                        Các Gói Bảo Hành Mở Rộng Đặc Quyền (VIP)
+                    </h4>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <div class="card h-100 border rounded-3 p-3 shadow-sm bg-light">
+                                <h6 class="fw-bold text-danger mb-2">
+                                    <i class="bi bi-shield-fill-plus me-1"></i> Gói Bảo Hành Rơi Vỡ - Vào Nước (S-Care VIP)
+                                </h6>
+                                <p class="small text-muted mb-2">
+                                    Bảo vệ thiết bị trước các tai nạn bất ngờ không thuộc phạm vi bảo hành của hãng như rơi vỡ màn hình, cấn móp, rớt nước.
+                                </p>
+                                <span class="badge bg-danger text-white small align-self-start">Hỗ trợ sửa chữa 100% chi phí hoặc đổi máy tương đương</span>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="card h-100 border rounded-3 p-3 shadow-sm bg-light">
+                                <h6 class="fw-bold text-danger mb-2">
+                                    <i class="bi bi-patch-check-fill me-1"></i> Gói Bảo Hành Mở Rộng 2 Năm (S24)
+                                </h6>
+                                <p class="small text-muted mb-2">
+                                    Kéo dài thời gian bảo hành chính hãng thêm 12 tháng (tổng cộng 24 tháng bảo hành), hoàn toàn yên tâm sử dụng máy lâu dài mà không lo hỏng hóc phát sinh.
+                                </p>
+                                <span class="badge bg-primary text-white small align-self-start">Gia tăng giá trị khi sang nhượng hoặc đổi máy mới</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. ĐIỀU KIỆN TIẾP NHẬN & TỪ CHỐI BẢO HÀNH -->
+                <div class="mb-5">
+                    <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                        <span class="badge bg-danger rounded-circle p-2" style="font-size: 14px;">3</span>
+                        Điều Kiện Tiếp Nhận & Từ Chối Bảo Hành
+                    </h4>
+
+                    <div class="row g-3">
+                        <!-- Được bảo hành -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border border-success-subtle rounded-3 p-3">
+                                <h6 class="fw-bold text-success mb-2">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Điều kiện được bảo hành:
+                                </h6>
+                                <ul class="small text-muted mb-0 d-flex flex-column gap-1">
+                                    <li>Sản phẩm còn trong thời hạn bảo hành tính từ ngày mua hàng.</li>
+                                    <li>Lỗi kỹ thuật xác định do linh kiện hoặc lỗi từ nhà sản xuất.</li>
+                                    <li>Số IMEI/Serial number trên thân máy trùng khớp với hóa đơn mua hàng điện tử tại hệ thống.</li>
+                                    <li>Sản phẩm đã thoát các tài khoản bảo mật cá nhân (iCloud, Google Account, Mi Account...).</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Từ chối bảo hành -->
+                        <div class="col-md-6">
+                            <div class="card h-100 border border-danger-subtle rounded-3 p-3">
+                                <h6 class="fw-bold text-danger mb-2">
+                                    <i class="bi bi-x-circle-fill me-1"></i> Các trường hợp từ chối bảo hành:
+                                </h6>
+                                <ul class="small text-muted mb-0 d-flex flex-column gap-1">
+                                    <li>Sản phẩm có dấu hiệu rơi vỡ, nứt móp, biến dạng khung sườn hoặc vào nước (nếu không mua gói S-Care VIP).</li>
+                                    <li>Tem bảo hành hoặc niêm phong trên sản phẩm bị rách, chắp vá hoặc mờ không đọc được.</li>
+                                    <li>Sản phẩm đã bị can thiệp tháo lắp, sửa chữa bởi các cá nhân hoặc đơn vị không thuộc hệ thống ủy quyền.</li>
+                                    <li>Máy bị khóa tài khoản bảo mật mà khách hàng không cung cấp được mật khẩu.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Nút chuyển tiếp -->
+                <div class="border-top pt-4 mt-5 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <a asp-controller="Policy" asp-action="InvoiceLookup" class="btn btn-outline-secondary fw-semibold rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Tra cứu hóa đơn điện tử
+                    </a>
+                    <a asp-controller="Policy" asp-action="Privacy" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-lock-fill me-1"></i> Chính sách bảo mật thông tin
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

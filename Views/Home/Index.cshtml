@@ -1,0 +1,944 @@
+@model WebsiteBanDienThoai.Models.ViewModels.HomeViewModel
+
+@{
+    ViewData["Title"] = "CellphoneS - Điện thoại, laptop, tablet, phụ kiện chính hãng";
+}
+
+<div class="container cps-hero-container">
+    <!-- 1. HERO SECTION (3 COLUMNS) -->
+    <div class="row g-3 cps-hero-section">
+        
+        <!-- Cột 1: Mega Menu Dọc bên trái -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="cps-sidebar-menu">
+                <ul class="cps-menu-list">
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <li class="cps-menu-item">
+                            <a asp-controller="Product" asp-action="Category" asp-route-slug="@cat.Slug" class="cps-menu-link">
+                                <i class="@(string.IsNullOrEmpty(cat.IconClass) ? "bi bi-phone" : cat.IconClass) menu-icon"></i>
+                                <span>@cat.Name</span>
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+
+                            <!-- Flyout Mega Menu -->
+                            <div class="cps-mega-flyout">
+                                <div class="row g-3">
+                                    <div class="col-4 cps-flyout-column">
+                                        <h6>THƯƠNG HIỆU HÀNG ĐẦU</h6>
+                                        <ul>
+                                            @foreach (var brand in Model.Brands.Take(6))
+                                            {
+                                                <li>
+                                                    <a asp-controller="Product" asp-action="Category" asp-route-slug="@cat.Slug" asp-route-brand="@brand.Slug">
+                                                        @cat.Name @brand.Name
+                                                    </a>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
+                                    <div class="col-4 cps-flyout-column">
+                                        <h6>CHỌN THEO MỨC GIÁ</h6>
+                                        <ul>
+                                            <li><a asp-controller="Product" asp-action="Category" asp-route-slug="@cat.Slug" asp-route-maxPrice="5000000">Dưới 5 triệu</a></li>
+                                            <li><a asp-controller="Product" asp-action="Category" asp-route-slug="@cat.Slug" asp-route-minPrice="5000000" asp-route-maxPrice="10000000">Từ 5 - 10 triệu</a></li>
+                                            <li><a asp-controller="Product" asp-action="Category" asp-route-slug="@cat.Slug" asp-route-minPrice="10000000" asp-route-maxPrice="20000000">Từ 10 - 20 triệu</a></li>
+                                            <li><a asp-controller="Product" asp-action="Category" asp-route-slug="@cat.Slug" asp-route-minPrice="20000000">Trên 20 triệu</a></li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-4 cps-flyout-column">
+                                        <h6>NHU CẦU NỔI BẬT</h6>
+                                        <ul>
+                                            <li><a href="#">Hỗ trợ 5G tốc độ cao</a></li>
+                                            <li><a href="#">Chơi game cấu hình khủng</a></li>
+                                            <li><a href="#">Chụp ảnh quay phim đẹp</a></li>
+                                            <li><a href="#">Pin trâu sạc siêu nhanh</a></li>
+                                            <li><a href="#">Màn hình gập thời thượng</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <!-- Cột 2: Main Slider Carousel ở giữa -->
+        <div class="col-12 col-lg-6">
+            <div class="cps-main-slider">
+                <div class="swiper cps-hero-swiper">
+                    <div class="swiper-wrapper">
+                        @for (int idx = 0; idx < Model.MainBanners.Count; idx++)
+                        {
+                            var banner = Model.MainBanners[idx];
+                            string fallbackMainImg = idx switch {
+                                0 => "/images/banners/banner-iphone16.jpg",
+                                1 => "/images/banners/banner-s24ultra.jpg",
+                                2 => "/images/banners/banner-khaitruong.jpg",
+                                _ => "/images/banners/banner-laptop.jpg"
+                            };
+                            <div class="swiper-slide">
+                                <a href="@banner.LinkUrl">
+                                    <img src="@banner.ImageUrl" alt="@banner.Title" onerror="this.onerror=null; this.src='@fallbackMainImg';" />
+                                </a>
+                            </div>
+                        }
+                    </div>
+                    <div class="swiper-button-next text-white"></div>
+                    <div class="swiper-button-prev text-white"></div>
+                </div>
+
+                <!-- Slider Bottom Tabs -->
+                <div class="cps-slider-tabs d-none d-sm-flex">
+                    @for (int i = 0; i < Model.MainBanners.Count; i++)
+                    {
+                        var b = Model.MainBanners[i];
+                        <div class="cps-tab-item @(i == 0 ? "active" : "")" data-slide-index="@i">
+                            <strong>@b.Title</strong><br />
+                            <small class="text-muted" style="font-size: 10px;">@(b.Subtitle ?? "Ưu đãi lớn")</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Cột 3: Khối Smember & Mini Banners bên phải -->
+        <div class="col-lg-3 d-none d-lg-block">
+            <div class="cps-right-widget">
+                <!-- Smember Card -->
+                <div class="cps-smember-box">
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        var memberLevel = User.FindFirst("SmemberLevel")?.Value ?? "Smember";
+                        var memberPoints = User.FindFirst("SmemberPoints")?.Value ?? "0";
+                        <div class="cps-smember-header">
+                            <div class="cps-smember-avatar bg-warning text-dark">
+                                <i class="bi bi-person-check-fill"></i>
+                            </div>
+                            <div class="overflow-hidden">
+                                <h6 class="text-truncate mb-0" title="@User.Identity.Name">Xin chào, @User.Identity.Name</h6>
+                                <span class="badge @(User.IsInRole("Admin") ? "bg-danger" : "bg-warning text-dark")" style="font-size: 10px;">
+                                    @(User.IsInRole("Admin") ? "Admin Quản trị" : memberLevel)
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center my-2 p-2 bg-light rounded border text-muted" style="font-size: 12px;">
+                            <span>Điểm tích luỹ:</span>
+                            <strong class="text-danger fs-6">@memberPoints PTS</strong>
+                        </div>
+
+                        <div class="cps-smember-actions">
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <a asp-area="Admin" asp-controller="Dashboard" asp-action="Index" class="btn btn-danger btn-smember text-decoration-none">
+                                    <i class="bi bi-shield-lock-fill me-1"></i> Admin
+                                </a>
+                                <a asp-controller="Account" asp-action="Profile" class="btn btn-outline-danger btn-smember text-decoration-none">Tài khoản</a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Account" asp-action="Profile" class="btn btn-danger btn-smember text-decoration-none">Tài khoản</a>
+                                <a asp-controller="Account" asp-action="Logout" class="btn btn-outline-danger btn-smember text-decoration-none">Đăng xuất</a>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="cps-smember-header">
+                            <div class="cps-smember-avatar">
+                                <i class="bi bi-person-fill"></i>
+                            </div>
+                            <div>
+                                <h6>Chào mừng đến CellphoneS</h6>
+                                <span class="badge bg-danger" style="font-size: 10px;">Smember VIP</span>
+                            </div>
+                        </div>
+                        <p>Đăng nhập để nhận thêm ưu đãi giảm giá và tích điểm nâng hạng thành viên!</p>
+                        <div class="cps-smember-actions">
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-danger btn-smember text-decoration-none">Đăng nhập</a>
+                            <a asp-controller="Account" asp-action="Register" class="btn btn-outline-danger btn-smember text-decoration-none">Đăng ký</a>
+                        </div>
+                    }
+                </div>
+
+                <!-- Right Banners -->
+                @if (Model.RightBanners != null && Model.RightBanners.Any())
+                {
+                    @for (int rIdx = 0; rIdx < Model.RightBanners.Count; rIdx++)
+                    {
+                        var rBanner = Model.RightBanners[rIdx];
+                        bool isTradeIn = rBanner.Title.Contains("Thu c", StringComparison.OrdinalIgnoreCase) || 
+                                         rBanner.Title.Contains("Thu cũ", StringComparison.OrdinalIgnoreCase) || 
+                                         (rBanner.LinkUrl != null && rBanner.LinkUrl.Contains("TradeIn", StringComparison.OrdinalIgnoreCase));
+                        string rTargetUrl = (isTradeIn ? Url.Action("Index", "TradeIn") : (!string.IsNullOrEmpty(rBanner.LinkUrl) && rBanner.LinkUrl != "#" ? rBanner.LinkUrl : Url.Action("Profile", "Account"))) ?? "#";
+                        string rFallbackImg = isTradeIn ? "/images/banners/banner-tradein.jpg" : "/images/banners/banner-smember.jpg";
+
+                        <a href="@rTargetUrl" class="cps-mini-banner">
+                            <img src="@rBanner.ImageUrl" alt="@rBanner.Title" onerror="this.onerror=null; this.src='@rFallbackImg';" />
+                        </a>
+                    }
+                }
+                else
+                {
+                    <a asp-controller="TradeIn" asp-action="Index" class="cps-mini-banner">
+                        <img src="/images/banners/banner-tradein.jpg" alt="Thu cũ đổi mới" />
+                    </a>
+                    <a asp-controller="Account" asp-action="Profile" class="cps-mini-banner">
+                        <img src="/images/banners/banner-smember.jpg" alt="Ưu đãi Smember" />
+                    </a>
+                }
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 2. QUICK SERVICE PILLS BAR -->
+    <div class="cps-quick-pills my-3">
+        <a href="#flashsale" class="cps-pill-item">
+            <i class="bi bi-lightning-charge-fill text-warning"></i>
+            <span>Hot Sale Giờ Vàng</span>
+        </a>
+        <a asp-controller="Product" asp-action="Category" asp-route-slug="dien-thoai" class="cps-pill-item">
+            <i class="bi bi-phone"></i>
+            <span>Điện thoại Flagship</span>
+        </a>
+        <a asp-controller="TradeIn" asp-action="Index" class="cps-pill-item">
+            <i class="bi bi-arrow-left-right text-success"></i>
+            <span>Thu cũ đổi mới - Trợ giá 4 triệu</span>
+        </a>
+        <a href="#aar-zone" class="cps-pill-item">
+            <i class="bi bi-apple text-dark"></i>
+            <span>Apple Authorised Reseller</span>
+        </a>
+        <a href="#" class="cps-pill-item">
+            <i class="bi bi-mortarboard-fill text-primary"></i>
+            <span>Đặc quyền Sinh viên (S-Student)</span>
+        </a>
+        <a href="#" class="cps-pill-item">
+            <i class="bi bi-credit-card-2-front"></i>
+            <span>Trả góp 0% lãi suất</span>
+        </a>
+    </div>
+
+    <!-- 3. FLASH SALE: HOT SALE GIỜ VÀNG (CÓ TABS CHUYÊN MỤC) -->
+    <section id="flashsale" class="cps-flashsale-block">
+        <div class="cps-flashsale-header">
+            <div class="cps-flashsale-title">
+                <i class="bi bi-fire"></i>
+                <span>HOT SALE GIỜ VÀNG</span>
+            </div>
+
+            <!-- Countdown Timer -->
+            <div class="cps-countdown">
+                <span>KẾT THÚC TRONG:</span>
+                <span id="cps-flash-hours" class="time-box">00</span>
+                <span class="colon">:</span>
+                <span id="cps-flash-mins" class="time-box">00</span>
+                <span class="colon">:</span>
+                <span id="cps-flash-secs" class="time-box">00</span>
+            </div>
+        </div>
+
+        <!-- Flash Sale Category Filter Tabs -->
+        <div class="cps-flash-tabs">
+            <button class="cps-flash-tab active" data-flash-cat="all">Tất cả deal sốc</button>
+            <button class="cps-flash-tab" data-flash-cat="dien-thoai">Điện thoại</button>
+            <button class="cps-flash-tab" data-flash-cat="am-thanh">Âm thanh</button>
+            <button class="cps-flash-tab" data-flash-cat="dong-ho">Đồng hồ</button>
+            <button class="cps-flash-tab" data-flash-cat="phu-kien">Phụ kiện</button>
+        </div>
+
+        <div class="swiper cps-flashsale-swiper">
+            <div class="swiper-wrapper">
+                @foreach (var product in Model.FlashSaleProducts)
+                {
+                    var priceToShow = product.FlashSalePrice ?? product.SalePrice;
+                    var percent = product.OriginalPrice > 0 ? (int)Math.Round((product.OriginalPrice - priceToShow) / product.OriginalPrice * 100) : 0;
+                    var soldPercent = product.FlashSaleQuantity > 0 ? (int)((double)product.FlashSaleSold / product.FlashSaleQuantity * 100) : 75;
+                    var catSlug = product.Category?.Slug ?? "";
+
+                    <div class="swiper-slide cps-flash-slide" data-cat="@catSlug">
+                        <div class="cps-product-card">
+                            <div class="cps-card-badges">
+                                <span class="cps-badge-installment">Trả góp 0%</span>
+                                <span class="cps-badge-discount">-@percent%</span>
+                            </div>
+
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="cps-card-image">
+                                <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                            </a>
+
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="cps-card-title">
+                                @product.Name
+                            </a>
+
+                            <div class="cps-card-price">
+                                <span class="cps-sale-price">@priceToShow.ToString("N0")₫</span>
+                                <span class="cps-origin-price">@product.OriginalPrice.ToString("N0")₫</span>
+                            </div>
+
+                            @if (product.SmemberDiscount > 0)
+                            {
+                                <div class="cps-smember-tag">
+                                    <i class="bi bi-star-fill me-1"></i> Smember giảm thêm @product.SmemberDiscount.ToString("N0")₫
+                                </div>
+                            }
+
+                            <!-- Progress bar -->
+                            <div class="cps-sold-progress">
+                                <div class="bar" style="width: @soldPercent%;"></div>
+                                <div class="label">
+                                    @if (soldPercent >= 85)
+                                    {
+                                        <span><i class="bi bi-fire text-warning"></i> Sắp cháy hàng (@product.FlashSaleSold/@product.FlashSaleQuantity)</span>
+                                    }
+                                    else
+                                    {
+                                        <span>Đã bán @product.FlashSaleSold / @product.FlashSaleQuantity</span>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================
+         3.5. BANNER QUẢNG CÁO LỚN TRANG CHỦ (NẾU CÓ CẤU HÌNH TRONG ADMIN)
+         ============================================================ -->
+    @{
+        var promoBanners = Model.BigBanners.Where(b => b.Position == "BigBanner" || b.Position == "MiddleBanner").ToList();
+    }
+    @if (promoBanners.Any())
+    {
+        <section class="cps-big-promo-section position-relative my-4" aria-label="Banner khuyến mãi lớn">
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-area="Admin" asp-controller="Banner" asp-action="Index" asp-route-position="BigBanner" 
+                   class="cps-admin-edit-banner-badge" title="Quản trị viên: Quản lý hoặc thay đổi banner to này">
+                    <i class="bi bi-pencil-square me-1"></i> Quản lý banner to này
+                </a>
+            }
+
+            @if (promoBanners.Count > 1)
+            {
+                <!-- Slider nhiều Banner quảng cáo to -->
+                <div class="swiper cps-big-promo-swiper">
+                    <div class="swiper-wrapper">
+                        @foreach (var b in promoBanners)
+                        {
+                            <div class="swiper-slide">
+                                <div class="cps-big-promo-card">
+                                    <a href="@b.LinkUrl" class="cps-big-promo-link" title="@b.Title">
+                                        <img src="@b.ImageUrl" alt="@b.Title" class="cps-big-promo-img" 
+                                             onerror="this.onerror=null; this.src='/images/banners/banner-megasale.jpg';" />
+                                        <div class="cps-big-promo-sheen"></div>
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <!-- Navigation Buttons (Hover-reveal Glassmorphism) -->
+                    <div class="swiper-button-next big-promo-next" aria-label="Next slide"></div>
+                    <div class="swiper-button-prev big-promo-prev" aria-label="Previous slide"></div>
+                </div>
+                <!-- Sleek Frosted Pill Pagination đặt bên dưới để hiển thị toàn bộ ảnh 100% không bị khuất -->
+                <div class="cps-big-promo-pagination-wrap">
+                    <div class="swiper-pagination big-promo-pagination"></div>
+                </div>
+            }
+            else
+            {
+                <!-- 1 Banner quảng cáo to duy nhất -->
+                var singleBanner = promoBanners[0];
+                <div class="cps-big-promo-card">
+                    <a href="@singleBanner.LinkUrl" class="cps-big-promo-link" title="@singleBanner.Title">
+                        <img src="@singleBanner.ImageUrl" alt="@singleBanner.Title" class="cps-big-promo-img" 
+                             onerror="this.onerror=null; this.src='/images/banners/banner-megasale.jpg';" />
+                        <div class="cps-big-promo-sheen"></div>
+                    </a>
+                </div>
+            }
+        </section>
+    }
+
+    <!-- 4. KHỐI ĐIỆN THOẠI NỔI BẬT (CÓ BỘ LỌC HÃNG & TẦM GIÁ NHANH) -->
+    <section class="my-4">
+        <div class="cps-section-header">
+            <div>
+                <h3 class="cps-section-title">
+                    <i class="bi bi-phone-fill text-danger me-1"></i> ĐIỆN THOẠI NỔI BẬT NHẤT
+                </h3>
+            </div>
+
+            <!-- Tabs Lọc Hãng -->
+            <div class="d-flex align-items-center gap-2">
+                <div class="cps-brand-tabs">
+                    <button class="cps-brand-tab active" data-brand="all">Tất cả</button>
+                    @foreach (var brand in Model.Brands.Take(5))
+                    {
+                        <button class="cps-brand-tab" data-brand="@brand.Slug">@brand.Name</button>
+                    }
+                </div>
+                <a asp-controller="Product" asp-action="Category" asp-route-slug="dien-thoai" class="cps-view-all d-none d-md-inline">
+                    Xem tất cả <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Sub-filter: Bộ lọc mức giá nhanh -->
+        <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="small fw-bold text-muted"><i class="bi bi-cash me-1"></i> Mức giá:</span>
+            <div class="cps-price-pills">
+                <button class="cps-price-pill active" data-price-range="all">Tất cả giá</button>
+                <button class="cps-price-pill" data-price-range="under-5m">Dưới 5 triệu</button>
+                <button class="cps-price-pill" data-price-range="5m-10m">Từ 5 - 10 triệu</button>
+                <button class="cps-price-pill" data-price-range="10m-20m">Từ 10 - 20 triệu</button>
+                <button class="cps-price-pill" data-price-range="over-20m">Trên 20 triệu</button>
+            </div>
+        </div>
+
+        <!-- Grid Sản Phẩm -->
+        <div id="grid-phones" class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-2 g-md-3">
+            @foreach (var product in Model.FeaturedPhones)
+            {
+                <div class="col cps-product-item" data-brand="@(product.Brand?.Slug ?? "")" data-price="@product.SalePrice">
+                    <div class="cps-product-card">
+                        <div class="cps-card-badges">
+                            @if (product.HasInstallment0Percent)
+                            {
+                                <span class="cps-badge-installment">Trả góp 0%</span>
+                            }
+                            @if (product.DiscountPercent > 0)
+                            {
+                                <span class="cps-badge-discount ms-auto">-@product.DiscountPercent%</span>
+                            }
+                        </div>
+
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="cps-card-image">
+                            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                        </a>
+
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="cps-card-title">
+                            @product.Name
+                        </a>
+
+                        <div class="cps-card-price">
+                            <span class="cps-sale-price">@product.SalePrice.ToString("N0")₫</span>
+                            @if (product.OriginalPrice > product.SalePrice)
+                            {
+                                <span class="cps-origin-price">@product.OriginalPrice.ToString("N0")₫</span>
+                            }
+                        </div>
+
+                        @if (product.SmemberDiscount > 0)
+                        {
+                            <div class="cps-smember-tag">
+                                <i class="bi bi-gem me-1"></i> Smember giảm thêm @product.SmemberDiscount.ToString("N0")₫
+                            </div>
+                        }
+
+                        @if (!string.IsNullOrEmpty(product.PromotionInfo))
+                        {
+                            <div class="cps-promo-box">
+                                <i class="bi bi-gift-fill text-danger me-1"></i> @product.PromotionInfo
+                            </div>
+                        }
+
+                        <div class="cps-card-footer">
+                            <div class="cps-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <span><strong>@product.Rating.ToString("0.0")</strong> (@product.ReviewCount)</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <button type="button" class="btn cps-wishlist-btn p-1" data-product-id="@product.Id" onclick="toggleWishlist(@product.Id, this)" title="Lưu yêu thích">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-bold" onclick="addToCart(@product.Id, 1)">
+                                    <i class="bi bi-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- 5. APPLE AUTHORISED RESELLER (AAR) SHOWCASE ZONE -->
+    <section id="aar-zone" class="cps-aar-box">
+        <div class="cps-aar-header">
+            <div class="cps-aar-title">
+                <i class="bi bi-apple fs-3"></i>
+                <span>Apple Authorised Reseller</span>
+                <span class="cps-aar-badge">Đại lý uỷ quyền Apple chính thức</span>
+            </div>
+            <a asp-controller="Product" asp-action="Category" asp-route-slug="all" asp-route-brand="apple" class="text-white text-decoration-none small fw-bold">
+                Khám phá hệ sinh thái Apple <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-4 g-3">
+            @foreach (var appleProduct in Model.FeaturedPhones.Where(p => p.Brand?.Slug == "apple").Take(4))
+            {
+                <div class="col">
+                    <div class="cps-product-card bg-white text-dark">
+                        <div class="cps-card-badges">
+                            <span class="badge bg-dark text-white">Apple VN/A</span>
+                            <span class="cps-badge-discount ms-auto">-@appleProduct.DiscountPercent%</span>
+                        </div>
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@appleProduct.Id" class="cps-card-image">
+                            <img src="@appleProduct.ImageUrl" alt="@appleProduct.Name" />
+                        </a>
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@appleProduct.Id" class="cps-card-title">
+                            @appleProduct.Name
+                        </a>
+                        <div class="cps-card-price">
+                            <span class="cps-sale-price">@appleProduct.SalePrice.ToString("N0")₫</span>
+                        </div>
+                        <button type="button" class="btn btn-sm btn-dark w-100 fw-bold mt-auto" onclick="addToCart(@appleProduct.Id, 1)">
+                            <i class="bi bi-bag-check me-1"></i> Chọn mua
+                        </button>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- 6. KHỐI LAPTOP & TABLET CHÍNH HÃNG -->
+    <section class="my-4">
+        <div class="cps-section-header">
+            <h3 class="cps-section-title">
+                <i class="bi bi-laptop text-danger me-1"></i> LAPTOP & MÁY TÍNH BẢNG
+            </h3>
+            <a asp-controller="Product" asp-action="Category" asp-route-slug="laptop" class="cps-view-all">
+                Xem tất cả <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-3">
+            @foreach (var product in Model.FeaturedLaptops)
+            {
+                <div class="col">
+                    <div class="cps-product-card">
+                        <div class="cps-card-badges">
+                            <span class="cps-badge-installment">Trả góp 0%</span>
+                            @if (product.DiscountPercent > 0)
+                            {
+                                <span class="cps-badge-discount ms-auto">-@product.DiscountPercent%</span>
+                            }
+                        </div>
+
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="cps-card-image">
+                            <img src="@product.ImageUrl" alt="@product.Name" loading="lazy" />
+                        </a>
+
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@product.Id" class="cps-card-title">
+                            @product.Name
+                        </a>
+
+                        <div class="cps-card-price">
+                            <span class="cps-sale-price">@product.SalePrice.ToString("N0")₫</span>
+                            <span class="cps-origin-price">@product.OriginalPrice.ToString("N0")₫</span>
+                        </div>
+
+                        @if (product.SmemberDiscount > 0)
+                        {
+                            <div class="cps-smember-tag">
+                                <i class="bi bi-star-fill me-1"></i> Smember giảm @product.SmemberDiscount.ToString("N0")₫
+                            </div>
+                        }
+
+                        <div class="cps-card-footer">
+                            <div class="cps-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <span><strong>@product.Rating.ToString("0.0")</strong> (@product.ReviewCount)</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <button type="button" class="btn cps-wishlist-btn p-1" data-product-id="@product.Id" onclick="toggleWishlist(@product.Id, this)" title="Lưu yêu thích">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-bold" onclick="addToCart(@product.Id, 1)">
+                                    <i class="bi bi-cart-plus"></i> Mua
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- 7. KHỐI ÂM THANH - LOA & TAI NGHE CHÍNH HÃNG -->
+    <section class="my-4">
+        <div class="cps-section-header">
+            <h3 class="cps-section-title">
+                <i class="bi bi-headphones text-danger me-1"></i> ÂM THANH - TAI NGHE & LOA
+            </h3>
+            <a asp-controller="Product" asp-action="Category" asp-route-slug="am-thanh" class="cps-view-all">
+                Xem tất cả <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-3">
+            @foreach (var audio in Model.FeaturedAudio)
+            {
+                <div class="col">
+                    <div class="cps-product-card">
+                        <div class="cps-card-badges">
+                            <span class="cps-badge-installment">Chính hãng</span>
+                            @if (audio.DiscountPercent > 0)
+                            {
+                                <span class="cps-badge-discount ms-auto">-@audio.DiscountPercent%</span>
+                            }
+                        </div>
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@audio.Id" class="cps-card-image">
+                            <img src="@audio.ImageUrl" alt="@audio.Name" loading="lazy" />
+                        </a>
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@audio.Id" class="cps-card-title">
+                            @audio.Name
+                        </a>
+                        <div class="cps-card-price">
+                            <span class="cps-sale-price">@audio.SalePrice.ToString("N0")₫</span>
+                            <span class="cps-origin-price">@audio.OriginalPrice.ToString("N0")₫</span>
+                        </div>
+                        @if (audio.SmemberDiscount > 0)
+                        {
+                            <div class="cps-smember-tag">
+                                <i class="bi bi-gem me-1"></i> Smember giảm @audio.SmemberDiscount.ToString("N0")₫
+                            </div>
+                        }
+                        <div class="cps-card-footer">
+                            <div class="cps-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <span><strong>@audio.Rating.ToString("0.0")</strong></span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <button type="button" class="btn cps-wishlist-btn p-1" data-product-id="@audio.Id" onclick="toggleWishlist(@audio.Id, this)" title="Lưu yêu thích">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-bold" onclick="addToCart(@audio.Id, 1)">
+                                    <i class="bi bi-cart-plus"></i> Mua
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- 8. KHỐI ĐỒNG HỒ THÔNG MINH (SMARTWATCH) -->
+    <section class="my-4">
+        <div class="cps-section-header">
+            <h3 class="cps-section-title">
+                <i class="bi bi-smartwatch text-danger me-1"></i> ĐỒNG HỒ THÔNG MINH
+            </h3>
+            <a asp-controller="Product" asp-action="Category" asp-route-slug="dong-ho" class="cps-view-all">
+                Xem tất cả <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-2 g-md-3">
+            @foreach (var watch in Model.FeaturedWatches)
+            {
+                <div class="col">
+                    <div class="cps-product-card">
+                        <div class="cps-card-badges">
+                            <span class="cps-badge-installment">GPS / LTE</span>
+                            @if (watch.DiscountPercent > 0)
+                            {
+                                <span class="cps-badge-discount ms-auto">-@watch.DiscountPercent%</span>
+                            }
+                        </div>
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@watch.Id" class="cps-card-image">
+                            <img src="@watch.ImageUrl" alt="@watch.Name" loading="lazy" />
+                        </a>
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@watch.Id" class="cps-card-title">
+                            @watch.Name
+                        </a>
+                        <div class="cps-card-price">
+                            <span class="cps-sale-price">@watch.SalePrice.ToString("N0")₫</span>
+                            <span class="cps-origin-price">@watch.OriginalPrice.ToString("N0")₫</span>
+                        </div>
+                        <div class="cps-card-footer">
+                            <div class="cps-rating">
+                                <i class="bi bi-star-fill"></i>
+                                <span><strong>@watch.Rating.ToString("0.0")</strong></span>
+                            </div>
+                            <div class="d-flex align-items-center gap-1">
+                                <button type="button" class="btn cps-wishlist-btn p-1" data-product-id="@watch.Id" onclick="toggleWishlist(@watch.Id, this)" title="Lưu yêu thích">
+                                    <i class="bi bi-heart"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-bold" onclick="addToCart(@watch.Id, 1)">
+                                    <i class="bi bi-cart-plus"></i> Mua
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- 9. INTERACTIVE WIDGET: ĐỊNH GIÁ THU CŨ LÊN ĐỜI NHANH (TRADE-IN VALUATION) -->
+    <section id="tradein-widget" class="cps-tradein-widget">
+        <div class="cps-tradein-header">
+            <i class="bi bi-arrow-repeat"></i>
+            <div>
+                <h4>ĐỊNH GIÁ THU CŨ LÊN ĐỜI IPHONE 16 SERIES</h4>
+                <small class="text-muted">Đổi máy cũ lấy máy mới, trợ giá độc quyền CellphoneS lên đến 4.000.000₫</small>
+            </div>
+        </div>
+
+        <div class="row g-3 align-items-center">
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">1. Chọn dòng máy bạn muốn bán lại:</label>
+                <select id="tradein-old-phone" class="form-select">
+                    <option value="15000000" selected>iPhone 14 Pro Max 128GB</option>
+                    <option value="11500000">iPhone 13 Pro Max 128GB</option>
+                    <option value="9000000">iPhone 12 Pro Max 128GB</option>
+                    <option value="6500000">iPhone 11 128GB</option>
+                    <option value="12000000">Samsung Galaxy S23 Ultra</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label small fw-bold">2. Tình trạng máy hiện tại:</label>
+                <select id="tradein-condition" class="form-select">
+                    <option value="1.0" selected>Loại 1: Máy đẹp 99%, pin > 85%, màn hình hoàn hảo</option>
+                    <option value="0.90">Loại 2: Máy 95%, xước nhẹ viền, mọi chức năng tốt</option>
+                    <option value="0.75">Loại 3: Máy 90%, trầy xước nhiều, pin chai nhẹ</option>
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <div class="cps-tradein-result">
+                    <div class="small text-muted mb-1">Giá thu dự kiến: <strong id="tradein-est-val" class="text-dark">15.000.000₫</strong></div>
+                    <div class="small text-success mb-1">+ Trợ giá lên đời: <strong>2.000.000₫</strong></div>
+                    <div class="fw-bold text-dark fs-6">Tổng thu lại: <span id="tradein-total-benefit" class="text-danger fw-bolder">17.000.000₫</span></div>
+                    <div class="border-top pt-2 mt-2">
+                        <small class="text-muted d-block">Bù để lên đời iPhone 16 Pro Max:</small>
+                        <span id="tradein-pay-diff" class="text-danger fw-bold fs-5">13.990.000₫</span>
+                    </div>
+                    <div class="d-flex gap-2 mt-2">
+                        <a asp-controller="TradeIn" asp-action="Index" class="btn btn-sm btn-danger flex-grow-1 fw-bold">
+                            <i class="bi bi-calendar2-check-fill me-1"></i> ĐẶT LỊCH LÊN ĐỜI NGAY
+                        </a>
+                        <a asp-controller="TradeIn" asp-action="Index" class="btn btn-sm btn-outline-danger fw-bold" title="Xem chi tiết bảng giá">
+                            <i class="bi bi-box-arrow-up-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 10. KHỐI PHỤ KIỆN & SMART HOME -->
+    <section class="my-4">
+        <div class="cps-section-header">
+            <h3 class="cps-section-title">
+                <i class="bi bi-plug-fill text-danger me-1"></i> PHỤ KIỆN & NHÀ THÔNG MINH
+            </h3>
+            <a asp-controller="Product" asp-action="Category" asp-route-slug="phu-kien" class="cps-view-all">
+                Xem tất cả <i class="bi bi-chevron-right"></i>
+            </a>
+        </div>
+
+        <div class="row row-cols-2 row-cols-md-4 g-2 g-md-3">
+            @foreach (var acc in Model.FeaturedAccessories.Concat(Model.FeaturedSmartHome).Take(4))
+            {
+                <div class="col">
+                    <div class="cps-product-card">
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@acc.Id" class="cps-card-image">
+                            <img src="@acc.ImageUrl" alt="@acc.Name" loading="lazy" />
+                        </a>
+                        <a asp-controller="Product" asp-action="Details" asp-route-id="@acc.Id" class="cps-card-title">
+                            @acc.Name
+                        </a>
+                        <div class="cps-card-price">
+                            <span class="cps-sale-price">@acc.SalePrice.ToString("N0")₫</span>
+                            <span class="cps-origin-price">@acc.OriginalPrice.ToString("N0")₫</span>
+                        </div>
+                        <div class="cps-card-footer">
+                            <span class="text-success small fw-bold"><i class="bi bi-check-circle me-1"></i> Có sẵn</span>
+                            <button type="button" class="btn btn-sm btn-outline-danger py-0 px-2 fw-bold" onclick="addToCart(@acc.Id, 1)">
+                                <i class="bi bi-cart-plus"></i> Mua
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <!-- 11. KHỐI TIN TỨC CÔNG NGHỆ (SFORUM STYLE - LẤY TỪ SQL NEWSARTICLES) -->
+    @if (Model.LatestNews != null && Model.LatestNews.Any())
+    {
+        <section class="my-5">
+            <div class="cps-section-header">
+                <h3 class="cps-section-title">
+                    <i class="bi bi-newspaper text-danger me-1"></i> TIN CÔNG NGHỆ (SFORUM)
+                </h3>
+                <a asp-controller="News" asp-action="Index" class="cps-view-all">Xem tất cả bài viết <i class="bi bi-chevron-right"></i></a>
+            </div>
+
+            <div class="row g-3">
+                @foreach (var news in Model.LatestNews)
+                {
+                    <div class="col-6 col-md-3">
+                        <a asp-controller="News" asp-action="Details" asp-route-id="@news.Id" class="text-decoration-none">
+                            <div class="cps-news-card h-100">
+                                <img src="@news.ThumbnailUrl" alt="@news.Title" class="cps-news-thumb" loading="lazy"
+                                     onerror="this.onerror=null; this.src='/images/banners/banner-iphone16.jpg';" />
+                                <div class="cps-news-body d-flex flex-column justify-content-between">
+                                    <div>
+                                        <span class="cps-news-tag">@news.Category</span>
+                                        <h6 class="cps-news-title">@news.Title</h6>
+                                    </div>
+                                    <div class="d-flex align-items-center justify-content-between mt-2">
+                                        <span class="cps-news-time"><i class="bi bi-clock me-1"></i> @news.TimeAgo</span>
+                                        <span class="cps-news-time"><i class="bi bi-eye me-1"></i> @news.ViewCount.ToString("N0")</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    <!-- 12. THÔNG TIN HỆ THỐNG CELLPHONES & SEO RICH CONTENT (ACCORDION) -->
+    <section class="cps-seo-box">
+        <h5 class="fw-bold mb-3 text-dark">
+            <i class="bi bi-shield-check text-danger me-1"></i> HỆ THỐNG CELLPHONES - ĐIỆN THOẠI, LAPTOP, PHỤ KIỆN CHÍNH HÃNG HÀNG ĐẦU VIỆT NAM
+        </h5>
+
+        <div id="cps-seo-content" class="cps-seo-content">
+            <p>
+                <strong>CellphoneS</strong> là một trong 5 hệ thống chuỗi bán lẻ công nghệ lớn nhất tại Việt Nam hiện nay với mạng lưới hơn 180 cửa hàng phủ rộng khắp các tỉnh thành trên cả nước như Hà Nội, TP. Hồ Chí Minh, Đà Nẵng, Cần Thơ, Hải Phòng, Bình Dương...
+            </p>
+            <p>
+                Với phương châm <em>"Tận tâm với khách hàng"</em>, CellphoneS tự hào là Đại lý uỷ quyền chính thức của các thương hiệu hàng đầu thế giới: Apple Authorised Reseller (AAR), Samsung Premium Store, đối tác chiến lược của Xiaomi, ASUS, Sony, OPPO, vivo, Anker, JBL, Marshall... Tất cả sản phẩm bán ra đều cam kết 100% chính hãng, có hoá đơn VAT đầy đủ và chính sách bảo hành 1 đổi 1 trong 30 ngày.
+            </p>
+            <h6>Đặc quyền khi mua sắm tại CellphoneS:</h6>
+            <ul>
+                <li><strong>Thu cũ đổi mới:</strong> Hỗ trợ trợ giá lên đời tốt nhất thị trường lên đến 4 - 5 triệu đồng, thủ tục kiểm tra máy nhanh chóng trong 15 phút.</li>
+                <li><strong>Hội viên Smember:</strong> Tích luỹ điểm thưởng trên từng đơn hàng, thăng hạng sVIP nhận thêm mức chiết khấu giảm trực tiếp từ 1% - 5%.</li>
+                <li><strong>Trả góp 0% linh hoạt:</strong> Hợp tác với các đơn vị tài chính uy tín duyệt hồ sơ CCCD trong 5 phút hoặc trả góp qua thẻ tín dụng hơn 20 ngân hàng lớn.</li>
+                <li><strong>Giao hàng siêu tốc 2 giờ:</strong> Nhận hàng ngay tại nhà hoàn toàn miễn phí cho đơn hàng từ 300.000đ.</li>
+            </ul>
+        </div>
+
+        <button type="button" id="cps-seo-btn" class="cps-seo-toggle-btn" onclick="toggleSeoContent()">
+            Xem thêm nội dung <i class="bi bi-chevron-down ms-1"></i>
+        </button>
+    </section>
+</div>
+
+<!-- ============================================================
+     13. PROMOTIONAL POPUP BANNER (POPUP QUẢNG CÁO TRANG CHỦ)
+     ============================================================ -->
+@if (Model.PopupBanner != null && Model.PopupBanner.IsActive)
+{
+    <div id="cpsPromoPopupModal" class="cps-promo-popup-backdrop" style="display: none;" role="dialog" aria-modal="true" aria-labelledby="popupBannerTitle">
+        <div class="cps-promo-popup-wrapper">
+            <!-- Nút chỉnh sửa nhanh dành riêng cho Admin (nổi bật phía trên modal) -->
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-area="Admin" asp-controller="Banner" asp-action="Edit" asp-route-id="@Model.PopupBanner.Id" 
+                   class="cps-promo-popup-admin-btn" title="Quản trị viên: Chỉnh sửa popup này trong Admin">
+                    <i class="bi bi-pencil-square me-1"></i> Quản lý Popup trong Admin
+                </a>
+            }
+
+            <!-- Nút đóng tròn nổi bật ở góc ngoài trên cùng -->
+            <button type="button" class="cps-promo-popup-close-btn" onclick="closePromoPopup(false)" title="Đóng quảng cáo" aria-label="Đóng">
+                <i class="bi bi-x-lg"></i>
+            </button>
+
+            <!-- Card chính của Popup (Full-bleed Edge-to-Edge) -->
+            <div class="cps-promo-popup-card">
+                <!-- Banner Image & Link -->
+                <a href="@Model.PopupBanner.LinkUrl" class="cps-promo-popup-link" onclick="closePromoPopup(false)" title="@Model.PopupBanner.Title">
+                    <img src="@Model.PopupBanner.ImageUrl" alt="@Model.PopupBanner.Title" id="popupBannerTitle" class="cps-promo-popup-img" 
+                         onerror="this.onerror=null; this.src='/images/banners/banner-megasale.jpg';" />
+                    <div class="cps-promo-popup-sheen"></div>
+                </a>
+
+                <!-- Thanh thao tác chân Popup: Thiết kế Kính tối màu cao cấp (Dark Frosted Glass) -->
+                <div class="cps-promo-popup-actions">
+                    <label class="cps-promo-popup-checkbox-label" for="cpsDontShowPopupToday">
+                        <input type="checkbox" id="cpsDontShowPopupToday" class="cps-custom-checkbox" />
+                        <span>Không hiển thị lại trong hôm nay</span>
+                    </label>
+                    <div class="cps-promo-popup-buttons">
+                        <button type="button" class="cps-promo-btn-close" onclick="closePromoPopup(false)">
+                            Bỏ qua
+                        </button>
+                        <a href="@Model.PopupBanner.LinkUrl" class="cps-promo-btn-cta" onclick="closePromoPopup(false)">
+                            <span>Khám Phá Ngay</span>
+                            <i class="bi bi-arrow-right-short"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const popupModal = document.getElementById("cpsPromoPopupModal");
+            if (!popupModal) return;
+
+            const hideDate = localStorage.getItem("cps_hide_promo_popup_date");
+            const todayStr = new Date().toISOString().slice(0, 10);
+
+            // Mở popup sau 700ms nếu người dùng chưa chọn ẩn hôm nay
+            if (hideDate !== todayStr) {
+                setTimeout(function () {
+                    popupModal.style.display = "flex";
+                    requestAnimationFrame(function () {
+                        popupModal.classList.add("cps-popup-active");
+                    });
+                }, 700);
+            }
+
+            // Đóng khi click vào vùng đen bên ngoài
+            popupModal.addEventListener("click", function (e) {
+                if (e.target === popupModal) {
+                    closePromoPopup(false);
+                }
+            });
+
+            // Đóng khi nhấn phím Escape
+            document.addEventListener("keydown", function (e) {
+                if (e.key === "Escape" && popupModal.classList.contains("cps-popup-active")) {
+                    closePromoPopup(false);
+                }
+            });
+        });
+
+        function closePromoPopup(forceSave) {
+            const popupModal = document.getElementById("cpsPromoPopupModal");
+            if (!popupModal) return;
+
+            const chk = document.getElementById("cpsDontShowPopupToday");
+            if (forceSave || (chk && chk.checked)) {
+                localStorage.setItem("cps_hide_promo_popup_date", new Date().toISOString().slice(0, 10));
+            }
+
+            popupModal.classList.remove("cps-popup-active");
+            popupModal.classList.add("cps-popup-closing");
+            setTimeout(function () {
+                popupModal.style.display = "none";
+                popupModal.classList.remove("cps-popup-closing");
+            }, 300);
+        }
+    </script>
+}

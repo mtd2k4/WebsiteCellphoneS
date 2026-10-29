@@ -1,0 +1,166 @@
+@model List<WebsiteBanDienThoai.Models.NewsArticle>
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Quản Lý Tin Tức Công Nghệ";
+    var categories = ViewBag.Categories as List<string> ?? new();
+    string currentSearch = ViewBag.CurrentSearch as string ?? "";
+    string currentCategory = ViewBag.CurrentCategory as string ?? "";
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold mb-1 text-dark"><i class="bi bi-newspaper text-danger me-2"></i>Quản Lý Tin Tức Công Nghệ</h4>
+        <p class="text-muted small mb-0">Dữ liệu bài viết công nghệ CellphoneS Sforum được lưu trữ trực tiếp trong cơ sở dữ liệu SQL Server.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-danger fw-bold">
+        <i class="bi bi-plus-circle me-1"></i> Thêm Bài Viết Mới
+    </a>
+</div>
+
+<!-- Bộ lọc & Tìm kiếm -->
+<div class="cps-admin-card mb-4">
+    <div class="cps-admin-card-body p-3">
+        <form method="get" asp-action="Index" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Tìm theo tiêu đề, tóm tắt..." value="@currentSearch" />
+                </div>
+            </div>
+            <div class="col-md-4">
+                <select name="category" class="form-select">
+                    <option value="Tất cả">-- Tất cả chuyên mục --</option>
+                    @foreach (var cat in categories)
+                    {
+                        <option value="@cat" selected="@(currentCategory == cat)">@cat</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-secondary w-100 fw-semibold">
+                    <i class="bi bi-funnel me-1"></i> Lọc dữ liệu
+                </button>
+                @if (!string.IsNullOrWhiteSpace(currentSearch) || (!string.IsNullOrWhiteSpace(currentCategory) && currentCategory != "Tất cả"))
+                {
+                    <a asp-action="Index" class="btn btn-outline-secondary" title="Xóa lọc">
+                        <i class="bi bi-x-circle"></i>
+                    </a>
+                }
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Bảng danh sách bài viết -->
+<div class="cps-admin-card">
+    <div class="cps-admin-card-header">
+        <h5><i class="bi bi-list-ul text-danger"></i> Danh Sách Bài Viết (@Model.Count bài)</h5>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover table-cps align-middle mb-0">
+            <thead>
+                <tr>
+                    <th style="width: 60px;">ID</th>
+                    <th style="width: 100px;">Hình ảnh</th>
+                    <th>Tiêu đề & Chuyên mục</th>
+                    <th style="width: 130px;">Tác giả</th>
+                    <th style="width: 100px;">Lượt xem</th>
+                    <th style="width: 100px;">Tiêu điểm</th>
+                    <th style="width: 100px;">Trạng thái</th>
+                    <th style="width: 120px;" class="text-end">Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (!Model.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center py-4 text-muted">
+                            <i class="bi bi-inbox fs-3 d-block mb-1"></i>
+                            Không có bài viết nào phù hợp.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="fw-bold text-muted">#@item.Id</td>
+                            <td>
+                                <img src="@item.ThumbnailUrl" alt="@item.Title" style="width: 75px; height: 50px; object-fit: cover; border-radius: 6px;" onerror="this.src='/images/banners/banner-iphone16.jpg';" />
+                            </td>
+                            <td>
+                                <a href="/tin-cong-nghe/@item.Slug" target="_blank" class="fw-bold text-dark text-decoration-none d-block mb-1" style="font-size: 13.5px;">
+                                    @item.Title
+                                    <i class="bi bi-box-arrow-up-right small text-muted ms-1"></i>
+                                </a>
+                                <span class="badge bg-danger bg-opacity-10 text-danger fw-semibold" style="font-size: 11px;">@item.Category</span>
+                                <small class="text-muted ms-2"><i class="bi bi-clock me-1"></i>@item.PublishedAt.ToString("dd/MM/yyyy HH:mm")</small>
+                            </td>
+                            <td>
+                                <span class="text-truncate d-inline-block" style="max-width: 110px;">@item.Author</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border"><i class="bi bi-eye me-1"></i>@item.ViewCount.ToString("N0")</span>
+                            </td>
+                            <td>
+                                <form asp-action="ToggleFeatured" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm @(item.IsFeatured ? "btn-warning text-dark" : "btn-light border")" style="font-size: 11px; padding: 2px 8px;">
+                                        @(item.IsFeatured ? "★ Tiêu điểm" : "☆ Thường")
+                                    </button>
+                                </form>
+                            </td>
+                            <td>
+                                <form asp-action="ToggleActive" asp-route-id="@item.Id" method="post" style="display:inline;">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm @(item.IsActive ? "btn-success" : "btn-secondary")" style="font-size: 11px; padding: 2px 8px;">
+                                        @(item.IsActive ? "Hiển thị" : "Ẩn")
+                                    </button>
+                                </form>
+                            </td>
+                            <td class="text-end">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-primary" title="Sửa bài viết">
+                                    <i class="bi bi-pencil-square"></i>
+                                </a>
+                                <form asp-action="Delete" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="confirmDeleteNews(event, this, '@Html.Raw(item.Title.Replace("'", "\\'"))')">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Xoá bài viết">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDeleteNews(e, form, title) {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Xoá bài viết tin tức?',
+                html: `Bạn có chắc chắn muốn xoá bài viết <strong>"${title}"</strong> không?<br><small class="text-danger">Thao tác này sẽ xoá vĩnh viễn bài viết khỏi hệ thống.</small>`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d70018',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="bi bi-trash me-1"></i> Đồng ý xoá',
+                cancelButtonText: 'Huỷ bỏ',
+                customClass: {
+                    popup: 'rounded-4'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.submit();
+                }
+            });
+            return false;
+        }
+    </script>
+}
+

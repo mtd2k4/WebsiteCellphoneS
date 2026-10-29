@@ -1,0 +1,170 @@
+@model WebsiteBanDienThoai.Models.NewsArticle
+@{
+    Layout = "_AdminLayout";
+    ViewData["Title"] = "Chỉnh Sửa Bài Viết #" + Model.Id;
+}
+
+<div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+        <h4 class="fw-bold mb-1 text-dark"><i class="bi bi-pencil-square text-danger me-2"></i>Chỉnh Sửa Bài Viết #@Model.Id</h4>
+        <p class="text-muted small mb-0">Cập nhật thông tin và nội dung bài viết trong cơ sở dữ liệu.</p>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/tin-cong-nghe/@Model.Slug" target="_blank" class="btn btn-outline-primary">
+            <i class="bi bi-eye me-1"></i> Xem bài viết
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại
+        </a>
+    </div>
+</div>
+
+<div class="cps-admin-card">
+    <div class="cps-admin-card-body p-4">
+        <form method="post" asp-action="Edit" asp-route-id="@Model.Id" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="CreatedAt" />
+            <input type="hidden" asp-for="ViewCount" />
+            <input type="hidden" asp-for="PublishedAt" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="row g-3">
+                <div class="col-md-8">
+                    <div class="mb-3">
+                        <label asp-for="Title" class="form-label fw-bold">Tiêu đề bài viết <span class="text-danger">*</span></label>
+                        <input asp-for="Title" class="form-control" required />
+                        <span asp-validation-for="Title" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Slug" class="form-label fw-bold">Đường dẫn thân thiện (Slug)</label>
+                        <input asp-for="Slug" class="form-control" />
+                        <small class="text-muted">Định dạng URL: /tin-cong-nghe/slug-bai-viet</small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Summary" class="form-label fw-bold">Tóm tắt ngắn (Lead) <span class="text-danger">*</span></label>
+                        <textarea asp-for="Summary" class="form-control" rows="3" required></textarea>
+                        <span asp-validation-for="Summary" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Content" class="form-label fw-bold">Nội dung chi tiết bài viết (Soạn thảo văn bản CKEditor)</label>
+                        <textarea asp-for="Content" id="editorContent" class="form-control" rows="14"></textarea>
+                        <span asp-validation-for="Content" class="text-danger small"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="card p-3 bg-light border-0 mb-3 rounded-3">
+                        <h6 class="fw-bold text-dark mb-3">Cấu hình xuất bản</h6>
+
+                        <div class="mb-3">
+                            <label asp-for="Category" class="form-label fw-semibold">Chuyên mục</label>
+                            <select asp-for="Category" class="form-select">
+                                <option value="Tin công nghệ">Tin công nghệ</option>
+                                <option value="Di động">Di động</option>
+                                <option value="Đánh giá">Đánh giá</option>
+                                <option value="Trên tay">Trên tay</option>
+                                <option value="So sánh">So sánh</option>
+                                <option value="Tư vấn">Tư vấn</option>
+                                <option value="Thủ thuật">Thủ thuật</option>
+                                <option value="Máy tính">Máy tính</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="Author" class="form-label fw-semibold">Tác giả</label>
+                            <input asp-for="Author" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="SourceUrl" class="form-label fw-semibold">Link bài gốc (nếu có)</label>
+                            <input asp-for="SourceUrl" class="form-control" />
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Ảnh đại diện hiện tại</label>
+                            <div class="mb-2">
+                                <img src="@Model.ThumbnailUrl" alt="@Model.Title" class="img-fluid rounded border shadow-sm" style="max-height: 140px; object-fit: cover; width: 100%;" onerror="this.src='/images/banners/banner-iphone16.jpg';" />
+                            </div>
+                            <label class="form-label fw-semibold">Thay đổi ảnh (Upload file)</label>
+                            <input type="file" name="imageFile" class="form-control mb-2" accept="image/*" />
+                            <small class="text-muted d-block mb-1">Hoặc đường dẫn ảnh:</small>
+                            <input asp-for="ThumbnailUrl" class="form-control" />
+                        </div>
+
+                        <div class="form-check form-switch mb-2">
+                            <input asp-for="IsFeatured" class="form-check-input" type="checkbox" id="isFeaturedCheck">
+                            <label class="form-check-label fw-semibold" for="isFeaturedCheck">Bài viết tiêu điểm</label>
+                        </div>
+
+                        <div class="form-check form-switch mb-3">
+                            <input asp-for="IsActive" class="form-check-input" type="checkbox" id="isActiveCheck">
+                            <label class="form-check-label fw-semibold" for="isActiveCheck">Hiển thị công khai</label>
+                        </div>
+
+                        <div class="d-flex justify-content-between text-muted small mb-3 pt-2 border-top">
+                            <span>Lượt xem: <strong>@Model.ViewCount.ToString("N0")</strong></span>
+                            <span>Ngày đăng: <strong>@Model.PublishedAt.ToString("dd/MM/yyyy")</strong></span>
+                        </div>
+
+                        <button type="submit" class="btn btn-danger w-100 fw-bold py-2">
+                            <i class="bi bi-save-fill me-1"></i> Cập Nhật Thay Đổi
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- CKEditor 5 WYSIWYG Editor -->
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.4.2/classic/ckeditor.js"></script>
+    <style>
+        .ck-editor__editable_inline {
+            min-height: 420px;
+            font-size: 15px;
+            line-height: 1.7;
+        }
+        .ck.ck-toolbar {
+            border-top-left-radius: 8px !important;
+            border-top-right-radius: 8px !important;
+            border-color: #cbd5e1 !important;
+        }
+        .ck.ck-content {
+            border-bottom-left-radius: 8px !important;
+            border-bottom-right-radius: 8px !important;
+            border-color: #cbd5e1 !important;
+        }
+    </style>
+    <script>
+        let editorInstance;
+        ClassicEditor
+            .create(document.querySelector('#editorContent'), {
+                heading: {
+                    options: [
+                        { model: 'paragraph', title: 'Đoạn văn (Paragraph)', class: 'ck-heading_paragraph' },
+                        { model: 'heading2', view: 'h2', title: 'Tiêu đề mục (H2)', class: 'ck-heading_heading2' },
+                        { model: 'heading3', view: 'h3', title: 'Tiêu đề con (H3)', class: 'ck-heading_heading3' }
+                    ]
+                },
+                placeholder: 'Nhập nội dung bài viết chi tiết, định dạng văn bản, chèn liên kết, bảng biểu tại đây...'
+            })
+            .then(editor => {
+                editorInstance = editor;
+            })
+            .catch(error => {
+                console.error('Lỗi khởi tạo CKEditor:', error);
+            });
+
+        document.querySelector('form').addEventListener('submit', function () {
+            if (editorInstance) {
+                document.querySelector('#editorContent').value = editorInstance.getData();
+            }
+        });
+    </script>
+}

@@ -1,0 +1,147 @@
+@model List<WebsiteBanDienThoai.Models.Order>
+
+@{
+    ViewData["Title"] = "Tra Cứu Đơn Hàng - CellphoneS";
+    string searchCode = ViewBag.SearchCode as string ?? "";
+    string searchPhone = ViewBag.SearchPhone as string ?? "";
+}
+
+<div class="container my-4" style="max-width: 800px;">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent p-0 mb-3" style="font-size: 12.5px;">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted"><i class="bi bi-house-door-fill me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item active text-danger fw-semibold">Tra cứu thông tin đơn hàng</li>
+        </ol>
+    </nav>
+
+    <!-- Header & Search Box -->
+    <div class="bg-white rounded-3 shadow-sm border p-4 mb-4">
+        <div class="text-center mb-4">
+            <h4 class="fw-bold text-dark mb-1">
+                <i class="bi bi-receipt text-danger me-2"></i> TRA CỨU HÀNH TRÌNH ĐƠN HÀNG
+            </h4>
+            <p class="text-muted small">Nhập mã đơn hàng hoặc số điện thoại người nhận để kiểm tra trạng thái xử lý.</p>
+        </div>
+
+        <form asp-action="Tracking" method="get" class="row g-2">
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">Mã số đơn hàng (Ví dụ: CPS2026...)</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-upc-scan"></i></span>
+                    <input type="text" name="orderCode" value="@searchCode" class="form-control" placeholder="Nhập mã đơn hàng..." />
+                </div>
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-bold">Hoặc Số điện thoại đặt hàng</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-light"><i class="bi bi-telephone"></i></span>
+                    <input type="text" name="phone" value="@searchPhone" class="form-control" placeholder="Nhập số điện thoại..." />
+                </div>
+            </div>
+            <div class="col-12 mt-3">
+                <button type="submit" class="btn btn-danger w-100 fw-bold py-2">
+                    <i class="bi bi-search me-1"></i> TRA CỨU NGAY
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Search Results -->
+    @if (!string.IsNullOrEmpty(searchCode) || !string.IsNullOrEmpty(searchPhone))
+    {
+        @if (!Model.Any())
+        {
+            <div class="bg-white p-5 rounded-3 shadow-sm border text-center my-3">
+                <i class="bi bi-question-circle text-muted" style="font-size: 48px;"></i>
+                <h6 class="fw-bold mt-3">Không tìm thấy đơn hàng nào phù hợp!</h6>
+                <p class="text-muted small">Vui lòng kiểm tra lại mã số đơn hàng hoặc số điện thoại bạn đã nhập.</p>
+            </div>
+        }
+        else
+        {
+            <div class="d-flex flex-column gap-3">
+                @foreach (var order in Model)
+                {
+                    <div class="bg-white rounded-3 shadow-sm border p-4">
+                        <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-3 flex-wrap gap-2">
+                            <div>
+                                <span class="fw-bold text-danger fs-5">#@order.OrderCode</span>
+                                <span class="text-muted small ms-2"><i class="bi bi-clock me-1"></i>@order.CreatedAt.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                            <div>
+                                @switch (order.Status)
+                                {
+                                    case WebsiteBanDienThoai.Models.OrderStatus.Pending:
+                                        <span class="badge bg-warning text-dark px-3 py-2">Chờ duyệt</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.OrderStatus.Confirmed:
+                                        <span class="badge bg-primary px-3 py-2">Đã xác nhận</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.OrderStatus.Shipping:
+                                        <span class="badge bg-info text-dark px-3 py-2">Đang giao hàng</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.OrderStatus.Completed:
+                                        <span class="badge bg-success px-3 py-2">Hoàn thành</span>
+                                        break;
+                                    case WebsiteBanDienThoai.Models.OrderStatus.Cancelled:
+                                        <span class="badge bg-danger px-3 py-2">Đã hủy</span>
+                                        break;
+                                }
+                            </div>
+                        </div>
+
+                        <div class="row g-2 small mb-3">
+                            <div class="col-sm-6"><strong>Người nhận:</strong> @order.CustomerName</div>
+                            <div class="col-sm-6"><strong>Số điện thoại:</strong> @order.PhoneNumber</div>
+                            <div class="col-12"><strong>Địa chỉ nhận:</strong> @order.Address, @order.Province</div>
+                        </div>
+
+                        <!-- Sản phẩm -->
+                        <div class="list-group list-group-flush mb-3 border-top border-bottom">
+                            @foreach (var item in order.OrderDetails)
+                            {
+                                <div class="list-group-item d-flex justify-content-between align-items-center px-0 py-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        @if (item.Product != null)
+                                        {
+                                            <img src="@item.Product.ImageUrl" alt="@item.Product.Name" style="width: 40px; height: 40px; object-fit: contain;" class="rounded border p-1" />
+                                        }
+                                        <div>
+                                            <div class="fw-semibold small">@(item.Product?.Name ?? "Sản phẩm")</div>
+                                            <small class="text-muted">SL: @item.Quantity</small>
+                                        </div>
+                                    </div>
+                                    <span class="text-danger fw-bold small">@item.TotalPrice.ToString("N0")₫</span>
+                                </div>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(order.OrderDiscountCode) || !string.IsNullOrEmpty(order.ShippingDiscountCode))
+                        {
+                            <div class="mb-2 d-flex flex-wrap gap-1">
+                                @if (!string.IsNullOrEmpty(order.OrderDiscountCode))
+                                {
+                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle small">
+                                        <i class="bi bi-tag-fill me-1"></i>Mã giảm đơn: @order.OrderDiscountCode (-@order.OrderDiscountAmount.ToString("N0")₫)
+                                    </span>
+                                }
+                                @if (!string.IsNullOrEmpty(order.ShippingDiscountCode))
+                                {
+                                    <span class="badge bg-success-subtle text-success border border-success-subtle small">
+                                        <i class="bi bi-truck me-1"></i>Freeship: @order.ShippingDiscountCode (-@order.ShippingDiscountAmount.ToString("N0")₫)
+                                    </span>
+                                }
+                            </div>
+                        }
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">Hình thức: @(order.PaymentMethod == "COD" ? "Thanh toán khi nhận hàng" : "Chuyển khoản QR")</span>
+                            <span class="fw-bold">Tổng tiền: <span class="text-danger fs-5">@order.TotalAmount.ToString("N0")₫</span></span>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    }
+</div>

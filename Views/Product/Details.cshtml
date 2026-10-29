@@ -1,0 +1,1256 @@
+@model WebsiteBanDienThoai.Models.ViewModels.ProductDetailViewModel
+
+@{
+    var product = Model.Product;
+    ViewData["Title"] = $"{product.Name} - Giá Tốt, Trả Góp 0% | CellphoneS";
+}
+
+<div class="container my-3">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent p-0 mb-3" style="font-size: 12.5px;">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted"><i class="bi bi-house-door-fill me-1"></i>Trang chủ</a></li>
+            @if (product.Category != null)
+            {
+                <li class="breadcrumb-item"><a asp-controller="Product" asp-action="Category" asp-route-slug="@product.Category.Slug" class="text-muted">@product.Category.Name</a></li>
+            }
+            @if (product.Brand != null)
+            {
+                <li class="breadcrumb-item"><a asp-controller="Product" asp-action="Category" asp-route-slug="@(product.Category?.Slug ?? "all")" asp-route-brand="@product.Brand.Slug" class="text-muted">@product.Brand.Name</a></li>
+            }
+            <li class="breadcrumb-item active text-danger fw-semibold" aria-current="page">@product.Name</li>
+        </ol>
+    </nav>
+
+    <!-- Product Title & Rating -->
+    <div class="border-bottom pb-2 mb-3 d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>
+            <h1 class="h4 fw-bold mb-1">@product.Name</h1>
+            <div class="d-flex align-items-center gap-2" style="font-size: 13px;">
+                <span class="text-warning"><i class="bi bi-star-fill"></i> @Model.AverageRating.ToString("0.0")</span>
+                <span class="text-muted">|</span>
+                <a href="#reviews-section" class="text-muted text-decoration-none hover-danger">
+                    <strong>@Model.TotalReviews</strong> đánh giá & nhận xét
+                </a>
+                <span class="text-muted">|</span>
+                <span class="badge bg-light text-dark border">Chính hãng VN/A</span>
+            </div>
+        </div>
+        <div>
+            <button id="btn-fav-toggle" type="button" class="btn btn-sm btn-outline-danger fw-semibold" onclick="toggleWishlist(@product.Id, this)">
+                <i class="bi bi-heart me-1"></i>
+                <span id="fav-text">Yêu thích</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Product Main Info Row -->
+    <div class="row g-4">
+        <!-- 1. LEFT COLUMN: IMAGE GALLERY -->
+        <div class="col-lg-5">
+            <div class="bg-white p-3 rounded-3 shadow-sm border text-center position-relative mb-3">
+                @if (product.HasInstallment0Percent)
+                {
+                    <span class="cps-badge-installment position-absolute top-0 start-0 m-3">Trả góp 0%</span>
+                }
+                @if (product.DiscountPercent > 0)
+                {
+                    <span class="cps-badge-discount position-absolute top-0 end-0 m-3">-@product.DiscountPercent%</span>
+                }
+                <img id="main-product-img" src="@product.ImageUrl" alt="@product.Name" class="img-fluid" style="max-height: 380px; object-fit: contain; transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);" />
+                <div class="mt-2 text-center" id="color-preview-wrap">
+                    <span class="badge bg-light text-dark border px-3 py-1 shadow-xs" style="font-size: 12px;">
+                        <i class="bi bi-palette-fill text-danger me-1"></i>Màu đang xem: <strong id="preview-color-label" class="text-danger">@product.Name</strong>
+                    </span>
+                </div>
+
+                @if (product.Variants.Any())
+                {
+                    var distinctColorVariants = product.Variants
+                        .GroupBy(v => v.ColorName.Trim().ToLower())
+                        .Select(g => g.First())
+                        .ToList();
+
+                    <div class="d-flex flex-wrap justify-content-center gap-2 mt-3 pt-2 border-top" id="variant-thumbs-gallery">
+                        @foreach (var cv in distinctColorVariants)
+                        {
+                            var thumbImg = !string.IsNullOrEmpty(cv.ImageUrl) ? cv.ImageUrl : product.ImageUrl;
+                            <button type="button"
+                                    class="btn p-1 bg-white rounded-3 border variant-gallery-thumb d-flex flex-column align-items-center justify-content-center"
+                                    style="width: 68px; min-height: 74px; transition: all 0.2s ease;"
+                                    data-color="@cv.ColorName"
+                                    data-img="@thumbImg"
+                                    onclick="selectColorFromGallery('@cv.ColorName', '@thumbImg')"
+                                    title="Xem màu @cv.ColorName">
+                                <img src="@thumbImg" alt="@cv.ColorName" style="width: 44px; height: 44px; object-fit: contain;" onerror="this.onerror=null; this.src='@product.ImageUrl';" />
+                                <span class="text-truncate w-100 mt-1" style="font-size: 10px; font-weight: 600; color: #334155;">@cv.ColorName</span>
+                            </button>
+                        }
+                    </div>
+                }
+            </div>
+
+            <!-- Cam kết CellphoneS -->
+            <div class="bg-white p-3 rounded-3 shadow-sm border" style="font-size: 12.5px;">
+                <h6 class="fw-bold text-danger mb-2"><i class="bi bi-shield-check me-1"></i> THÔNG TIN BẢO HÀNH & ĐỔI TRẢ</h6>
+                <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-check-circle-fill text-success mt-1"></i>
+                        <span>Máy mới 100%, chính hãng fullbox đầy đủ phụ kiện từ nhà sản xuất.</span>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-arrow-repeat text-danger mt-1"></i>
+                        <span>1 ĐỔI 1 trong 30 ngày đầu tiên nếu phát sinh lỗi phần cứng từ nhà sản xuất.</span>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-tools text-primary mt-1"></i>
+                        <span>Bảo hành <strong>@product.Warranty</strong> tại trung tâm bảo hành chính hãng.</span>
+                    </li>
+                    <li class="d-flex align-items-start gap-2">
+                        <i class="bi bi-box-seam text-warning mt-1"></i>
+                        <span>Giao hàng siêu tốc miễn phí trong 2 giờ tại nội thành.</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 2. MIDDLE COLUMN: PRICING, VARIANTS & PROMOTIONS -->
+        <div class="col-lg-7">
+            <!-- Price Display -->
+            <div class="p-3 bg-light rounded-3 mb-3 border d-flex align-items-baseline gap-3 flex-wrap">
+                <span id="current-price" class="text-danger fw-bolder fs-3">@product.SalePrice.ToString("N0")₫</span>
+                @if (product.OriginalPrice > product.SalePrice)
+                {
+                    <span id="current-orig-price" class="text-muted text-decoration-line-through fs-6">@product.OriginalPrice.ToString("N0")₫</span>
+                    <span id="current-saving-badge" class="badge bg-danger">Tiết kiệm @((product.OriginalPrice - product.SalePrice).ToString("N0"))₫</span>
+                }
+            </div>
+
+            <!-- PHIÊN BẢN (STORAGE / VERSION) & MÀU SẮC (COLOR) -->
+            @if (product.Variants.Any())
+            {
+                var storages = product.Variants
+                    .Where(v => !string.IsNullOrEmpty(v.Storage))
+                    .Select(v => v.Storage)
+                    .Distinct()
+                    .ToList();
+
+                if (storages.Any())
+                {
+                    <div class="mb-3">
+                        <label class="fw-bold small mb-2 d-flex align-items-center justify-content-between">
+                            <span><i class="bi bi-memory text-danger me-1"></i> Chọn phiên bản / dung lượng:</span>
+                            <span class="text-muted fw-normal" style="font-size: 11px;">(Giá thay đổi theo phiên bản)</span>
+                        </label>
+                        <div class="d-flex flex-wrap gap-2" id="storage-container">
+                            @for (int i = 0; i < storages.Count; i++)
+                            {
+                                var st = storages[i];
+                                var minPriceForStorage = product.Variants.Where(v => v.Storage == st).Min(v => v.Price);
+                                <div class="cps-storage-pill @(i == 0 ? "active" : "")" data-storage="@st" onclick="selectStorage('@st')">
+                                    <span class="storage-name">@st</span>
+                                    <span class="storage-price">@minPriceForStorage.ToString("N0")₫</span>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+
+                <!-- CHỌN MÀU SẮC (COLOR) -->
+                <div class="mb-3">
+                    <label class="fw-bold small mb-2 d-flex align-items-center justify-content-between">
+                        <span><i class="bi bi-palette-fill text-danger me-1"></i> Chọn màu sắc yêu thích:</span>
+                        <span id="active-color-name" class="text-danger fw-bold small"></span>
+                    </label>
+                    <div class="d-flex flex-wrap gap-2" id="colors-container">
+                        <!-- Populated by JavaScript depending on selected storage -->
+                    </div>
+                </div>
+
+                <!-- TÓM TẮT BIẾN THỂ ĐÃ CHỌN -->
+                <div class="p-2 px-3 rounded-3 bg-light border d-flex align-items-center justify-content-between mb-3 small">
+                    <div class="d-flex align-items-center text-truncate">
+                        <i class="bi bi-check-circle-fill text-danger me-2"></i>
+                        <span>Đã chọn: <strong id="selected-summary-text" class="text-dark">Đang tải...</strong></span>
+                    </div>
+                    <span class="badge bg-success-subtle text-success border border-success-subtle ms-2 flex-shrink-0">
+                        <i class="bi bi-shield-fill-check me-1"></i>Còn hàng
+                    </span>
+                </div>
+            }
+
+
+
+            <!-- Khung Khuyến Mãi Đặc Quyền (Signature CellphoneS Box) -->
+            <div class="card border-danger mb-3 shadow-sm">
+                <div class="card-header bg-danger text-white py-2 d-flex align-items-center gap-2">
+                    <i class="bi bi-gift-fill"></i>
+                    <strong style="font-size: 13.5px;">KHUYẾN MÃI & ƯU ĐÃI ĐỘC QUYỀN CELLPHONES</strong>
+                </div>
+                <div class="card-body p-3" style="font-size: 12.5px; background: #fffdfd;">
+                    <ul class="list-unstyled mb-0 d-flex flex-column gap-2">
+                        @if (product.SmemberDiscount > 0)
+                        {
+                            <li class="d-flex align-items-start gap-2">
+                                <span class="badge bg-danger">Smember</span>
+                                <span>Giảm thêm đến <strong>@product.SmemberDiscount.ToString("N0")₫</strong> dành cho hội viên thân thiết.</span>
+                            </li>
+                        }
+                        <li class="d-flex align-items-start gap-2">
+                            <span class="badge bg-warning text-dark">Thu cũ</span>
+                            <span>Trợ giá lên đời đến <strong>4.000.000₫</strong> khi tham gia thu cũ đổi mới tại cửa hàng.</span>
+                        </li>
+                        <li class="d-flex align-items-start gap-2">
+                            <span class="badge bg-primary">Thanh toán</span>
+                            <span>Giảm ngay 500.000₫ khi thanh toán qua thẻ tín dụng hoặc VNPAY-QR (số lượng có hạn).</span>
+                        </li>
+                        @if (!string.IsNullOrEmpty(product.PromotionInfo))
+                        {
+                            <li class="d-flex align-items-start gap-2">
+                                <span class="badge bg-success">Quà tặng</span>
+                                <span>@product.PromotionInfo</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Action CTA Buttons -->
+            <div class="d-flex flex-column gap-2 mb-3">
+                <div class="d-flex gap-2">
+                    <!-- Nút Mua Ngay -->
+                    <button type="button" class="btn btn-danger flex-grow-1 py-2 fw-bold text-uppercase fs-5 shadow-sm d-flex flex-column align-items-center justify-content-center" 
+                            onclick="handleBuyNow()">
+                        <span><i class="bi bi-cart-check-fill me-1"></i> MUA NGAY</span>
+                        <small style="font-size: 11px; font-weight: normal; text-transform: none;">(Giao hàng tận nơi miễn phí hoặc nhận tại cửa hàng)</small>
+                    </button>
+                    <!-- Nút Thêm vào giỏ hàng -->
+                    <button type="button" class="btn btn-outline-danger px-3 py-2 fw-bold d-flex flex-column align-items-center justify-content-center" 
+                            style="min-width: 90px;" onclick="handleAddToCart()" title="Thêm sản phẩm vào giỏ hàng">
+                        <i class="bi bi-cart-plus-fill fs-4"></i>
+                        <span style="font-size: 10px;">THÊM VÀO GIỎ</span>
+                    </button>
+                    <!-- Nút Yêu thích -->
+                    <button type="button" id="btn-fav-toggle" class="btn btn-outline-danger px-3 py-2 fw-bold d-flex flex-column align-items-center justify-content-center"
+                            style="min-width: 85px;" onclick="toggleWishlist(@product.Id, this)" title="Lưu sản phẩm vào danh sách yêu thích" data-product-id="@product.Id">
+                        <i class="bi bi-heart fs-4"></i>
+                        <span id="fav-text" style="font-size: 10px;">YÊU THÍCH</span>
+                    </button>
+                </div>
+
+                <!-- Hai nút trả góp -->
+                <div class="row g-2">
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-danger w-100 py-2 fw-bold d-flex flex-column align-items-center" onclick="Swal.fire({ icon: 'info', title: 'Trả Góp 0% Qua CCCD', text: 'Duyệt hồ sơ nhanh chóng chỉ trong 5 phút. Vui lòng mang theo CCCD gắn chip đến cửa hàng CellphoneS gần nhất để làm thủ tục nhận máy ngay!', confirmButtonColor: '#d70018', confirmButtonText: 'Đã hiểu' })">
+                            <span>TRẢ GOP 0%</span>
+                            <small class="text-muted" style="font-size: 10.5px; font-weight: normal;">Duyệt hồ sơ nhanh qua CCCD</small>
+                        </button>
+                    </div>
+                    <div class="col-6">
+                        <button type="button" class="btn btn-outline-primary w-100 py-2 fw-bold d-flex flex-column align-items-center" onclick="Swal.fire({ icon: 'info', title: 'Trả Góp 0% Qua Thẻ Tín Dụng', text: 'Hỗ trợ trả góp 0% lãi suất kỳ hạn 3 - 12 tháng qua thẻ tín dụng của hơn 25 ngân hàng đối tác (Visa, Mastercard, JCB).', confirmButtonColor: '#d70018', confirmButtonText: 'Đã hiểu' })">
+                            <span>TRẢ GÓP QUA THẺ</span>
+                            <small class="text-muted" style="font-size: 10.5px; font-weight: normal;">Visa, Mastercard, JCB</small>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- BANNER THU CŨ LÊN ĐỜI CELLPHONES -->
+                <div class="card border-danger-subtle rounded-3 p-3 mt-3 shadow-sm" style="background: #fff8f8;">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px; flex-shrink: 0;">
+                                <i class="bi bi-arrow-repeat fs-5"></i>
+                            </div>
+                            <div>
+                                <strong class="text-danger d-block" style="font-size: 13.5px;">THU CŨ ĐỔI MỚI - LÊN ĐỜI @product.Name</strong>
+                                <small class="text-muted" style="font-size: 11.5px;">Trợ giá độc quyền CellphoneS lên đến <span class="text-danger fw-bold">2.500.000₫</span></small>
+                            </div>
+                        </div>
+                        <a asp-controller="TradeIn" asp-action="Index" asp-route-targetProductId="@product.Id" class="btn btn-sm btn-danger fw-bold rounded-pill px-3 shadow-sm flex-shrink-0">
+                            Định giá ngay <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center text-muted small">
+                <i class="bi bi-telephone-fill text-danger me-1"></i> Cần tư vấn chi tiết? Gọi ngay tổng đài miễn phí: <a href="tel:18002097" class="text-danger fw-bold">1800.2097</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Description & Specs Row -->
+    <div class="row g-4 mt-2">
+        <!-- Mô tả chi tiết -->
+        <div class="col-lg-8">
+            <div class="bg-white p-4 rounded-3 shadow-sm border">
+                <h4 class="fw-bold mb-3 text-danger border-bottom pb-2">
+                    <i class="bi bi-info-circle-fill me-2"></i> ĐẶC ĐIỂM NỔI BẬT
+                </h4>
+                <div class="lead fs-6 mb-3" style="line-height: 1.8;">
+                    @product.Description
+                </div>
+
+                <div class="alert alert-danger bg-light border-danger my-3">
+                    <h6 class="fw-bold text-danger mb-1"><i class="bi bi-stars me-1"></i> Tại sao nên mua @product.Name tại CellphoneS?</h6>
+                    <ul class="mb-0 small">
+                        <li>Cam kết 100% hàng chính hãng, nguyên seal hộp, xuất hóa đơn VAT đầy đủ.</li>
+                        <li>Chính sách 1 đổi 1 trong 30 ngày đầu tiên nếu máy có lỗi phần cứng từ nhà sản xuất.</li>
+                        <li>Đội ngũ kỹ thuật viên CellphoneS hỗ trợ dán màn hình, chuyển dữ liệu máy cũ sang máy mới hoàn toàn miễn phí.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bảng thông số kỹ thuật -->
+        <div class="col-lg-4">
+            <div class="bg-white p-3 rounded-3 shadow-sm border">
+                <h5 class="fw-bold mb-3 text-dark border-bottom pb-2">
+                    <i class="bi bi-cpu-fill text-danger me-1"></i> THÔNG SỐ KỸ THUẬT
+                </h5>
+                @if (!string.IsNullOrEmpty(product.TechnicalSpecs))
+                {
+                    var specs = product.TechnicalSpecs.Split('|');
+                    <table class="table table-striped table-sm mb-0" style="font-size: 12.5px;">
+                        <tbody>
+                            @foreach (var spec in specs)
+                            {
+                                var parts = spec.Split(':');
+                                <tr>
+                                    <td class="fw-bold text-muted" style="width: 35%;">@(parts.Length > 0 ? parts[0].Trim() : "")</td>
+                                    <td>@(parts.Length > 1 ? parts[1].Trim() : spec.Trim())</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <p class="text-muted small">Đang cập nhật thông số kỹ thuật.</p>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================== -->
+    <!-- PHẦN ĐÁNH GIÁ & NHẬN XÉT SẢN PHẨM (CUSTOMER REVIEWS & RATINGS) -->
+    <!-- ========================================================== -->
+    <div id="reviews-section" class="mt-4 pt-3">
+        <div class="bg-white p-4 rounded-4 shadow-sm border">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4 pb-2 border-bottom">
+                <h4 class="fw-bold m-0 text-dark">
+                    <i class="bi bi-chat-heart-fill text-danger me-2"></i> Đánh Giá & Nhận Xét @product.Name
+                </h4>
+                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-3 py-2 fw-semibold" id="top-reviews-badge">
+                    <i class="bi bi-patch-check-fill me-1"></i> @Model.TotalReviews lượt đánh giá xác thực
+                </span>
+            </div>
+
+            <!-- BẢNG TỔNG QUAN ĐIỂM SỐ & THANH TỶ LỆ SAO -->
+            <div class="cps-rating-overview-card mb-4">
+                <div class="row align-items-center g-4">
+                    <!-- Cột 1: Điểm trung bình -->
+                    <div class="col-md-3 text-center border-end-md">
+                        <div class="cps-big-score" id="summary-avg-rating">@Model.AverageRating.ToString("0.0")</div>
+                        <div class="text-warning fs-5 my-1" id="summary-stars">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                if (i <= Math.Round(Model.AverageRating))
+                                {
+                                    <i class="bi bi-star-fill"></i>
+                                }
+                                else
+                                {
+                                    <i class="bi bi-star"></i>
+                                }
+                            }
+                        </div>
+                        <div class="text-muted small"><strong id="summary-total-count">@Model.TotalReviews</strong> đánh giá & nhận xét</div>
+                        <div class="mt-2 text-success small fw-semibold">
+                            <i class="bi bi-hand-thumbs-up-fill me-1"></i>98% khách hàng hài lòng
+                        </div>
+                    </div>
+
+                    <!-- Cột 2: Phân bổ sao (Progress Bars) -->
+                    <div class="col-md-5">
+                        <div class="cps-star-bar">
+                            <span style="width: 45px;"><i class="bi bi-star-fill text-warning me-1"></i>5</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-danger" style="width: @(Model.GetStarPercentage(Model.Star5Count))%"></div>
+                            </div>
+                            <span class="text-muted small text-end" style="width: 60px;">@Model.Star5Count (@(Model.GetStarPercentage(Model.Star5Count))%)</span>
+                        </div>
+                        <div class="cps-star-bar">
+                            <span style="width: 45px;"><i class="bi bi-star-fill text-warning me-1"></i>4</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-danger bg-opacity-75" style="width: @(Model.GetStarPercentage(Model.Star4Count))%"></div>
+                            </div>
+                            <span class="text-muted small text-end" style="width: 60px;">@Model.Star4Count (@(Model.GetStarPercentage(Model.Star4Count))%)</span>
+                        </div>
+                        <div class="cps-star-bar">
+                            <span style="width: 45px;"><i class="bi bi-star-fill text-warning me-1"></i>3</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-warning" style="width: @(Model.GetStarPercentage(Model.Star3Count))%"></div>
+                            </div>
+                            <span class="text-muted small text-end" style="width: 60px;">@Model.Star3Count (@(Model.GetStarPercentage(Model.Star3Count))%)</span>
+                        </div>
+                        <div class="cps-star-bar">
+                            <span style="width: 45px;"><i class="bi bi-star-fill text-warning me-1"></i>2</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-secondary" style="width: @(Model.GetStarPercentage(Model.Star2Count))%"></div>
+                            </div>
+                            <span class="text-muted small text-end" style="width: 60px;">@Model.Star2Count (@(Model.GetStarPercentage(Model.Star2Count))%)</span>
+                        </div>
+                        <div class="cps-star-bar">
+                            <span style="width: 45px;"><i class="bi bi-star-fill text-warning me-1"></i>1</span>
+                            <div class="progress">
+                                <div class="progress-bar bg-secondary bg-opacity-50" style="width: @(Model.GetStarPercentage(Model.Star1Count))%"></div>
+                            </div>
+                            <span class="text-muted small text-end" style="width: 60px;">@Model.Star1Count (@(Model.GetStarPercentage(Model.Star1Count))%)</span>
+                        </div>
+                    </div>
+
+                    <!-- Cột 3: Nút viết đánh giá -->
+                    <div class="col-md-4 text-center text-md-end">
+                        <div class="p-3 bg-light rounded-3 border text-center">
+                            <h6 class="fw-bold text-dark mb-1">Bạn đã dùng sản phẩm này?</h6>
+                            <p class="small text-muted mb-3">Đánh giá ngay để nhận điểm thưởng Smember và giúp mọi người chọn mua nhé!</p>
+                            <button type="button" class="btn btn-danger fw-bold px-4 py-2 w-100 shadow-sm" onclick="toggleReviewForm()">
+                                <i class="bi bi-pencil-square me-1"></i> Viết đánh giá ngay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORM GỬI ĐÁNH GIÁ (SLIDE DOWN / COLLAPSIBLE) -->
+            <div id="reviewFormContainer" class="card border-danger border-opacity-50 rounded-4 mb-4 shadow-sm" style="display: none; background: #fffdfd;">
+                <div class="card-header bg-danger text-white py-2 px-4 d-flex justify-content-between align-items-center">
+                    <span class="fw-bold"><i class="bi bi-pencil-fill me-1"></i> Viết Đánh Giá Của Bạn Cho @product.Name</span>
+                    <button type="button" class="btn-close btn-close-white" onclick="toggleReviewForm()"></button>
+                </div>
+                <div class="card-body p-4">
+                    <form id="productReviewForm" onsubmit="submitReview(event)">
+                        <input type="hidden" id="reviewProductId" value="@product.Id" />
+                        <input type="hidden" id="reviewRatingInput" value="5" />
+
+                        <!-- Chọn số sao đánh giá -->
+                        <div class="text-center mb-3">
+                            <label class="form-label fw-bold d-block mb-1">Đánh giá chung của bạn về sản phẩm:</label>
+                            <div class="d-inline-flex align-items-center gap-1" id="starSelectorContainer">
+                                <i class="bi bi-star-fill star-interactive active" data-rating="1"></i>
+                                <i class="bi bi-star-fill star-interactive active" data-rating="2"></i>
+                                <i class="bi bi-star-fill star-interactive active" data-rating="3"></i>
+                                <i class="bi bi-star-fill star-interactive active" data-rating="4"></i>
+                                <i class="bi bi-star-fill star-interactive active" data-rating="5"></i>
+                            </div>
+                            <div class="text-danger fw-bold small mt-1" id="ratingLabelText">5/5: Tuyệt vời</div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Họ và tên của bạn <span class="text-danger">*</span></label>
+                                <input type="text" id="reviewCustomerName" class="form-control" placeholder="Nhập họ tên đầy đủ" 
+                                       value="@(User.Identity?.IsAuthenticated == true ? User.Identity.Name : "")" required />
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label small fw-bold">Số điện thoại <span class="text-muted font-normal">(bảo mật hiển thị)</span></label>
+                                <input type="tel" id="reviewPhoneNumber" class="form-control" placeholder="Ví dụ: 0988xxxxxx" />
+                            </div>
+
+                            @if (product.Variants.Any())
+                            {
+                                <div class="col-12">
+                                    <label class="form-label small fw-bold">Phiên bản bạn đang đánh giá:</label>
+                                    <select id="reviewVariantInfo" class="form-select">
+                                        <option value="">Tất cả các phiên bản của @product.Name</option>
+                                        @foreach (var v in product.Variants)
+                                        {
+                                            <option value="@v.ColorName - @v.Storage">@v.ColorName - @v.Storage</option>
+                                        }
+                                    </select>
+                                </div>
+                            }
+
+                            <div class="col-12">
+                                <label class="form-label small fw-bold">Nội dung đánh giá chi tiết <span class="text-danger">*</span></label>
+                                <textarea id="reviewContent" class="form-control" rows="4" 
+                                          placeholder="Chia sẻ trải nghiệm thực tế của bạn về camera, pin, màn hình, hiệu năng hoặc dịch vụ của CellphoneS..." required></textarea>
+                                <div class="d-flex justify-content-between small text-muted mt-1">
+                                    <span>Tối thiểu 5 ký tự</span>
+                                    <span id="charCount">0/1000 ký tự</span>
+                                </div>
+                            </div>
+
+                            <div class="col-12 text-end">
+                                <button type="button" class="btn btn-light border px-3 me-2" onclick="toggleReviewForm()">Hủy</button>
+                                <button type="submit" id="btnSubmitReview" class="btn btn-danger px-4 fw-bold">
+                                    <i class="bi bi-send-fill me-1"></i> Gửi Đánh Giá Ngay
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- BỘ LỌC ĐÁNH GIÁ (FILTER PILLS) -->
+            <div class="d-flex flex-wrap align-items-center gap-2 mb-3 pb-2 border-bottom">
+                <span class="small fw-bold text-muted me-2"><i class="bi bi-funnel-fill me-1"></i> Lọc theo:</span>
+                <button type="button" class="btn btn-sm btn-danger review-filter-btn active" data-filter="all" onclick="filterReviews('all', this)">
+                    Tất cả (<span id="filter-count-all">@Model.Reviews.Count</span>)
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary review-filter-btn" data-filter="5" onclick="filterReviews('5', this)">
+                    5 sao (@Model.Star5Count)
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary review-filter-btn" data-filter="4" onclick="filterReviews('4', this)">
+                    4 sao (@Model.Star4Count)
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary review-filter-btn" data-filter="3" onclick="filterReviews('3', this)">
+                    3 sao (@Model.Star3Count)
+                </button>
+                <button type="button" class="btn btn-sm btn-outline-secondary review-filter-btn" data-filter="verified" onclick="filterReviews('verified', this)">
+                    <i class="bi bi-patch-check-fill text-success me-1"></i>Đã mua tại CellphoneS
+                </button>
+            </div>
+
+            <!-- DANH SÁCH NHẬN XÉT CỦA KHÁCH HÀNG -->
+            <div id="reviewsListContainer">
+                @if (Model.Reviews.Any())
+                {
+                    @foreach (var r in Model.Reviews)
+                    {
+                        var initial = !string.IsNullOrEmpty(r.CustomerName) ? r.CustomerName.Trim().Substring(0, 1).ToUpper() : "K";
+                        <div class="cps-review-item review-row" data-rating="@r.Rating" data-verified="@r.IsVerifiedBuyer.ToString().ToLower()">
+                            <div class="d-flex align-items-start gap-3">
+                                <!-- Avatar -->
+                                <div class="cps-review-avatar">@initial</div>
+
+                                <!-- Nội dung đánh giá -->
+                                <div class="flex-grow-1">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <strong class="text-dark">@r.CustomerName</strong>
+                                            @if (r.IsVerifiedBuyer)
+                                            {
+                                                <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 11px;">
+                                                    <i class="bi bi-patch-check-fill me-1"></i>Đã mua tại CellphoneS
+                                                </span>
+                                            }
+                                        </div>
+                                        <small class="text-muted" style="font-size: 11.5px;">
+                                            <i class="bi bi-clock me-1"></i>@r.CreatedAt.ToString("dd/MM/yyyy HH:mm")
+                                        </small>
+                                    </div>
+
+                                    <!-- Số sao và phiên bản -->
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                        <div class="text-warning small">
+                                            @for (int s = 1; s <= 5; s++)
+                                            {
+                                                if (s <= r.Rating)
+                                                {
+                                                    <i class="bi bi-star-fill"></i>
+                                                }
+                                                else
+                                                {
+                                                    <i class="bi bi-star text-muted opacity-50"></i>
+                                                }
+                                            }
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(r.VariantInfo))
+                                        {
+                                            <span class="badge bg-light text-secondary border" style="font-size: 11px;">
+                                                <i class="bi bi-phone me-1"></i>Phiên bản: @r.VariantInfo
+                                            </span>
+                                        }
+                                    </div>
+
+                                    <!-- Lời nhận xét -->
+                                    <p class="text-dark mb-2" style="font-size: 13.5px; line-height: 1.6;">
+                                        @r.Content
+                                    </p>
+
+                                    <!-- Nút Hữu ích -->
+                                    <div class="d-flex align-items-center gap-3">
+                                        <button type="button" class="btn btn-sm btn-light border py-1 px-2" style="font-size: 11.5px;" onclick="likeReview(@r.Id, this)">
+                                            <i class="bi bi-hand-thumbs-up me-1 text-danger"></i> Hữu ích (<strong>@r.LikesCount</strong>)
+                                        </button>
+                                    </div>
+
+                                    <!-- Khối phản hồi chính thức từ Quản trị viên CellphoneS -->
+                                    @if (!string.IsNullOrEmpty(r.AdminReply))
+                                    {
+                                        <div class="cps-admin-reply-box">
+                                            <div class="d-flex align-items-center justify-content-between mb-1">
+                                                <strong class="text-danger small">
+                                                    <i class="bi bi-headset me-1"></i> CellphoneS - Quản trị viên:
+                                                </strong>
+                                                <small class="text-muted" style="font-size: 11px;">
+                                                    @(r.AdminReplyAt.HasValue ? r.AdminReplyAt.Value.ToString("dd/MM/yyyy") : "")
+                                                </small>
+                                            </div>
+                                            <div class="text-muted" style="font-size: 12.5px; line-height: 1.5;">
+                                                @r.AdminReply
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="text-center py-5 text-muted" id="emptyReviewNotice">
+                        <i class="bi bi-chat-square-heart display-4 text-danger opacity-50 d-block mb-3"></i>
+                        <p class="mb-2">Chưa có đánh giá nào cho sản phẩm này.</p>
+                        <p class="small">Hãy là người đầu tiên trải nghiệm và chia sẻ cảm nhận của bạn!</p>
+                        <button type="button" class="btn btn-outline-danger btn-sm mt-2" onclick="toggleReviewForm()">
+                            Viết đánh giá ngay
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- SẢN PHẨM TƯƠNG TỰ BẠN CÓ THỂ THÍCH -->
+    @if (Model.RelatedProducts.Any())
+    {
+        <div class="mt-5">
+            <h4 class="fw-bold text-dark mb-3">
+                <i class="bi bi-grid-3x3-gap-fill text-danger me-1"></i> SẢN PHẨM TƯƠNG TỰ BẠN CÓ THỂ THÍCH
+            </h4>
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-5 g-2 g-md-3">
+                @foreach (var item in Model.RelatedProducts)
+                {
+                    <div class="col">
+                        <div class="cps-product-card">
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" class="cps-card-image">
+                                <img src="@item.ImageUrl" alt="@item.Name" loading="lazy" />
+                            </a>
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" class="cps-card-title">
+                                @item.Name
+                            </a>
+                            <div class="cps-card-price">
+                                <span class="cps-sale-price">@item.SalePrice.ToString("N0")₫</span>
+                            </div>
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger mt-auto">
+                                Xem chi tiết
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        // Dữ liệu toàn bộ biến thể sản phẩm truyền từ Model
+        const productName = "@Html.Raw(product.Name.Replace("\"", "\\\""))";
+        const defaultProductImg = "@Html.Raw(product.ImageUrl)";
+        const productVariants = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(product.Variants.Select(v => new {
+            id = v.Id,
+            colorName = v.ColorName,
+            colorHex = v.ColorHex,
+            storage = v.Storage,
+            price = v.Price,
+            stock = v.StockQuantity,
+            imageUrl = v.ImageUrl
+        })));
+
+        let currentStorage = null;
+        let currentColor = null;
+        let selectedVariantId = null;
+
+        // Khởi tạo biến thể và trạng thái yêu thích khi tải trang
+        document.addEventListener("DOMContentLoaded", function () {
+            if (productVariants && productVariants.length > 0) {
+                // Chọn storage đầu tiên
+                const firstStorage = productVariants[0].storage;
+                selectStorage(firstStorage);
+            }
+            initStarSelector();
+
+            // Kiểm tra xem sản phẩm này đã được lưu vào yêu thích chưa
+            fetch(`/Wishlist/CheckStatus?productId=${@product.Id}`)
+                .then(r => r.json())
+                .then(data => {
+                    const btn = document.getElementById('btn-fav-toggle');
+                    if (data.isFavorited && btn) {
+                        btn.classList.remove('btn-outline-danger');
+                        btn.classList.add('btn-danger');
+                        const icon = btn.querySelector('i');
+                        if (icon) icon.className = 'bi bi-heart-fill me-1';
+                        const text = btn.querySelector('#fav-text') || btn.querySelector('span');
+                        if (text) text.innerText = 'Đã yêu thích';
+                    }
+                })
+                .catch(() => {});
+        });
+
+        // Hàm ánh xạ ảnh màu sắc thông minh chuẩn CDN CellphoneS cho toàn bộ sản phẩm
+        function getSmartColorImage(prodName, colorName, fallback) {
+            const p = (prodName || '').toLowerCase();
+            const c = (colorName || '').toLowerCase();
+
+            // 1. iPhone 16 Pro Max
+            if (p.includes('iphone 16 pro') || p.includes('16 pro max')) {
+                if (c.includes('tự nhiên') || c.includes('natural') || c.includes('tu nhien')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max-titan-tu-nhien.png';
+                if (c.includes('trắng') || c.includes('white') || c.includes('trang')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max-titan-trang.png';
+                if (c.includes('đen') || c.includes('black') || c.includes('den')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max-titan-den.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-16-pro-max-titan-sa-mac.png';
+            }
+
+            // 2. Samsung Galaxy S24 Ultra
+            if (p.includes('s24 ultra')) {
+                if (c.includes('đen') || c.includes('black') || c.includes('den')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/g/a/galaxy-s24-ultra-den-1_1_3.png';
+                if (c.includes('tím') || c.includes('violet') || c.includes('tim')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/g/a/galaxy-s24-ultra-tim_1_3.png';
+                if (c.includes('vàng') || c.includes('yellow') || c.includes('vang')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/g/a/galaxy-s24-ultra-vang_1_3.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/g/a/galaxy-s24-ultra-xam_1_3.png';
+            }
+
+            // 3. iPhone 15
+            if (p.includes('iphone 15')) {
+                if (c.includes('mint') || c.includes('xanh lá') || c.includes('xanh la') || c.includes('green')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-128gb-xanh-la.png';
+                if (c.includes('đen') || c.includes('midnight') || c.includes('den')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-128-gbden.png';
+                if (c.includes('vàng') || c.includes('yellow') || c.includes('vang')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-128gb-vang.png';
+                if (c.includes('lam') || c.includes('dương') || c.includes('duong') || c.includes('blue')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-128gb-xanh-duong.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/iphone-15-hong.png';
+            }
+
+            // 4. Xiaomi 14
+            if (p.includes('xiaomi 14')) {
+                if (c.includes('trắng') || c.includes('trang') || c.includes('white'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi-14-pre-trang_1.png';
+                if (c.includes('xanh') || c.includes('green') || c.includes('ngọc'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi-14-pre-xanh-la_1.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/x/i/xiaomi-14-pre-den_1.png';
+            }
+
+            // 5. OPPO Find N3 Flip
+            if (p.includes('find n3 flip')) {
+                if (c.includes('hồng') || c.includes('hong') || c.includes('pink'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/o/p/oppo-find-n3-flip_2_.png';
+                if (c.includes('đen') || c.includes('den') || c.includes('black'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/n/3/n3_flip_-_combo_product_-_black.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/n/3/n3_flip_-_combo_product_-_gold.png';
+            }
+
+            // 6. Galaxy Z Flip6
+            if (p.includes('z flip6') || p.includes('flip 6') || p.includes('flip6')) {
+                if (c.includes('xám') || c.includes('gray') || c.includes('metal') || c.includes('đen')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/f/l/flip-den.jpg';
+                if (c.includes('vàng') || c.includes('solar') || c.includes('vang')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/f/l/flip-vang.jpg';
+                if (c.includes('mint') || c.includes('lá') || c.includes('green')) 
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/f/l/flip-xanh-la.jpg';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/f/l/flip-xanh.jpg';
+            }
+
+            // 7. vivo V40 Lite
+            if (p.includes('vivo v40 lite')) {
+                if (c.includes('đen') || c.includes('den') || c.includes('black'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/m/image_-_2025-02-10t145332.961.png';
+                if (c.includes('tím') || c.includes('tim') || c.includes('purple'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/d/i/dien-thoai-vivo-v40-lite_1_.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/m/image_-_2025-02-10t145206.786.png';
+            }
+
+            // 8. Xiaomi Redmi Note 13
+            if (p.includes('redmi note 13')) {
+                if (c.includes('xanh') || c.includes('băng') || c.includes('blue'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/d/o/downloadnote_13.png';
+                if (c.includes('vàng') || c.includes('vang') || c.includes('gold'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/d/o/download_3__11.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/d/o/download_4__12_2.png';
+            }
+
+            // 9. MacBook Air M2
+            if (p.includes('macbook air m2')) {
+                if (c.includes('bạc') || c.includes('bac') || c.includes('silver'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/m/a/macbook_air_m2_2_3.jpg';
+                if (c.includes('vàng') || c.includes('vang') || c.includes('starlight'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/m/a/macbook_air_m2_3_2.jpg';
+                if (c.includes('xám') || c.includes('xam') || c.includes('gray'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/m/a/macbook_air_m2_4_2.jpg';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/m/a/macbook_air_m2_1_2.jpg';
+            }
+
+            // 10. ASUS TUF Gaming F15
+            if (p.includes('tuf gaming')) {
+                if (c.includes('đen') || c.includes('den') || c.includes('mecha'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/l/a/laptop_asus_tuf_gaming_f15_fx507zc4-hn074w.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_2__3_25.png';
+            }
+
+            // 12. iPad Air 6 M2
+            if (p.includes('ipad air 6')) {
+                if (c.includes('starlight') || c.includes('ánh sao') || c.includes('vàng'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-air-6-m2-11-inch_3_.png';
+                if (c.includes('xanh') || c.includes('blue'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-air-6-m2-11-inch.png';
+                if (c.includes('tím') || c.includes('purple'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/p/ipad-air-6-m2-11-inch_2_.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/f/r/frame_100_5__3.png';
+            }
+
+            // 13. Apple Watch Series 10
+            if (p.includes('watch series 10')) {
+                if (c.includes('hồng') || c.includes('rose') || c.includes('gold'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_34__7_2.png';
+                if (c.includes('bạc') || c.includes('silver'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_26__6_4.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/e/text_ng_n_31__7_4.png';
+            }
+
+            // 14. Galaxy Watch Ultra
+            if (p.includes('watch ultra')) {
+                if (c.includes('bạc') || c.includes('silver'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/m/sm-l705_001_front_titanium_silve_2.png';
+                if (c.includes('trắng') || c.includes('white'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/s/m/sm-l705_001_front_titanium_white_2.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/i/m/image_1075_1_1_1_1.png';
+            }
+
+            // 15. Marshall Emberton II
+            if (p.includes('marshall emberton')) {
+                if (c.includes('kem') || c.includes('cream') || c.includes('xám'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/l/o/loa-bluetooth-marshall-emberton-ii-xam.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/l/o/loa-marshall-emberton-ii_1.jpg';
+            }
+
+            // 16. Sony WH-1000XM5
+            if (p.includes('wh-1000xm5') || p.includes('1000xm5')) {
+                if (c.includes('bạc') || c.includes('platinum') || c.includes('silver'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/a/tai-nghe-chup-tai-sony-wh-1000xm5-2-removebg-preview_1.png';
+                if (c.includes('xanh') || c.includes('blue'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/_/t_i_xu_ng_67__2_7.png';
+                if (c.includes('hồng') || c.includes('pink'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/a/tai-nghe-chup-tai-sony-wh-1000xm5-hong-khoi.jpg';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/t/a/tai-nghe-chup-tai-sony-wh-1000xm5-3_1.png';
+            }
+
+            // 17. Anker 30W
+            if (p.includes('anker') && p.includes('30w')) {
+                if (c.includes('trắng') || c.includes('white'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/f/r/frame_1_79__2.png';
+                if (c.includes('xanh') || c.includes('blue'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/m/_/m_y_r_a_ch_n_29__1.png';
+                if (c.includes('hồng') || c.includes('pink'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/m/_/m_y_r_a_ch_n_28__1.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/f/r/frame_1_78__2.png';
+            }
+
+            // 18. Baseus 100W
+            if (p.includes('baseus') && p.includes('100w')) {
+                if (c.includes('trắng') || c.includes('white'))
+                    return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/p/i/pin-du-phong-baseus-enerfill-20000mah-100w-tich-hop-cap-doi-usb-c-man-hinh-fc41_3_.png';
+                return 'https://cdn2.cellphones.com.vn/insecure/rs:fill:358:358/q:90/plain/https://cellphones.com.vn/media/catalog/product/p/i/pin-du-phong-baseus-enerfill-20000mah-100w-tich-hop-cap-doi-usb-c-man-hinh-fc41_2_.png';
+            }
+
+            return fallback;
+        }
+
+        // Cho phép bấm trực tiếp vào ảnh thumbnail dưới khung ảnh chính để đổi màu biến thể
+        function selectColorFromGallery(colorName, imgUrl) {
+            const hasInCurrentStorage = productVariants.some(v => v.storage === currentStorage && v.colorName === colorName);
+            if (hasInCurrentStorage) {
+                selectColor(colorName);
+            } else {
+                const matchAny = productVariants.find(v => v.colorName === colorName);
+                if (matchAny) {
+                    selectStorage(matchAny.storage);
+                    selectColor(colorName);
+                }
+            }
+        }
+
+        // Hàm chọn phiên bản bộ nhớ (Storage)
+        function selectStorage(storage) {
+            currentStorage = storage;
+
+            // Highlight storage pill
+            document.querySelectorAll("#storage-container .cps-storage-pill").forEach(el => {
+                if (el.getAttribute("data-storage") === storage) {
+                    el.classList.add("active");
+                } else {
+                    el.classList.remove("active");
+                }
+            });
+
+            // Lọc danh sách màu sắc có sẵn cho dung lượng này
+            const availableColors = productVariants.filter(v => v.storage === storage);
+            const colorsContainer = document.getElementById("colors-container");
+            if (colorsContainer) {
+                colorsContainer.innerHTML = "";
+
+                availableColors.forEach((v, index) => {
+                    const colorPill = document.createElement("div");
+                    colorPill.className = "cps-color-pill " + (index === 0 ? "active" : "");
+                    colorPill.setAttribute("data-color", v.colorName);
+                    colorPill.onclick = () => selectColor(v.colorName);
+
+                    const resolvedImg = v.imageUrl || getSmartColorImage(productName, v.colorName, defaultProductImg);
+
+                    let thumbHtml = '';
+                    if (resolvedImg) {
+                        thumbHtml = `<img src="${resolvedImg}" alt="${v.colorName}" class="cps-color-thumb me-1" style="width: 26px; height: 26px; object-fit: contain; border-radius: 4px; background: #fff; padding: 1px; border: 1px solid #e2e8f0;" onerror="this.onerror=null; this.style.display='none';" />`;
+                    } else {
+                        thumbHtml = `<span class="cps-color-dot" style="background-color: ${v.colorHex};"></span>`;
+                    }
+
+                    colorPill.innerHTML = `
+                        <div class="d-flex align-items-center gap-2">
+                            ${thumbHtml}
+                            <div class="d-flex flex-column text-start">
+                                <span class="cps-color-name" style="font-weight: 700; font-size: 13px;">${v.colorName}</span>
+                                <span class="cps-color-price" style="font-size: 11px; color: #64748b;">${Number(v.price).toLocaleString('vi-VN')}₫</span>
+                            </div>
+                        </div>
+                    `;
+                    colorsContainer.appendChild(colorPill);
+                });
+
+                // Tự động chọn màu đầu tiên của storage này
+                if (availableColors.length > 0) {
+                    selectColor(availableColors[0].colorName);
+                }
+            }
+        }
+
+        // Hàm chọn màu sắc (Color)
+        function selectColor(colorName) {
+            currentColor = colorName;
+
+            // Highlight color pill
+            document.querySelectorAll("#colors-container .cps-color-pill").forEach(el => {
+                if (el.getAttribute("data-color") === colorName) {
+                    el.classList.add("active");
+                } else {
+                    el.classList.remove("active");
+                }
+            });
+
+            // Highlight thumbnail in left gallery
+            document.querySelectorAll("#variant-thumbs-gallery .variant-gallery-thumb").forEach(el => {
+                if (el.getAttribute("data-color") === colorName) {
+                    el.classList.add("border-danger", "border-2", "shadow-xs");
+                    el.style.background = "#fff5f5";
+                } else {
+                    el.classList.remove("border-danger", "border-2", "shadow-xs");
+                    el.style.background = "#ffffff";
+                }
+            });
+
+            const activeColorLabel = document.getElementById("active-color-name");
+            if (activeColorLabel) activeColorLabel.innerText = colorName;
+
+            const previewColorLabel = document.getElementById("preview-color-label");
+            if (previewColorLabel) previewColorLabel.innerText = colorName;
+
+            // Tìm biến thể thỏa mãn cả Storage và Color
+            const matchVariant = productVariants.find(v => v.storage === currentStorage && v.colorName === colorName);
+            if (matchVariant) {
+                selectedVariantId = matchVariant.id;
+
+                // Cập nhật giá hiển thị
+                const currentPriceEl = document.getElementById("current-price");
+                if (currentPriceEl) {
+                    currentPriceEl.innerText = Number(matchVariant.price).toLocaleString('vi-VN') + "₫";
+                }
+
+                // Cập nhật tóm tắt lựa chọn
+                const summaryEl = document.getElementById("selected-summary-text");
+                if (summaryEl) {
+                    summaryEl.innerText = `${matchVariant.storage} - ${matchVariant.colorName} (${Number(matchVariant.price).toLocaleString('vi-VN')}₫)`;
+                }
+
+                // Tự động đồng bộ dropdown trong form đánh giá
+                const reviewVarSelect = document.getElementById("reviewVariantInfo");
+                if (reviewVarSelect) {
+                    const optionVal = `${matchVariant.colorName} - ${matchVariant.storage}`;
+                    for (let opt of reviewVarSelect.options) {
+                        if (opt.value === optionVal) {
+                            reviewVarSelect.value = optionVal;
+                            break;
+                        }
+                    }
+                }
+
+                // Đổi ảnh sản phẩm tương ứng với màu đã chọn
+                const targetImg = matchVariant.imageUrl || getSmartColorImage(productName, matchVariant.colorName, defaultProductImg);
+                const mainImg = document.getElementById("main-product-img");
+                if (mainImg && targetImg) {
+                    if (mainImg.getAttribute("data-current-src") !== targetImg) {
+                        mainImg.setAttribute("data-current-src", targetImg);
+                        mainImg.style.opacity = '0.2';
+                        mainImg.style.transform = 'scale(0.96)';
+                        setTimeout(() => {
+                            mainImg.src = targetImg;
+                            mainImg.style.opacity = '1';
+                            mainImg.style.transform = 'scale(1)';
+                        }, 130);
+                    }
+                }
+            }
+        }
+
+        // Xử lý nút MUA NGAY
+        function handleBuyNow() {
+            const productId = @product.Id;
+            addToCart(productId, 1, selectedVariantId);
+            setTimeout(() => {
+                window.location.href = '/Cart';
+            }, 300);
+        }
+
+        // Xử lý nút THÊM VÀO GIỎ HÀNG
+        function handleAddToCart() {
+            const productId = @product.Id;
+            addToCart(productId, 1, selectedVariantId);
+            Swal.fire({
+                icon: 'success',
+                title: 'Đã thêm vào giỏ hàng!',
+                text: 'Sản phẩm "@Html.Raw(product.Name.Replace("\"", "\\\""))" đã được thêm vào giỏ hàng của bạn.',
+                showCancelButton: true,
+                confirmButtonColor: '#d70018',
+                cancelButtonColor: '#334155',
+                confirmButtonText: '<i class="bi bi-cart3 me-1"></i> Xem giỏ hàng',
+                cancelButtonText: 'Tiếp tục mua sắm',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = '/Cart';
+                }
+            });
+        }
+
+        // ========================================================
+        // LOGIC ĐÁNH GIÁ & NHẬN XÉT (REVIEWS & RATINGS)
+        // ========================================================
+        function toggleReviewForm() {
+            const container = document.getElementById("reviewFormContainer");
+            if (container) {
+                if (container.style.display === "none" || container.style.display === "") {
+                    container.style.display = "block";
+                    container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                } else {
+                    container.style.display = "none";
+                }
+            }
+        }
+
+        // Khởi tạo tương tác chọn sao đánh giá
+        function initStarSelector() {
+            const stars = document.querySelectorAll("#starSelectorContainer .star-interactive");
+            const label = document.getElementById("ratingLabelText");
+            const input = document.getElementById("reviewRatingInput");
+            const labels = {
+                1: "1/5: Rất tệ",
+                2: "2/5: Tệ, chưa hài lòng",
+                3: "3/5: Bình thường",
+                4: "4/5: Rất tốt, hài lòng",
+                5: "5/5: Tuyệt vời, vượt mong đợi"
+            };
+
+            stars.forEach(star => {
+                star.addEventListener("click", function () {
+                    const val = parseInt(this.getAttribute("data-rating"));
+                    input.value = val;
+                    label.innerText = labels[val] || `${val}/5 sao`;
+
+                    stars.forEach(s => {
+                        const sVal = parseInt(s.getAttribute("data-rating"));
+                        if (sVal <= val) {
+                            s.classList.add("active");
+                            s.classList.replace("bi-star", "bi-star-fill");
+                        } else {
+                            s.classList.remove("active");
+                            s.classList.replace("bi-star-fill", "bi-star");
+                        }
+                    });
+                });
+            });
+
+            // Đếm ký tự
+            const contentArea = document.getElementById("reviewContent");
+            const countLabel = document.getElementById("charCount");
+            contentArea?.addEventListener("input", function () {
+                countLabel.innerText = `${this.value.length}/1000 ký tự`;
+            });
+        }
+
+        // Gửi đánh giá qua AJAX
+        async function submitReview(e) {
+            e.preventDefault();
+
+            const productId = parseInt(document.getElementById("reviewProductId").value);
+            const rating = parseInt(document.getElementById("reviewRatingInput").value);
+            const customerName = document.getElementById("reviewCustomerName").value.trim();
+            const phoneNumber = document.getElementById("reviewPhoneNumber").value.trim();
+            const variantInfo = document.getElementById("reviewVariantInfo") ? document.getElementById("reviewVariantInfo").value : "";
+            const content = document.getElementById("reviewContent").value.trim();
+            const btnSubmit = document.getElementById("btnSubmitReview");
+
+            if (content.length < 5) {
+                showWarning("Nội dung đánh giá cần tối thiểu 5 ký tự.");
+                return;
+            }
+
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = `<span class="spinner-border spinner-border-sm me-1"></span> Đang gửi...`;
+
+            try {
+                const response = await fetch('/Product/AddReview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        productId: productId,
+                        rating: rating,
+                        customerName: customerName,
+                        phoneNumber: phoneNumber,
+                        variantInfo: variantInfo,
+                        content: content
+                    })
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showSuccess(data.message, "Đánh giá thành công");
+                    
+                    // Ẩn form và reset
+                    toggleReviewForm();
+                    document.getElementById("productReviewForm").reset();
+
+                    // Thêm trực tiếp đánh giá mới lên đầu danh sách
+                    const r = data.review;
+                    const initial = r.customerName.charAt(0).toUpperCase();
+                    let starsHtml = "";
+                    for (let s = 1; s <= 5; s++) {
+                        starsHtml += s <= r.rating ? '<i class="bi bi-star-fill"></i>' : '<i class="bi bi-star text-muted opacity-50"></i>';
+                    }
+
+                    const reviewHtml = `
+                        <div class="cps-review-item review-row border-start border-4 border-success ps-3 bg-success-subtle bg-opacity-10" data-rating="${r.rating}" data-verified="true">
+                            <div class="d-flex align-items-start gap-3">
+                                <div class="cps-review-avatar">${initial}</div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-1">
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <strong class="text-dark">${r.customerName}</strong>
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle" style="font-size: 11px;">
+                                                <i class="bi bi-patch-check-fill me-1"></i>Đã mua tại CellphoneS
+                                            </span>
+                                            <span class="badge bg-warning text-dark" style="font-size: 10px;">Vừa xong</span>
+                                        </div>
+                                        <small class="text-muted" style="font-size: 11.5px;"><i class="bi bi-clock me-1"></i>${r.createdAt}</small>
+                                    </div>
+                                    <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+                                        <div class="text-warning small">${starsHtml}</div>
+                                        ${r.variantInfo ? `<span class="badge bg-light text-secondary border" style="font-size: 11px;"><i class="bi bi-phone me-1"></i>Phiên bản: ${r.variantInfo}</span>` : ''}
+                                    </div>
+                                    <p class="text-dark mb-2" style="font-size: 13.5px; line-height: 1.6;">${r.content}</p>
+                                    <div>
+                                        <button type="button" class="btn btn-sm btn-light border py-1 px-2" style="font-size: 11.5px;" onclick="likeReview(${r.id}, this)">
+                                            <i class="bi bi-hand-thumbs-up me-1 text-danger"></i> Hữu ích (<strong>0</strong>)
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    const container = document.getElementById("reviewsListContainer");
+                    const emptyNotice = document.getElementById("emptyReviewNotice");
+                    if (emptyNotice) emptyNotice.remove();
+                    container.insertAdjacentHTML('afterbegin', reviewHtml);
+
+                    // Cập nhật số lượng
+                    const countEl = document.getElementById("summary-total-count");
+                    const topBadge = document.getElementById("top-reviews-badge");
+                    if (countEl) countEl.innerText = parseInt(countEl.innerText) + 1;
+                    if (topBadge) topBadge.innerHTML = `<i class="bi bi-patch-check-fill me-1"></i> ${parseInt(countEl.innerText)} lượt đánh giá xác thực`;
+                } else {
+                    showError(data.message || "Có lỗi xảy ra khi gửi đánh giá.");
+                }
+            } catch (err) {
+                showError("Lỗi kết nối khi gửi đánh giá. Vui lòng thử lại!");
+            } finally {
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = `<i class="bi bi-send-fill me-1"></i> Gửi Đánh Giá Ngay`;
+            }
+        }
+
+        // Like review
+        async function likeReview(reviewId, btn) {
+            try {
+                const res = await fetch('/Product/LikeReview', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(reviewId)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    btn.querySelector('strong').innerText = data.likes;
+                    btn.classList.add('text-danger', 'fw-bold');
+                }
+            } catch (e) {}
+        }
+
+        // Lọc đánh giá theo số sao
+        function filterReviews(filter, btn) {
+            document.querySelectorAll(".review-filter-btn").forEach(b => {
+                b.classList.remove("btn-danger", "active");
+                b.classList.add("btn-outline-secondary");
+            });
+            btn.classList.add("btn-danger", "active");
+            btn.classList.remove("btn-outline-secondary");
+
+            const rows = document.querySelectorAll("#reviewsListContainer .review-row");
+            rows.forEach(row => {
+                if (filter === 'all') {
+                    row.style.display = "block";
+                } else if (filter === 'verified') {
+                    row.style.display = row.getAttribute("data-verified") === 'true' ? "block" : "none";
+                } else {
+                    row.style.display = row.getAttribute("data-rating") === filter ? "block" : "none";
+                }
+            });
+        }
+
+        // Kiểm tra trạng thái yêu thích của sản phẩm khi tải trang
+        (async function checkFav() {
+            try {
+                const res = await fetch('/Wishlist/CheckStatus?productId=@product.Id');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.isFavorited) {
+                        const btn = document.getElementById('btn-fav-toggle');
+                        if (btn) {
+                            btn.classList.remove('btn-outline-danger');
+                            btn.classList.add('btn-danger');
+                            const icon = btn.querySelector('i');
+                            if (icon) icon.className = 'bi bi-heart-fill fs-4';
+                            const text = document.getElementById('fav-text');
+                            if (text) text.innerText = 'ĐÃ YÊU THÍCH';
+                        }
+                    }
+                }
+            } catch (e) {}
+        })();
+    </script>
+}

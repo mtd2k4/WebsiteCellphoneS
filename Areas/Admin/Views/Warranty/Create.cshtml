@@ -1,0 +1,174 @@
+@model WebsiteBanDienThoai.Models.WarrantyCard
+@{
+    ViewData["Title"] = "Cấp Phiếu Bảo Hành Mới - CellphoneS Care";
+    var products = ViewBag.Products as List<WebsiteBanDienThoai.Models.Product> ?? new();
+}
+
+<div class="mb-3">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-1">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-action="Index">Quản lý phiếu bảo hành</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Cấp phiếu mới</li>
+        </ol>
+    </nav>
+    <h4 class="fw-bolder text-dark mb-0">
+        <i class="bi bi-shield-plus text-danger me-2"></i> Cấp Phiếu Bảo Hành Điện Tử Mới
+    </h4>
+    <small class="text-muted">Tạo giấy chứng nhận bảo hành chính hãng cho thiết bị bán lẻ hoặc cấp bổ sung cho đơn hàng.</small>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="max-width: 900px;">
+    <div class="card-header bg-white py-3 border-bottom">
+        <h6 class="fw-bold mb-0 text-dark">
+            <i class="bi bi-file-earmark-plus-fill text-danger me-2"></i>Thông Tin Phiếu Bảo Hành Cần Phát Hành
+        </h6>
+    </div>
+
+    <div class="card-body p-4">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger py-2 small" role="alert"></div>
+
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-muted">Mã Phiếu Bảo Hành (Tự động sinh)</label>
+                    <input asp-for="WarrantyCode" class="form-control font-monospace fw-bold text-danger bg-light" readonly />
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-muted">Mã Đơn Hàng Gốc (Nếu có)</label>
+                    <input asp-for="OrderCode" class="form-control" placeholder="Ví dụ: ORD-20241020-001" />
+                    <input type="hidden" asp-for="OrderId" />
+                </div>
+
+                <div class="col-12"><hr class="my-1"></div>
+
+                <!-- THIẾT BỊ -->
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-muted">Chọn Sản Phẩm Từ Hệ Thống</label>
+                    <select asp-for="ProductId" class="form-select" id="selectProduct" onchange="onProductSelect(this)">
+                        <option value="">-- Chọn sản phẩm có sẵn --</option>
+                        @foreach (var p in products)
+                        {
+                            <option value="@p.Id" data-name="@p.Name" data-img="@p.ImageUrl" data-warranty="@(p.Warranty ?? "12 tháng chính hãng")">
+                                @p.Name - [@p.Brand?.Name]
+                            </option>
+                        }
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-muted">Tên Thiết Bị / Model Máy <span class="text-danger">*</span></label>
+                    <input asp-for="ProductName" id="inputProductName" class="form-control" placeholder="VD: iPhone 15 Pro Max 256GB" required />
+                    <span asp-validation-for="ProductName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-muted">Số IMEI / Serial Number <span class="text-danger">*</span></label>
+                    <input asp-for="SerialNumber" class="form-control font-monospace fw-bold text-danger" placeholder="Nhập IMEI (15 số) hoặc số Serial máy..." required />
+                    <span asp-validation-for="SerialNumber" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label class="form-label fw-bold small text-muted">Phiên Bản / Màu Sắc</label>
+                    <input asp-for="VariantInfo" class="form-control" placeholder="VD: Titan Tự Nhiên / 256GB" />
+                </div>
+
+                <input type="hidden" asp-for="ProductImageUrl" id="inputProductImageUrl" />
+
+                <div class="col-12"><hr class="my-1"></div>
+
+                <!-- KHÁCH HÀNG -->
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small text-muted">Tên Khách Hàng <span class="text-danger">*</span></label>
+                    <input asp-for="CustomerName" class="form-control" placeholder="Nguyễn Văn A" required />
+                    <span asp-validation-for="CustomerName" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small text-muted">Số Điện Thoại <span class="text-danger">*</span></label>
+                    <input asp-for="PhoneNumber" class="form-control font-monospace" placeholder="0901234567" required />
+                    <span asp-validation-for="PhoneNumber" class="text-danger small"></span>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small text-muted">Email Khách Hàng</label>
+                    <input asp-for="Email" class="form-control" placeholder="customer@gmail.com" />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-bold small text-muted">Địa Chỉ Khách Hàng</label>
+                    <input asp-for="Address" class="form-control" placeholder="Số nhà, tên đường, phường xã, quận huyện, tỉnh thành..." />
+                </div>
+
+                <div class="col-12"><hr class="my-1"></div>
+
+                <!-- GÓI BẢO HÀNH & THỜI HẠN -->
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small text-muted">Gói Bảo Hành</label>
+                    <select asp-for="WarrantyPackage" id="inputWarrantyPackage" class="form-select">
+                        <option value="12 tháng chính hãng CellphoneS">12 tháng chính hãng CellphoneS</option>
+                        <option value="24 tháng bảo hành VIP 1 đổi 1 CellphoneS Care">24 tháng bảo hành VIP 1 đổi 1 CellphoneS Care</option>
+                        <option value="12 tháng AppleCare chính hãng Apple">12 tháng AppleCare chính hãng Apple</option>
+                        <option value="18 tháng tiêu chuẩn Xiaomi Việt Nam">18 tháng tiêu chuẩn Xiaomi Việt Nam</option>
+                        <option value="Bảo hành rơi vỡ - vào nước 12 tháng">Bảo hành rơi vỡ - vào nước 12 tháng</option>
+                    </select>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small text-muted">Thời Gian Bảo Hành (Tháng)</label>
+                    <input asp-for="WarrantyPeriodMonths" type="number" min="1" max="60" class="form-control" value="12" id="inputMonths" onchange="updateEndDate()" />
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small text-muted">Ngày Kích Hoạt</label>
+                    <input asp-for="StartDate" type="date" class="form-control" value="@DateTime.UtcNow.ToString("yyyy-MM-dd")" id="inputStartDate" onchange="updateEndDate()" />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-bold small text-muted">Trung Tâm Bảo Hành Tiếp Nhận</label>
+                    <input asp-for="ServiceCenter" class="form-control" value="Điện Thoại Vui AASP - 136 Nguyễn Thái Học, Quận 1, TP.HCM (Hotline: 1800.2064)" />
+                </div>
+
+                <div class="col-12">
+                    <label class="form-label fw-bold small text-muted">Điều Khoản &amp; Phạm Vi Bảo Hành</label>
+                    <textarea asp-for="WarrantyTerms" rows="2" class="form-control small">Bảo hành 1 đổi 1 trong 30 ngày nếu lỗi do nhà sản xuất. Sửa chữa thay thế linh kiện chính hãng miễn phí tại hệ thống Điện Thoại Vui. Không bảo hành các trường hợp rơi vỡ, cấn móp, ngấm chất lỏng hoặc tự ý can thiệp phần cứng.</textarea>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 pt-2 border-top">
+                <a asp-action="Index" class="btn btn-secondary px-4 fw-semibold">Hủy Bỏ</a>
+                <button type="submit" class="btn btn-danger px-4 fw-bold shadow-sm">
+                    <i class="bi bi-shield-check me-1"></i> Phát Hành Phiếu Bảo Hành
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function onProductSelect(select) {
+            var selectedOption = select.options[select.selectedIndex];
+            if (selectedOption && selectedOption.value) {
+                var name = selectedOption.getAttribute('data-name');
+                var img = selectedOption.getAttribute('data-img');
+                var warranty = selectedOption.getAttribute('data-warranty');
+
+                if (name) document.getElementById('inputProductName').value = name;
+                if (img) document.getElementById('inputProductImageUrl').value = img;
+                if (warranty) document.getElementById('inputWarrantyPackage').value = warranty;
+            }
+        }
+
+        function updateEndDate() {
+            var startVal = document.getElementById('inputStartDate').value;
+            var months = parseInt(document.getElementById('inputMonths').value) || 12;
+            if (startVal) {
+                var d = new Date(startVal);
+                d.setMonth(d.getMonth() + months);
+                // tự động tính toán
+            }
+        }
+    </script>
+}

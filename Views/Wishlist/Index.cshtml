@@ -1,0 +1,207 @@
+@model List<WebsiteBanDienThoai.Models.Product>
+@{
+    ViewData["Title"] = "Danh Sách Sản Phẩm Yêu Thích | CellphoneS";
+}
+
+<div class="container my-3">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb bg-transparent p-0 mb-3" style="font-size: 12.5px;">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted"><i class="bi bi-house-door-fill me-1"></i>Trang chủ</a></li>
+            <li class="breadcrumb-item active text-danger fw-semibold" aria-current="page">Sản phẩm yêu thích</li>
+        </ol>
+    </nav>
+
+    <!-- Header Banner -->
+    <div class="card border-0 rounded-4 shadow-sm p-4 mb-4" 
+         style="background: linear-gradient(135deg, #fff5f5 0%, #fee2e2 100%); border: 1.5px solid #fecaca !important;">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="rounded-circle bg-danger text-white d-flex align-items-center justify-content-center shadow-sm" 
+                     style="width: 52px; height: 52px; font-size: 24px;">
+                    <i class="bi bi-heart-fill"></i>
+                </div>
+                <div>
+                    <h4 class="fw-bold m-0 text-dark">Sản Phẩm Yêu Thích Của Bạn</h4>
+                    <p class="text-muted small m-0 mt-1">
+                        Lưu lại những thiết bị công nghệ bạn quan tâm để dễ dàng so sánh và theo dõi khuyến mãi tốt nhất.
+                    </p>
+                </div>
+            </div>
+
+            <div class="d-flex align-items-center gap-2">
+                @if (Model.Any())
+                {
+                    <button type="button" class="btn btn-outline-danger btn-sm px-3 py-2 fw-semibold" onclick="clearAllWishlist()">
+                        <i class="bi bi-trash3 me-1"></i> Xóa tất cả
+                    </button>
+                }
+                <a asp-controller="Home" asp-action="Index" class="btn btn-danger btn-sm px-3 py-2 fw-bold">
+                    <i class="bi bi-bag-plus-fill me-1"></i> Tiếp tục mua sắm
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- DANH SÁCH SẢN PHẨM HOẶC TRẠNG THÁI TRỐNG -->
+    <div id="wishlistContainer">
+        @if (Model.Any())
+        {
+            <div class="d-flex align-items-center justify-content-between mb-3">
+                <span class="fw-bold text-dark">
+                    Đang có <strong class="text-danger" id="wishlistTotalCount">@Model.Count</strong> sản phẩm trong danh sách:
+                </span>
+            </div>
+
+            <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3" id="wishlistGrid">
+                @foreach (var p in Model)
+                {
+                    <div class="col wish-item-col" id="wish-col-@p.Id">
+                        <div class="cps-product-card position-relative h-100 d-flex flex-column">
+                            <!-- Nút xóa nhanh khỏi yêu thích -->
+                            <button type="button" class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-0 end-0 m-2 border" 
+                                    style="width: 32px; height: 32px; padding: 0; z-index: 5; display: flex; align-items: center; justify-content: center;"
+                                    onclick="removeWishlistItem(@p.Id)" title="Bỏ khỏi yêu thích">
+                                <i class="bi bi-x-lg text-danger font-bold" style="font-size: 13px;"></i>
+                            </button>
+
+                            <!-- Nhãn giảm giá / Trả góp -->
+                            @if (p.DiscountPercent > 0)
+                            {
+                                <span class="cps-badge-discount position-absolute top-0 start-0 m-2">-@p.DiscountPercent%</span>
+                            }
+
+                            <!-- Ảnh sản phẩm -->
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="cps-card-image text-center pt-2">
+                                <img src="@p.ImageUrl" alt="@p.Name" loading="lazy" style="max-height: 160px; object-fit: contain;" />
+                            </a>
+
+                            <!-- Tên sản phẩm -->
+                            <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="cps-card-title px-2 mt-2">
+                                @p.Name
+                            </a>
+
+                            <!-- Giá sản phẩm -->
+                            <div class="cps-card-price px-2 my-1">
+                                <span class="cps-sale-price fs-6">@p.SalePrice.ToString("N0")₫</span>
+                                @if (p.OriginalPrice > p.SalePrice)
+                                {
+                                    <span class="cps-original-price">@p.OriginalPrice.ToString("N0")₫</span>
+                                }
+                            </div>
+
+                            <!-- Đánh giá sao -->
+                            <div class="px-2 small mb-2 d-flex align-items-center gap-1 text-warning" style="font-size: 11px;">
+                                <i class="bi bi-star-fill"></i>
+                                <span class="text-dark fw-bold">@p.Rating.ToString("0.0")</span>
+                                <span class="text-muted">(@p.ReviewCount đánh giá)</span>
+                            </div>
+
+                            <!-- Các nút thao tác -->
+                            <div class="mt-auto p-2 pt-0 d-flex flex-column gap-1">
+                                <a asp-controller="Product" asp-action="Details" asp-route-id="@p.Id" class="btn btn-danger btn-sm fw-bold w-100 py-1">
+                                    <i class="bi bi-eye-fill me-1"></i> Xem chi tiết
+                                </a>
+                                <button type="button" class="btn btn-outline-danger btn-sm w-100 py-1" onclick="addToCart(@p.Id, 1)">
+                                    <i class="bi bi-cart-plus me-1"></i> Thêm vào giỏ
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="card border-0 shadow-sm rounded-4 text-center py-5 px-3 bg-white">
+                <div class="my-4">
+                    <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 90px; height: 90px; background: #fff1f2; color: #e11d48; font-size: 42px;">
+                        <i class="bi bi-heartbreak"></i>
+                    </div>
+                    <h5 class="fw-bold text-dark">Danh sách yêu thích của bạn đang trống</h5>
+                    <p class="text-muted small mb-4" style="max-width: 480px; margin: 0 auto;">
+                        Hãy bấm vào biểu tượng <strong>"Yêu thích"</strong> tại các sản phẩm bạn đang quan tâm để lưu lại và dễ dàng tìm lại khi cần mua sắm nhé!
+                    </p>
+                    <a asp-controller="Home" asp-action="Index" class="btn btn-danger px-4 py-2 fw-bold shadow-sm">
+                        <i class="bi bi-arrow-left me-1"></i> Khám phá sản phẩm hot ngay
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Xóa một sản phẩm khỏi danh sách yêu thích
+        async function removeWishlistItem(productId) {
+            try {
+                const res = await fetch('/Wishlist/Remove', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(productId)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    const cardCol = document.getElementById(`wish-col-${productId}`);
+                    if (cardCol) {
+                        cardCol.style.transition = 'all 0.3s ease';
+                        cardCol.style.opacity = '0';
+                        cardCol.style.transform = 'scale(0.8)';
+                        setTimeout(() => {
+                            cardCol.remove();
+                            updateWishlistBadge(data.count);
+
+                            const totalEl = document.getElementById("wishlistTotalCount");
+                            if (totalEl) totalEl.innerText = data.count;
+
+                            if (data.count === 0) {
+                                location.reload();
+                            }
+                        }, 300);
+                    }
+                }
+            } catch (err) {
+                showError("Lỗi khi xóa sản phẩm yêu thích.");
+            }
+        }
+
+        // Xóa toàn bộ danh sách yêu thích
+        async function clearAllWishlist() {
+            const result = await showConfirm(
+                "Xác nhận xóa danh sách",
+                "Bạn có chắc chắn muốn xóa toàn bộ sản phẩm khỏi danh sách yêu thích không?",
+                "Xác nhận xóa",
+                "Giữ lại"
+            );
+            if (!result.isConfirmed) {
+                return;
+            }
+
+            try {
+                const res = await fetch('/Wishlist/Clear', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                const data = await res.json();
+                if (data.success) {
+                    updateWishlistBadge(0);
+                    showToast("Đã làm trống danh sách yêu thích");
+                    setTimeout(() => location.reload(), 500);
+                }
+            } catch (err) {
+                showError("Lỗi khi xóa danh sách yêu thích.");
+            }
+        }
+
+        // Cập nhật huy hiệu trên Header
+        function updateWishlistBadge(count) {
+            const badge = document.getElementById("cps-wishlist-badge");
+            if (badge) {
+                badge.innerText = count;
+                badge.style.display = count > 0 ? 'inline-flex' : 'none';
+            }
+        }
+    </script>
+}

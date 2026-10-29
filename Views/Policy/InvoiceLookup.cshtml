@@ -1,0 +1,288 @@
+@model WebsiteBanDienThoai.Models.Order
+@{
+    ViewData["Title"] = "Tra Cứu Hóa Đơn Điện Tử GTGT - CellphoneS";
+    bool searched = ViewBag.Searched is bool s && s;
+    string inputCode = ViewBag.OrderCode as string ?? "";
+    string inputPhone = ViewBag.Phone as string ?? "";
+}
+
+<div class="container my-4">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb bg-transparent p-0 small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-muted"><i class="bi bi-house-door"></i> Trang chủ</a></li>
+            <li class="breadcrumb-item"><span class="text-muted">Thông tin & Chính sách</span></li>
+            <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Tra cứu hóa đơn điện tử</li>
+        </ol>
+    </nav>
+
+    <div class="row g-4">
+        <!-- CỘT TRÁI: SIDEBAR ĐIỀU HƯỚNG -->
+        <div class="col-lg-3">
+            <partial name="_PolicySidebar" />
+        </div>
+
+        <!-- CỘT PHẢI: NỘI DUNG TRA CỨU HÓA ĐƠN -->
+        <div class="col-lg-9">
+            <div class="bg-white p-4 p-md-5 rounded-3 shadow-sm cps-policy-article">
+                <!-- Tiêu đề chính -->
+                <div class="border-bottom pb-4 mb-4">
+                    <span class="badge bg-danger-subtle text-danger px-3 py-1 rounded-pill fw-bold mb-2">
+                        <i class="bi bi-receipt-cutoff me-1"></i> HỆ THỐNG HÓA ĐƠN ĐIỆN TỬ
+                    </span>
+                    <h2 class="fw-bolder text-dark mb-2">Tra Cứu Hóa Đơn Giá Trị Gia Tăng (VAT)</h2>
+                    <p class="text-muted mb-0">
+                        Hệ thống hóa đơn điện tử theo Thông tư 78/2021/TT-BTC của Tổng cục Thuế. Quý khách có thể dễ dàng tra cứu, xem trực tuyến, tải file hóa đơn và in ấn phục vụ công tác thanh toán, kê khai thuế hoặc bảo hành sản phẩm.
+                    </p>
+                </div>
+
+                <!-- FORM TÌM KIẾM HÓA ĐƠN -->
+                <div class="card border border-danger-subtle rounded-3 p-4 bg-light mb-4 shadow-sm">
+                    <h5 class="fw-bold text-dark mb-3">
+                        <i class="bi bi-search text-danger me-2"></i> Nhập Thông Tin Tra Cứu Hóa Đơn
+                    </h5>
+                    <form method="get" asp-action="InvoiceLookup" class="row g-3" id="invoiceSearchForm">
+                        <div class="col-md-5">
+                            <label class="form-label small fw-bold">Mã Đơn Hàng (Order Code) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="bi bi-upc-scan text-muted"></i></span>
+                                <input type="text" name="orderCode" class="form-control" placeholder="VD: DH20261028-1001 hoặc số ID đơn" value="@inputCode" id="searchOrderCode" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Số Điện Thoại Đặt Hàng <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="bi bi-telephone text-muted"></i></span>
+                                <input type="text" name="phone" class="form-control" placeholder="VD: 0988123456" value="@inputPhone" id="searchPhone" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-danger w-100 fw-bold py-2 shadow-sm">
+                                <i class="bi bi-search me-1"></i> Tra Cứu Ngay
+                            </button>
+                        </div>
+                    </form>
+                    <div class="small text-muted mt-2">
+                        <i class="bi bi-lightbulb-fill text-warning me-1"></i> Quý khách có thể nhập Mã đơn hàng hoặc Số điện thoại để hệ thống tìm kiếm hóa đơn gần nhất.
+                    </div>
+                </div>
+
+                <!-- KẾT QUẢ TRA CỨU HÓA ĐƠN -->
+                @if (searched)
+                {
+                    @if (Model != null)
+                    {
+                        decimal preTax = Math.Round(Model.TotalAmount / 1.1m, 0);
+                        decimal vatAmount = Model.TotalAmount - preTax;
+                        string invoiceNo = $"HD-{Model.CreatedAt:yyyyMMdd}-{Model.Id:D5}";
+
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <span class="badge bg-success-subtle text-success fs-6 py-2 px-3 border border-success-subtle">
+                                <i class="bi bi-check-circle-fill me-1"></i> Đã tìm thấy hóa đơn điện tử hợp lệ
+                            </span>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-danger fw-bold" onclick="window.print()">
+                                    <i class="bi bi-printer me-1"></i> In Hóa Đơn
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger fw-bold" onclick="alert('Đã tải hóa đơn điện tử PDF mã ' + '@invoiceNo');">
+                                    <i class="bi bi-download me-1"></i> Tải PDF
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- BẢN THỂ HIỆN HÓA ĐƠN ĐIỆN TỬ CHUẨN THÔNG TƯ 78 -->
+                        <div class="cps-invoice-box border border-dark-subtle p-4 p-md-5 rounded-3 bg-white shadow-sm mb-5 position-relative">
+                            <!-- Header hóa đơn -->
+                            <div class="row align-items-center border-bottom pb-4 mb-4">
+                                <div class="col-sm-7">
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <span class="fw-bolder text-danger fs-3">cellphone<span class="text-dark">S</span></span>
+                                    </div>
+                                    <h6 class="fw-bold text-dark m-0">CÔNG TY CỔ PHẦN BÁN LẺ CELLPHONES</h6>
+                                    <p class="small text-muted mb-1">Mã số thuế: <strong class="text-dark font-monospace">0107778899</strong></p>
+                                    <p class="small text-muted mb-0">Địa chỉ: 123 Đường Công Nghệ, Phường Bến Nghé, Quận 1, TP. Hồ Chí Minh</p>
+                                    <p class="small text-muted mb-0">Hotline: 1800.2097 - Email: cskh@cellphones.com.vn</p>
+                                </div>
+                                <div class="col-sm-5 text-sm-end mt-3 mt-sm-0">
+                                    <h5 class="fw-bolder text-danger mb-1 text-uppercase">HÓA ĐƠN GIÁ TRỊ GIA TĂNG</h5>
+                                    <div class="small text-muted mb-2">(Bản thể hiện hóa đơn điện tử)</div>
+                                    <div class="small text-dark">Mẫu số: <strong class="font-monospace">1C26TND</strong></div>
+                                    <div class="small text-dark">Ký hiệu: <strong class="font-monospace">CPS/26E</strong></div>
+                                    <div class="small text-dark">Số: <strong class="text-danger font-monospace fs-6">@invoiceNo</strong></div>
+                                    <div class="small text-muted">Ngày lập: @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</div>
+                                </div>
+                            </div>
+
+                            <!-- Thông tin người mua -->
+                            <div class="bg-light p-3 rounded-3 mb-4 small">
+                                <div class="row g-2">
+                                    <div class="col-sm-6">
+                                        <strong>Họ tên người mua hàng:</strong> <span class="text-dark fw-bold">@Model.CustomerName</span>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <strong>Số điện thoại:</strong> <span class="text-dark font-monospace">@Model.PhoneNumber</span>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <strong>Địa chỉ giao hàng:</strong> <span class="text-dark">@Model.Address, @Model.Province</span>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <strong>Hình thức thanh toán:</strong> <span class="badge bg-secondary-subtle text-dark border">@Model.PaymentMethod</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(Model.Email))
+                                    {
+                                        <div class="col-sm-6">
+                                            <strong>Email nhận hóa đơn:</strong> <span class="text-dark">@Model.Email</span>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Bảng danh sách hàng hóa -->
+                            <div class="table-responsive mb-4">
+                                <table class="table table-bordered table-sm align-middle m-0">
+                                    <thead class="table-light text-center small fw-bold">
+                                        <tr>
+                                            <th style="width: 40px;">STT</th>
+                                            <th>Tên Hàng Hóa, Dịch Vụ</th>
+                                            <th style="width: 80px;">ĐVT</th>
+                                            <th style="width: 70px;">SL</th>
+                                            <th style="width: 130px;">Đơn Giá</th>
+                                            <th style="width: 140px;">Thành Tiền</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="small">
+                                        @{ int idx = 1; }
+                                        @foreach (var item in Model.OrderDetails)
+                                        {
+                                            var pName = item.Product != null ? item.Product.Name : "Sản phẩm";
+                                            var total = item.Quantity * item.UnitPrice;
+                                            <tr>
+                                                <td class="text-center">@idx</td>
+                                                <td>
+                                                    <span class="fw-bold">@pName</span>
+                                                    @if (!string.IsNullOrEmpty(item.VariantInfo))
+                                                    {
+                                                        <small class="text-muted d-block">Phân loại: @item.VariantInfo</small>
+                                                    }
+                                                </td>
+                                                <td class="text-center">Chiếc</td>
+                                                <td class="text-center fw-bold">@item.Quantity</td>
+                                                <td class="text-end">@item.UnitPrice.ToString("N0")₫</td>
+                                                <td class="text-end fw-bold">@total.ToString("N0")₫</td>
+                                            </tr>
+                                            idx++;
+                                        }
+                                    </tbody>
+                                    <tfoot class="small">
+                                        <tr>
+                                            <td colspan="5" class="text-end fw-semibold">Cộng tiền hàng (Tạm tính):</td>
+                                            <td class="text-end fw-bold">@Model.SubtotalAmount.ToString("N0")₫</td>
+                                        </tr>
+                                        @if (Model.OrderDiscountAmount > 0)
+                                        {
+                                            <tr class="text-danger">
+                                                <td colspan="5" class="text-end fw-semibold">Chiết khấu voucher đơn hàng (@Model.OrderDiscountCode):</td>
+                                                <td class="text-end fw-bold">-@Model.OrderDiscountAmount.ToString("N0")₫</td>
+                                            </tr>
+                                        }
+                                        <tr>
+                                            <td colspan="5" class="text-end fw-semibold">Phí vận chuyển:</td>
+                                            <td class="text-end">
+                                                @if (Model.ShippingDiscountAmount > 0)
+                                                {
+                                                    <del class="text-muted me-1">@Model.ShippingFee.ToString("N0")₫</del>
+                                                    <span class="text-success fw-bold">0₫</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>@Model.ShippingFee.ToString("N0")₫</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5" class="text-end fw-semibold">Tiền trước thuế GTGT (VAT 10%):</td>
+                                            <td class="text-end">@preTax.ToString("N0")₫</td>
+                                        </tr>
+                                        <tr>
+                                            <td colspan="5" class="text-end fw-semibold">Thuế GTGT (10%):</td>
+                                            <td class="text-end">@vatAmount.ToString("N0")₫</td>
+                                        </tr>
+                                        <tr class="table-danger fw-bolder fs-6">
+                                            <td colspan="5" class="text-end text-danger">TỔNG CỘNG THANH TOÁN (ĐÃ GỒM VAT):</td>
+                                            <td class="text-end text-danger">@Model.TotalAmount.ToString("N0")₫</td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
+
+                            <!-- Chữ ký số điện tử -->
+                            <div class="row pt-3 align-items-center">
+                                <div class="col-sm-6 text-muted small">
+                                    <p class="mb-1"><i class="bi bi-check-circle-fill text-success me-1"></i> Hóa đơn điện tử có giá trị pháp lý tương đương hóa đơn giấy.</p>
+                                    <p class="mb-0">Mã tra cứu biên lai: <strong class="text-dark font-monospace">CPS-INV-@Model.OrderCode</strong></p>
+                                </div>
+                                <div class="col-sm-6 text-sm-end mt-3 mt-sm-0">
+                                    <div class="d-inline-block border border-danger border-2 rounded-2 p-2 px-3 text-start bg-danger bg-opacity-10">
+                                        <div class="text-danger fw-bold small text-uppercase">
+                                            <i class="bi bi-patch-check-fill text-danger me-1"></i> ĐÃ KÝ ĐIỆN TỬ
+                                        </div>
+                                        <div class="small" style="font-size: 11px;">Ký bởi: CÔNG TY CỔ PHẦN BÁN LẺ CELLPHONES</div>
+                                        <div class="small text-muted" style="font-size: 11px;">Ngày ký: @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss")</div>
+                                        <div class="small text-success fw-semibold" style="font-size: 11px;">Chứng thư số: Viettel-CA (Hợp lệ)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning border-0 rounded-3 p-4 text-center mb-5">
+                            <i class="bi bi-exclamation-circle text-warning fs-1 d-block mb-2"></i>
+                            <h5 class="fw-bold text-dark mb-2">Không tìm thấy thông tin hóa đơn điện tử</h5>
+                            <p class="small text-muted mb-3">
+                                Rất tiếc, hệ thống không tìm thấy đơn hàng phù hợp với thông tin đã nhập: 
+                                <strong>@(string.IsNullOrEmpty(inputCode) ? "" : $"Mã đơn: {inputCode}")</strong> 
+                                <strong>@(string.IsNullOrEmpty(inputPhone) ? "" : $"SĐT: {inputPhone}")</strong>.
+                            </p>
+                            <p class="small text-muted mb-0">
+                                Vui lòng kiểm tra lại chính xác Mã đơn hàng hoặc gọi tổng đài miễn phí 
+                                <a href="tel:18002097" class="fw-bold text-danger text-decoration-none">1800.2097</a> để được nhân viên hỗ trợ xuất hóa đơn ngay.
+                            </p>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <!-- Trạng thái ban đầu: Hướng dẫn xuất hóa đơn công ty -->
+                    <div class="mb-5">
+                        <h4 class="fw-bold text-dark mb-3 d-flex align-items-center gap-2">
+                            <span class="badge bg-danger rounded-circle p-2" style="font-size: 14px;">?</span>
+                            Quy Định Xuất Hóa Đơn Cho Doanh Nghiệp (Hóa Đơn Công Ty)
+                        </h4>
+
+                        <div class="card border rounded-3 p-4 bg-white shadow-sm mb-3">
+                            <ul class="small text-dark mb-0 d-flex flex-column gap-2">
+                                <li><strong>1. Thời điểm yêu cầu:</strong> Quý khách có nhu cầu xuất hóa đơn theo thông tin công ty vui lòng điền thông tin vào phần <em>"Ghi chú đơn hàng"</em> hoặc thông báo cho nhân viên tư vấn trong vòng <strong>24h</strong> kể từ lúc đặt hàng thành công.</li>
+                                <li><strong>2. Thông tin cần cung cấp:</strong> Tên đầy đủ của công ty/doanh nghiệp, Mã số thuế (MST), Địa chỉ đăng ký kinh doanh theo giấy phép thành lập doanh nghiệp, Email nhận hóa đơn điện tử.</li>
+                                <li><strong>3. Thời gian phát hành hóa đơn:</strong> Hóa đơn điện tử sẽ được tự động xuất và gửi về email doanh nghiệp sau khi đơn hàng được giao thành công.</li>
+                                <li><strong>4. Hóa đơn VAT 100% hợp lệ:</strong> Mọi sản phẩm tại CellphoneS đều là hàng chính hãng, giá bán đã bao gồm thuế Giá Trị Gia Tăng (VAT).</li>
+                            </ul>
+                        </div>
+                    </div>
+                }
+
+                <!-- Nút chuyển tiếp -->
+                <div class="border-top pt-4 mt-5 d-flex flex-wrap justify-content-between align-items-center gap-3">
+                    <a asp-controller="Policy" asp-action="Shipping" class="btn btn-outline-secondary fw-semibold rounded-pill px-4">
+                        <i class="bi bi-arrow-left me-1"></i> Chính sách giao hàng
+                    </a>
+                    <a asp-controller="Policy" asp-action="Warranty" class="btn btn-danger fw-bold rounded-pill px-4 shadow-sm">
+                        <i class="bi bi-shield-shaded me-1"></i> Xem Chính sách bảo hành
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

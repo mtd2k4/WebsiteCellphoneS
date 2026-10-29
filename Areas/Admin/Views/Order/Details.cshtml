@@ -1,0 +1,252 @@
+@model WebsiteBanDienThoai.Models.Order
+@{
+    ViewData["Title"] = "Chi Tiết Đơn Hàng #" + Model.OrderCode;
+}
+
+<div class="d-flex align-items-center justify-content-between mb-3">
+    <div>
+        <a asp-area="Admin" asp-controller="Order" asp-action="Index" class="btn btn-sm btn-outline-secondary mb-2">
+            <i class="bi bi-arrow-left me-1"></i> Quay lại danh sách
+        </a>
+        <h4 class="m-0 fw-bold text-dark">
+            Đơn Hàng <span class="text-danger">#@Model.OrderCode</span>
+        </h4>
+        <small class="text-muted">Đặt lúc: @Model.CreatedAt.ToString("dd/MM/yyyy HH:mm:ss") (Giờ Việt Nam)</small>
+    </div>
+
+    <div>
+        @switch (Model.Status)
+        {
+            case WebsiteBanDienThoai.Models.OrderStatus.Pending:
+                <span class="badge bg-warning text-dark fs-6 py-2 px-3"><i class="bi bi-hourglass-split me-1"></i>Chờ xử lý</span>
+                break;
+            case WebsiteBanDienThoai.Models.OrderStatus.Confirmed:
+                <span class="badge bg-info text-dark fs-6 py-2 px-3"><i class="bi bi-check2-circle me-1"></i>Đã xác nhận</span>
+                break;
+            case WebsiteBanDienThoai.Models.OrderStatus.Shipping:
+                <span class="badge bg-primary fs-6 py-2 px-3"><i class="bi bi-truck me-1"></i>Đang giao hàng</span>
+                break;
+            case WebsiteBanDienThoai.Models.OrderStatus.Completed:
+                <span class="badge bg-success fs-6 py-2 px-3"><i class="bi bi-check-lg me-1"></i>Hoàn thành</span>
+                break;
+            case WebsiteBanDienThoai.Models.OrderStatus.Cancelled:
+                <span class="badge bg-secondary fs-6 py-2 px-3"><i class="bi bi-x-lg me-1"></i>Đã huỷ</span>
+                break;
+        }
+    </div>
+</div>
+
+<!-- STEPPER TIẾN TRÌNH ĐƠN HÀNG -->
+<div class="cps-admin-card mb-4">
+    <div class="cps-admin-card-body py-4">
+        <div class="row text-center position-relative">
+            @{
+                int stepIndex = Model.Status switch
+                {
+                    WebsiteBanDienThoai.Models.OrderStatus.Pending => 1,
+                    WebsiteBanDienThoai.Models.OrderStatus.Confirmed => 2,
+                    WebsiteBanDienThoai.Models.OrderStatus.Shipping => 3,
+                    WebsiteBanDienThoai.Models.OrderStatus.Completed => 4,
+                    _ => 0
+                };
+            }
+            <div class="col-3">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2 @(stepIndex >= 1 ? "bg-danger text-white" : "bg-light text-muted border")" style="width: 44px; height: 44px; font-size: 18px;">
+                    <i class="bi bi-cart-check"></i>
+                </div>
+                <div class="small fw-bold @(stepIndex >= 1 ? "text-danger" : "text-muted")">1. Đặt hàng thành công</div>
+            </div>
+
+            <div class="col-3">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2 @(stepIndex >= 2 ? "bg-danger text-white" : "bg-light text-muted border")" style="width: 44px; height: 44px; font-size: 18px;">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <div class="small fw-bold @(stepIndex >= 2 ? "text-danger" : "text-muted")">2. Đã xác nhận & đóng gói</div>
+            </div>
+
+            <div class="col-3">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2 @(stepIndex >= 3 ? "bg-danger text-white" : "bg-light text-muted border")" style="width: 44px; height: 44px; font-size: 18px;">
+                    <i class="bi bi-truck"></i>
+                </div>
+                <div class="small fw-bold @(stepIndex >= 3 ? "text-danger" : "text-muted")">3. Đang vận chuyển</div>
+            </div>
+
+            <div class="col-3">
+                <div class="rounded-circle d-inline-flex align-items-center justify-content-center mb-2 @(stepIndex >= 4 ? "bg-success text-white" : "bg-light text-muted border")" style="width: 44px; height: 44px; font-size: 18px;">
+                    <i class="bi bi-check-circle-fill"></i>
+                </div>
+                <div class="small fw-bold @(stepIndex >= 4 ? "text-success" : "text-muted")">4. Giao hàng thành công</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- CỘT TRÁI: DANH SÁCH MÓN HÀNG & THANH TOÁN -->
+    <div class="col-lg-8">
+        <div class="cps-admin-card">
+            <div class="cps-admin-card-header">
+                <h5><i class="bi bi-bag-fill text-danger"></i> Sản Phẩm Đặt Mua (@Model.OrderDetails.Count)</h5>
+            </div>
+            <div class="cps-admin-card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-cps m-0">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">Ảnh</th>
+                                <th>Tên Sản Phẩm</th>
+                                <th class="text-end">Đơn Giá</th>
+                                <th class="text-center" style="width: 70px;">SL</th>
+                                <th class="text-end">Thành Tiền</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.OrderDetails)
+                            {
+                                var subTotal = item.UnitPrice * item.Quantity;
+                                <tr>
+                                    <td>
+                                        <img src="@(item.Product?.ImageUrl ?? "https://via.placeholder.com/48")" alt="@(item.Product?.Name ?? "Sản phẩm")" 
+                                             style="width: 48px; height: 48px; object-fit: contain; border-radius: 6px; border: 1px solid #e2e8f0; padding: 2px;" />
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark">@(item.Product?.Name ?? "Sản phẩm #" + item.ProductId)</div>
+                                        @if (!string.IsNullOrEmpty(item.VariantInfo))
+                                        {
+                                            <div class="badge bg-light text-secondary border">Phân loại: @item.VariantInfo</div>
+                                        }
+                                    </td>
+                                    <td class="text-end text-muted">
+                                        @item.UnitPrice.ToString("N0")₫
+                                    </td>
+                                    <td class="text-center fw-bold">
+                                        @item.Quantity
+                                    </td>
+                                    <td class="text-end fw-bold text-danger">
+                                        @subTotal.ToString("N0")₫
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr class="bg-light">
+                                <td colspan="4" class="text-end fw-bold">Tạm tính sản phẩm:</td>
+                                <td class="text-end fw-bold">@((Model.SubtotalAmount > 0 ? Model.SubtotalAmount : Model.TotalAmount).ToString("N0"))₫</td>
+                            </tr>
+                            @if (!string.IsNullOrEmpty(Model.OrderDiscountCode) && Model.OrderDiscountAmount > 0)
+                            {
+                                <tr class="bg-light text-danger">
+                                    <td colspan="4" class="text-end">
+                                        <i class="bi bi-tag-fill me-1"></i>Giảm giá đơn hàng (Mã: <strong>@Model.OrderDiscountCode</strong>):
+                                    </td>
+                                    <td class="text-end fw-bold">-@Model.OrderDiscountAmount.ToString("N0")₫</td>
+                                </tr>
+                            }
+                            <tr class="bg-light">
+                                <td colspan="4" class="text-end text-muted">Phí vận chuyển:</td>
+                                <td class="text-end fw-bold">@Model.ShippingFee.ToString("N0")₫</td>
+                            </tr>
+                            @if (!string.IsNullOrEmpty(Model.ShippingDiscountCode) && Model.ShippingDiscountAmount > 0)
+                            {
+                                <tr class="bg-light text-success">
+                                    <td colspan="4" class="text-end">
+                                        <i class="bi bi-truck me-1"></i>Giảm giá phí ship (Mã: <strong>@Model.ShippingDiscountCode</strong>):
+                                    </td>
+                                    <td class="text-end fw-bold">-@Model.ShippingDiscountAmount.ToString("N0")₫</td>
+                                </tr>
+                            }
+                            <tr class="bg-light">
+                                <td colspan="4" class="text-end fs-6 fw-bold text-dark">Tổng tiền thanh toán:</td>
+                                <td class="text-end fs-5 fw-bolder text-danger">@Model.TotalAmount.ToString("N0")₫</td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrEmpty(Model.Notes))
+        {
+            <div class="cps-admin-card">
+                <div class="cps-admin-card-header">
+                    <h5><i class="bi bi-chat-quote-fill text-muted"></i> Ghi Chú Giao Hàng Từ Khách</h5>
+                </div>
+                <div class="cps-admin-card-body">
+                    <p class="m-0 text-dark fst-italic">"@Model.Notes"</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- CỘT PHẢI: KHÁCH HÀNG & CẬP NHẬT TRẠNG THÁI -->
+    <div class="col-lg-4">
+        <!-- Thông tin khách hàng -->
+        <div class="cps-admin-card">
+            <div class="cps-admin-card-header">
+                <h5><i class="bi bi-person-fill text-primary"></i> Khách Hàng Nhận Hàng</h5>
+            </div>
+            <div class="cps-admin-card-body">
+                <div class="mb-3">
+                    <div class="small text-muted">Họ và tên:</div>
+                    <div class="fw-bold fs-6 text-dark">@Model.CustomerName</div>
+                </div>
+
+                <div class="mb-3">
+                    <div class="small text-muted">Số điện thoại:</div>
+                    <div class="d-flex align-items-center gap-2">
+                        <strong class="text-danger">@Model.PhoneNumber</strong>
+                        <a href="tel:@Model.PhoneNumber" class="btn btn-xs btn-outline-danger py-0 px-2 small">
+                            <i class="bi bi-telephone-fill"></i> Gọi
+                        </a>
+                    </div>
+                </div>
+
+                @if (!string.IsNullOrEmpty(Model.Email))
+                {
+                    <div class="mb-3">
+                        <div class="small text-muted">Email liên hệ:</div>
+                        <div class="text-dark small">@Model.Email</div>
+                    </div>
+                }
+
+                <div class="mb-3">
+                    <div class="small text-muted">Địa chỉ nhận hàng:</div>
+                    <div class="text-dark small">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i>@Model.Address, @Model.Province
+                    </div>
+                </div>
+
+                <div class="border-top pt-2 mt-2">
+                    <div class="small text-muted">Phương thức thanh toán:</div>
+                    <span class="badge bg-dark fs-6 mt-1">@Model.PaymentMethod</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cập nhật trạng thái -->
+        <div class="cps-admin-card">
+            <div class="cps-admin-card-header">
+                <h5><i class="bi bi-sliders text-danger"></i> Cập Nhật Trạng Thái Đơn</h5>
+            </div>
+            <div class="cps-admin-card-body">
+                <form asp-action="UpdateStatus" asp-route-id="@Model.Id" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Chọn trạng thái tiếp theo:</label>
+                        <select name="newStatus" class="form-select">
+                            <option value="@WebsiteBanDienThoai.Models.OrderStatus.Pending" selected="@(Model.Status == WebsiteBanDienThoai.Models.OrderStatus.Pending)">1. Chờ xử lý</option>
+                            <option value="@WebsiteBanDienThoai.Models.OrderStatus.Confirmed" selected="@(Model.Status == WebsiteBanDienThoai.Models.OrderStatus.Confirmed)">2. Đã xác nhận & Đóng gói</option>
+                            <option value="@WebsiteBanDienThoai.Models.OrderStatus.Shipping" selected="@(Model.Status == WebsiteBanDienThoai.Models.OrderStatus.Shipping)">3. Đang giao hàng</option>
+                            <option value="@WebsiteBanDienThoai.Models.OrderStatus.Completed" selected="@(Model.Status == WebsiteBanDienThoai.Models.OrderStatus.Completed)">4. Giao thành công (Hoàn tất)</option>
+                            <option value="@WebsiteBanDienThoai.Models.OrderStatus.Cancelled" selected="@(Model.Status == WebsiteBanDienThoai.Models.OrderStatus.Cancelled)">5. Huỷ đơn hàng</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-danger w-100 fw-bold py-2">
+                        <i class="bi bi-arrow-repeat me-1"></i> Lưu Cập Nhật Trạng Thái
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

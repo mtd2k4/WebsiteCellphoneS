@@ -1,0 +1,666 @@
+@model WebsiteBanDienThoai.Models.Product
+@{
+    ViewData["Title"] = "Quản Lý Biến Thể: " + Model.Name;
+    var variantsList = Model.Variants ?? new List<WebsiteBanDienThoai.Models.ProductVariant>();
+    var distinctColors = variantsList.Select(v => v.ColorName).Where(c => !string.IsNullOrEmpty(c)).Distinct().ToList();
+    var distinctStorages = variantsList.Select(v => v.Storage).Where(s => !string.IsNullOrEmpty(s)).Distinct().ToList();
+    var minPrice = variantsList.Any() ? variantsList.Min(v => v.Price) : Model.SalePrice;
+    var maxPrice = variantsList.Any() ? variantsList.Max(v => v.Price) : Model.SalePrice;
+}
+
+<div class="mb-3">
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-2" style="font-size: 13px;">
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+            <li class="breadcrumb-item"><a asp-area="Admin" asp-controller="Product" asp-action="Index">Sản phẩm</a></li>
+            <li class="breadcrumb-item active text-danger fw-semibold">Quản lý biến thể</li>
+        </ol>
+    </nav>
+
+    <!-- Header Title & Action Buttons -->
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div>
+            <h4 class="fw-bold mb-1 text-dark d-flex align-items-center gap-2">
+                <i class="bi bi-diagram-3-fill text-danger"></i> Quản Lý Biến Thể Sản Phẩm
+            </h4>
+            <div class="text-muted small">Cấu hình màu sắc, dung lượng, giá bán và hình ảnh tương ứng cho từng biến thể</div>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-action="Index" class="btn btn-outline-secondary btn-sm px-3">
+                <i class="bi bi-arrow-left me-1"></i> Danh sách
+            </a>
+            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-primary btn-sm px-3">
+                <i class="bi bi-pencil-square me-1"></i> Sửa sản phẩm
+            </a>
+            <a href="/Product/Details/@Model.Id" target="_blank" class="btn btn-outline-danger btn-sm px-3">
+                <i class="bi bi-eye me-1"></i> Xem trên Web
+            </a>
+            <button type="button" class="btn btn-outline-success btn-sm px-3 fw-semibold" onclick="openBatchModal()">
+                <i class="bi bi-magic me-1"></i> Tạo nhanh hàng loạt
+            </button>
+            <button type="button" class="btn btn-danger btn-sm px-3 fw-bold shadow-sm" onclick="openAddVariantModal()">
+                <i class="bi bi-plus-circle-fill me-1"></i> Thêm biến thể mới
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- THÔNG TIN TÓM TẮT SẢN PHẨM & THỐNG KÊ BIẾN THỂ -->
+<div class="card border-0 shadow-sm rounded-3 mb-4 overflow-hidden">
+    <div class="card-body p-3 p-md-4 bg-white">
+        <div class="row g-3 align-items-center">
+            <!-- Ảnh & Tên sản phẩm -->
+            <div class="col-lg-5 d-flex align-items-center gap-3">
+                <div class="border rounded p-2 bg-light text-center flex-shrink-0" style="width: 80px; height: 80px;">
+                    <img src="@Model.ImageUrl" alt="@Model.Name" style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                </div>
+                <div class="overflow-hidden">
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle">ID: #@Model.Id</span>
+                        <span class="badge bg-secondary-subtle text-secondary border">@(Model.Category?.Name ?? "Chưa phân loại")</span>
+                        <span class="badge bg-primary-subtle text-primary border">@(Model.Brand?.Name ?? "Chưa rõ hãng")</span>
+                    </div>
+                    <h5 class="fw-bold mb-1 text-truncate" title="@Model.Name">@Model.Name</h5>
+                    <div class="small text-muted">
+                        Giá gốc: <strong class="text-danger">@Model.SalePrice.ToString("N0")₫</strong> 
+                        | Tồn kho chung: <strong>@Model.StockQuantity</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 Thẻ chỉ số biến thể -->
+            <div class="col-lg-7">
+                <div class="row g-2 text-center">
+                    <div class="col-6 col-sm-3">
+                        <div class="p-2 rounded bg-light border">
+                            <small class="text-muted d-block" style="font-size: 11px;">Tổng biến thể</small>
+                            <span class="fs-5 fw-bold text-danger" id="stat-total-variants">@variantsList.Count</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="p-2 rounded bg-light border">
+                            <small class="text-muted d-block" style="font-size: 11px;">Màu sắc</small>
+                            <span class="fs-5 fw-bold text-dark">@distinctColors.Count</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="p-2 rounded bg-light border">
+                            <small class="text-muted d-block" style="font-size: 11px;">Dung lượng</small>
+                            <span class="fs-5 fw-bold text-primary">@distinctStorages.Count</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <div class="p-2 rounded bg-light border">
+                            <small class="text-muted d-block" style="font-size: 11px;">Tổng tồn kho</small>
+                            <span class="fs-5 fw-bold text-success">@variantsList.Sum(v => v.StockQuantity)</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- BẢNG DANH SÁCH BIẾN THỂ -->
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-header bg-white py-3 border-bottom d-flex align-items-center justify-content-between">
+        <h6 class="fw-bold mb-0 text-dark">
+            <i class="bi bi-list-stars text-danger me-1"></i> Danh sách biến thể (@variantsList.Count)
+        </h6>
+        @if (variantsList.Any())
+        {
+            <div class="small text-muted">
+                Khoảng giá: <strong class="text-danger">@minPrice.ToString("N0")₫</strong> ~ <strong class="text-danger">@maxPrice.ToString("N0")₫</strong>
+            </div>
+        }
+    </div>
+    <div class="card-body p-0">
+        @if (!variantsList.Any())
+        {
+            <!-- Trạng thái chưa có biến thể -->
+            <div class="text-center py-5">
+                <div class="mb-3">
+                    <i class="bi bi-diagram-3 text-muted" style="font-size: 54px; opacity: 0.4;"></i>
+                </div>
+                <h5 class="fw-bold text-muted">Chưa có biến thể nào cho sản phẩm này</h5>
+                <p class="text-muted small mb-3">Tạo biến thể để khách hàng có thể chọn màu sắc, dung lượng và hình ảnh tương ứng khi đặt hàng.</p>
+                <div class="d-flex justify-content-center gap-2">
+                    <button type="button" class="btn btn-outline-success" onclick="openBatchModal()">
+                        <i class="bi bi-magic me-1"></i> Tạo nhanh hàng loạt
+                    </button>
+                    <button type="button" class="btn btn-danger fw-bold" onclick="openAddVariantModal()">
+                        <i class="bi bi-plus-circle-fill me-1"></i> Thêm biến thể đầu tiên
+                    </button>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="variants-table">
+                    <thead class="table-light small text-uppercase text-muted" style="font-size: 11.5px;">
+                        <tr>
+                            <th class="ps-3" style="width: 50px;">#</th>
+                            <th style="width: 80px;">Hình ảnh</th>
+                            <th>Màu sắc</th>
+                            <th>Dung lượng / Phiên bản</th>
+                            <th>Mã SKU</th>
+                            <th>Giá bán biến thể</th>
+                            <th>Tồn kho</th>
+                            <th class="text-end pe-3" style="width: 140px;">Thao tác</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int idx = 1; }
+                        @foreach (var v in variantsList)
+                        {
+                            <tr id="variant-row-@v.Id">
+                                <td class="ps-3 text-muted fw-bold">@(idx++)</td>
+                                <td>
+                                    <div class="border rounded p-1 bg-white text-center position-relative" style="width: 50px; height: 50px;">
+                                        <img src="@(string.IsNullOrEmpty(v.ImageUrl) ? Model.ImageUrl : v.ImageUrl)" 
+                                             alt="@v.ColorName" 
+                                             style="max-width: 100%; max-height: 100%; object-fit: contain;" />
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <span class="rounded-circle shadow-xs" 
+                                              style="width: 20px; height: 20px; background-color: @(string.IsNullOrEmpty(v.ColorHex) ? "#000000" : v.ColorHex); border: 1.5px solid #cbd5e1; flex-shrink: 0;"
+                                              title="@v.ColorHex"></span>
+                                        <div>
+                                            <strong class="d-block text-dark" style="font-size: 13.5px;">@v.ColorName</strong>
+                                            <small class="text-muted" style="font-size: 11px;">Mã màu: @(string.IsNullOrEmpty(v.ColorHex) ? "#000000" : v.ColorHex)</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(v.Storage))
+                                    {
+                                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle fw-bold fs-6">
+                                            @v.Storage
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">Tiêu chuẩn</span>
+                                    }
+                                </td>
+                                <td>
+                                    @if (!string.IsNullOrEmpty(v.Sku))
+                                    {
+                                        <span class="badge bg-light text-dark border font-monospace">@v.Sku</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted small">--</span>
+                                    }
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-danger fs-6">@v.Price.ToString("N0")₫</div>
+                                    @if (v.Price != Model.SalePrice)
+                                    {
+                                        var diff = v.Price - Model.SalePrice;
+                                        <small class="text-muted" style="font-size: 11px;">
+                                            @(diff > 0 ? $"+{diff:N0}₫ so với giá gốc" : $"{diff:N0}₫ so với giá gốc")
+                                        </small>
+                                    }
+                                </td>
+                                <td>
+                                    @if (v.StockQuantity > 20)
+                                    {
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle fw-bold">@v.StockQuantity trong kho</span>
+                                    }
+                                    else if (v.StockQuantity > 0)
+                                    {
+                                        <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold">@v.StockQuantity (Sắp hết)</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle fw-bold">Hết hàng</span>
+                                    }
+                                </td>
+                                <td class="text-end pe-3">
+                                    <button type="button" class="btn btn-sm btn-outline-primary py-1 px-2" title="Chỉnh sửa biến thể" onclick="openEditVariantModal(@v.Id)">
+                                        <i class="bi bi-pencil-square"></i> Sửa
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger py-1 px-2" title="Xoá biến thể" onclick="confirmDeleteVariant(@v.Id, '@Html.Raw(v.ColorName.Replace("'", "\\'"))', '@v.Storage')">
+                                        <i class="bi bi-trash3-fill"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- ======================================================= -->
+<!-- MODAL THÊM / SỬA BIẾN THỂ -->
+<!-- ======================================================= -->
+<div class="modal fade" id="variantModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold" id="variantModalTitle">
+                    <i class="bi bi-plus-circle me-1"></i> Thêm biến thể mới
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <form id="variantForm" onsubmit="handleSaveVariant(event)">
+                <div class="modal-body p-4">
+                    <input type="hidden" id="var-productId" value="@Model.Id" />
+                    <input type="hidden" id="var-id" value="0" />
+
+                    <div class="row g-3">
+                        <!-- Màu sắc -->
+                        <div class="col-md-7">
+                            <label class="form-label fw-bold small">Tên màu sắc <span class="text-danger">*</span></label>
+                            <input type="text" id="var-colorName" class="form-control" placeholder="Ví dụ: Titan Sa Mạc, Xám Titan, Đen, Trắng..." required />
+                            
+                            <!-- Gợi ý màu sắc nhanh -->
+                            <div class="mt-2 d-flex flex-wrap gap-1 align-items-center">
+                                <small class="text-muted me-1" style="font-size: 11px;">Gợi ý nhanh:</small>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-1" style="font-size: 11px;" onclick="setQuickColor('Titan Sa Mạc', '#C8B19E')">Titan Sa Mạc</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-1" style="font-size: 11px;" onclick="setQuickColor('Titan Tự Nhiên', '#9F9E99')">Titan Tự Nhiên</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-1" style="font-size: 11px;" onclick="setQuickColor('Titan Đen', '#2B2B2B')">Titan Đen</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-1" style="font-size: 11px;" onclick="setQuickColor('Titan Trắng', '#F2F3F4')">Titan Trắng</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-1" style="font-size: 11px;" onclick="setQuickColor('Xanh Dương', '#1e40af')">Xanh Dương</button>
+                                <button type="button" class="btn btn-xs btn-outline-secondary py-0 px-1" style="font-size: 11px;" onclick="setQuickColor('Vàng Gold', '#E5C07B')">Vàng Gold</button>
+                            </div>
+                        </div>
+
+                        <!-- Mã màu Hex & Color Picker -->
+                        <div class="col-md-5">
+                            <label class="form-label fw-bold small">Mã màu (Hex Code)</label>
+                            <div class="input-group">
+                                <input type="color" id="var-colorPicker" class="form-control form-control-color" value="#C8B19E" title="Chọn màu" onchange="document.getElementById('var-colorHex').value = this.value" />
+                                <input type="text" id="var-colorHex" class="form-control font-monospace" value="#C8B19E" placeholder="#000000" onchange="document.getElementById('var-colorPicker').value = this.value" />
+                            </div>
+                        </div>
+
+                        <!-- Dung lượng / Phiên bản -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Dung lượng / Phiên bản <span class="text-danger">*</span></label>
+                            <input type="text" id="var-storage" class="form-control" placeholder="Ví dụ: 128GB, 256GB, 512GB, 1TB..." required />
+                            
+                            <!-- Gợi ý dung lượng nhanh -->
+                            <div class="mt-2 d-flex flex-wrap gap-1 align-items-center">
+                                <small class="text-muted me-1" style="font-size: 11px;">Chọn nhanh:</small>
+                                <button type="button" class="btn btn-xs btn-outline-primary py-0 px-1" style="font-size: 11px;" onclick="document.getElementById('var-storage').value = '128GB'">128GB</button>
+                                <button type="button" class="btn btn-xs btn-outline-primary py-0 px-1" style="font-size: 11px;" onclick="document.getElementById('var-storage').value = '256GB'">256GB</button>
+                                <button type="button" class="btn btn-xs btn-outline-primary py-0 px-1" style="font-size: 11px;" onclick="document.getElementById('var-storage').value = '512GB'">512GB</button>
+                                <button type="button" class="btn btn-xs btn-outline-primary py-0 px-1" style="font-size: 11px;" onclick="document.getElementById('var-storage').value = '1TB'">1TB</button>
+                                <button type="button" class="btn btn-xs btn-outline-primary py-0 px-1" style="font-size: 11px;" onclick="document.getElementById('var-storage').value = '8GB - 256GB'">8GB - 256GB</button>
+                                <button type="button" class="btn btn-xs btn-outline-primary py-0 px-1" style="font-size: 11px;" onclick="document.getElementById('var-storage').value = '12GB - 512GB'">12GB - 512GB</button>
+                            </div>
+                        </div>
+
+                        <!-- Giá bán -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Giá bán biến thể (₫) <span class="text-danger">*</span></label>
+                            <div class="input-group">
+                                <input type="number" id="var-price" class="form-control fw-bold text-danger" required value="@Convert.ToInt64(Model.SalePrice)" oninput="updatePricePreview(this.value)" />
+                                <span class="input-group-text">₫</span>
+                            </div>
+                            <small class="text-muted d-block mt-1" id="var-price-formatted" style="font-size: 11px;">
+                                Giá hiển thị: @Model.SalePrice.ToString("N0")₫
+                            </small>
+                        </div>
+
+                        <!-- Tồn kho & SKU -->
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small d-flex justify-content-between">
+                                <span>Số lượng tồn kho</span>
+                                <span class="badge bg-secondary-subtle text-secondary border"><i class="bi bi-lock-fill"></i> Quản lý qua kho hàng</span>
+                            </label>
+                            <input type="number" id="var-stock" class="form-control bg-light text-muted fw-bold" value="0" readonly />
+                            <small class="text-muted d-block mt-1" style="font-size: 11px;">
+                                <i class="bi bi-info-circle text-primary me-1"></i> Số lượng được đồng bộ tự động khi <b>Nhập hàng</b> hoặc <b>Bán hàng</b>.
+                            </small>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold small">Mã SKU (tùy chọn)</label>
+                            <input type="text" id="var-sku" class="form-control font-monospace" placeholder="Ví dụ: IP16PM-256GB-NAT" />
+                        </div>
+
+                        <!-- URL hình ảnh biến thể tương ứng -->
+                        <div class="col-12">
+                            <label class="form-label fw-bold small">
+                                Hình ảnh tương ứng với màu này (URL)
+                                <small class="text-muted fw-normal">(Khi khách chọn màu trên web, ảnh này sẽ hiển thị)</small>
+                            </label>
+                            <div class="input-group">
+                                <input type="text" id="var-imageUrl" class="form-control" placeholder="https://cdn2.cellphones.com.vn/..." onchange="previewVariantImage()" />
+                                <button type="button" class="btn btn-outline-secondary" onclick="previewVariantImage()">Xem trước</button>
+                                <button type="button" class="btn btn-outline-secondary" onclick="useProductImage()" title="Dùng ảnh chính sản phẩm">Ảnh chính</button>
+                            </div>
+                            <div class="mt-2 text-center p-2 bg-light border rounded" style="max-height: 140px; overflow: hidden;">
+                                <img id="var-image-preview" src="@Model.ImageUrl" alt="Preview" style="max-height: 120px; object-fit: contain;" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer bg-light py-2">
+                    <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" id="btn-save-variant" class="btn btn-danger fw-bold px-4">
+                        <i class="bi bi-check-circle-fill me-1"></i> Lưu biến thể
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================================= -->
+<!-- MODAL TẠO NHANH HÀNG LOẠT BIẾN THỂ (BATCH GENERATE) -->
+<!-- ======================================================= -->
+<div class="modal fade" id="batchModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title fw-bold">
+                    <i class="bi bi-magic me-1"></i> Tạo Nhanh Biến Thể Hàng Loạt
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="text-muted small mb-3">
+                    Chọn các dung lượng và màu sắc bạn muốn. Hệ thống sẽ tự động tạo tổ hợp tất cả các biến thể cho sản phẩm trong một click.
+                </p>
+
+                <!-- 1. Chọn Dung lượng -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">1. Chọn các phiên bản dung lượng:</label>
+                    <div class="d-flex flex-wrap gap-2" id="batch-storages">
+                        <label class="btn btn-sm btn-outline-primary active">
+                            <input type="checkbox" value="128GB" class="me-1" checked> 128GB
+                        </label>
+                        <label class="btn btn-sm btn-outline-primary active">
+                            <input type="checkbox" value="256GB" class="me-1" checked> 256GB
+                        </label>
+                        <label class="btn btn-sm btn-outline-primary active">
+                            <input type="checkbox" value="512GB" class="me-1" checked> 512GB
+                        </label>
+                        <label class="btn btn-sm btn-outline-primary">
+                            <input type="checkbox" value="1TB" class="me-1"> 1TB
+                        </label>
+                        <label class="btn btn-sm btn-outline-primary">
+                            <input type="checkbox" value="8GB - 256GB" class="me-1"> 8GB - 256GB
+                        </label>
+                        <label class="btn btn-sm btn-outline-primary">
+                            <input type="checkbox" value="12GB - 512GB" class="me-1"> 12GB - 512GB
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 2. Chọn Màu sắc -->
+                <div class="mb-3">
+                    <label class="form-label fw-bold small">2. Chọn các màu sắc:</label>
+                    <div class="d-flex flex-wrap gap-2" id="batch-colors">
+                        <label class="btn btn-sm btn-outline-secondary active">
+                            <input type="checkbox" value="Titan Sa Mạc|#C8B19E" class="me-1" checked>
+                            <span class="d-inline-block rounded-circle" style="width: 12px; height: 12px; background: #C8B19E;"></span> Titan Sa Mạc
+                        </label>
+                        <label class="btn btn-sm btn-outline-secondary active">
+                            <input type="checkbox" value="Titan Tự Nhiên|#9F9E99" class="me-1" checked>
+                            <span class="d-inline-block rounded-circle" style="width: 12px; height: 12px; background: #9F9E99;"></span> Titan Tự Nhiên
+                        </label>
+                        <label class="btn btn-sm btn-outline-secondary active">
+                            <input type="checkbox" value="Titan Đen|#2B2B2B" class="me-1" checked>
+                            <span class="d-inline-block rounded-circle" style="width: 12px; height: 12px; background: #2B2B2B;"></span> Titan Đen
+                        </label>
+                        <label class="btn btn-sm btn-outline-secondary active">
+                            <input type="checkbox" value="Titan Trắng|#F2F3F4" class="me-1" checked>
+                            <span class="d-inline-block rounded-circle" style="width: 12px; height: 12px; background: #F2F3F4; border: 1px solid #ccc;"></span> Titan Trắng
+                        </label>
+                        <label class="btn btn-sm btn-outline-secondary">
+                            <input type="checkbox" value="Xanh Dương|#1e40af" class="me-1">
+                            <span class="d-inline-block rounded-circle" style="width: 12px; height: 12px; background: #1e40af;"></span> Xanh Dương
+                        </label>
+                        <label class="btn btn-sm btn-outline-secondary">
+                            <input type="checkbox" value="Vàng Gold|#E5C07B" class="me-1">
+                            <span class="d-inline-block rounded-circle" style="width: 12px; height: 12px; background: #E5C07B;"></span> Vàng Gold
+                        </label>
+                    </div>
+                </div>
+
+                <!-- 3. Giá & Tồn kho mặc định -->
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Giá bán khởi điểm (₫)</label>
+                        <input type="number" id="batch-price" class="form-control" value="@Convert.ToInt64(Model.SalePrice)" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold small">Tồn kho mỗi biến thể</label>
+                        <input type="number" id="batch-stock" class="form-control" value="30" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer bg-light py-2">
+                <button type="button" class="btn btn-secondary px-3" data-bs-dismiss="modal">Đóng</button>
+                <button type="button" class="btn btn-success fw-bold px-4" onclick="handleBatchCreate()">
+                    <i class="bi bi-lightning-fill me-1"></i> Khởi tạo các biến thể
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const productId = @Model.Id;
+        const defaultProductImage = '@Html.Raw(Model.ImageUrl)';
+
+        // 1. Mở modal thêm biến thể mới
+        function openAddVariantModal() {
+            document.getElementById('variantModalTitle').innerHTML = '<i class="bi bi-plus-circle me-1"></i> Thêm biến thể mới';
+            document.getElementById('var-id').value = "0";
+            document.getElementById('var-productId').value = productId;
+            document.getElementById('var-colorName').value = "";
+            document.getElementById('var-colorHex').value = "#000000";
+            document.getElementById('var-colorPicker').value = "#000000";
+            document.getElementById('var-storage').value = "";
+            document.getElementById('var-price').value = "@Convert.ToInt64(Model.SalePrice)";
+            document.getElementById('var-stock').value = "0";
+            document.getElementById('var-sku').value = "";
+            document.getElementById('var-imageUrl').value = defaultProductImage;
+            document.getElementById('var-image-preview').src = defaultProductImage;
+            updatePricePreview(@Convert.ToInt64(Model.SalePrice));
+
+            const modal = new bootstrap.Modal(document.getElementById('variantModal'));
+            modal.show();
+        }
+
+        // 2. Mở modal chỉnh sửa biến thể
+        async function openEditVariantModal(variantId) {
+            try {
+                const res = await fetch(`/Admin/Product/GetVariant/${variantId}`);
+                const data = await res.json();
+                if (data.success && data.data) {
+                    const v = data.data;
+                    document.getElementById('variantModalTitle').innerHTML = '<i class="bi bi-pencil-square me-1"></i> Cập nhật biến thể #' + v.id;
+                    document.getElementById('var-id').value = v.id;
+                    document.getElementById('var-productId').value = v.productId;
+                    document.getElementById('var-colorName').value = v.colorName || "";
+                    document.getElementById('var-colorHex').value = v.colorHex || "#000000";
+                    document.getElementById('var-colorPicker').value = v.colorHex || "#000000";
+                    document.getElementById('var-storage').value = v.storage || "";
+                    document.getElementById('var-price').value = v.price || 0;
+                    document.getElementById('var-stock').value = v.stockQuantity || 0;
+                    document.getElementById('var-sku').value = v.sku || "";
+                    document.getElementById('var-imageUrl').value = v.imageUrl || defaultProductImage;
+                    document.getElementById('var-image-preview').src = v.imageUrl || defaultProductImage;
+                    updatePricePreview(v.price || 0);
+
+                    const modal = new bootstrap.Modal(document.getElementById('variantModal'));
+                    modal.show();
+                } else {
+                    showError(data.message || 'Không tìm thấy thông tin biến thể.');
+                }
+            } catch (err) {
+                showError('Có lỗi khi tải dữ liệu biến thể.');
+            }
+        }
+
+        // 3. Lưu biến thể (Thêm mới hoặc Cập nhật)
+        async function handleSaveVariant(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-save-variant');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Đang lưu...';
+
+            const payload = {
+                id: parseInt(document.getElementById('var-id').value) || 0,
+                productId: parseInt(document.getElementById('var-productId').value) || productId,
+                colorName: document.getElementById('var-colorName').value.trim(),
+                colorHex: document.getElementById('var-colorHex').value.trim(),
+                storage: document.getElementById('var-storage').value.trim(),
+                price: parseFloat(document.getElementById('var-price').value) || 0,
+                stockQuantity: parseInt(document.getElementById('var-stock').value) || 0,
+                sku: document.getElementById('var-sku').value.trim(),
+                imageUrl: document.getElementById('var-imageUrl').value.trim()
+            };
+
+            try {
+                const res = await fetch('/Admin/Product/SaveVariant', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 600);
+                } else {
+                    showError(data.message || 'Không thể lưu biến thể.');
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Lưu biến thể';
+                }
+            } catch (err) {
+                showError('Có lỗi kết nối đến máy chủ.');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-check-circle-fill me-1"></i> Lưu biến thể';
+            }
+        }
+
+        // 4. Xoá biến thể với SweetAlert2
+        function confirmDeleteVariant(variantId, colorName, storage) {
+            showConfirm(
+                'Xác nhận xoá biến thể?',
+                `Bạn có chắc chắn muốn xoá biến thể "${colorName} - ${storage}"? Hành động này không thể hoàn tác!`,
+                'Xoá ngay',
+                'Huỷ'
+            ).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const res = await fetch(`/Admin/Product/DeleteVariant/${variantId}`, {
+                            method: 'POST'
+                        });
+                        const data = await res.json();
+                        if (data.success) {
+                            showToast(data.message, 'success');
+                            const row = document.getElementById(`variant-row-${variantId}`);
+                            if (row) {
+                                row.style.transition = 'all 0.4s ease';
+                                row.style.opacity = '0';
+                                row.style.transform = 'scale(0.95)';
+                                setTimeout(() => {
+                                    row.remove();
+                                    // Cập nhật lại số lượng hiển thị
+                                    const statEl = document.getElementById('stat-total-variants');
+                                    if (statEl) {
+                                        const cur = parseInt(statEl.innerText) || 1;
+                                        statEl.innerText = Math.max(0, cur - 1);
+                                    }
+                                }, 400);
+                            } else {
+                                setTimeout(() => window.location.reload(), 500);
+                            }
+                        } else {
+                            showError(data.message || 'Không thể xoá biến thể.');
+                        }
+                    } catch (err) {
+                        showError('Có lỗi xảy ra khi xoá biến thể.');
+                    }
+                }
+            });
+        }
+
+        // 5. Tạo nhanh hàng loạt biến thể
+        function openBatchModal() {
+            const modal = new bootstrap.Modal(document.getElementById('batchModal'));
+            modal.show();
+        }
+
+        async function handleBatchCreate() {
+            const storages = [];
+            document.querySelectorAll('#batch-storages input[type="checkbox"]:checked').forEach(cb => {
+                storages.push(cb.value);
+            });
+
+            const colors = [];
+            document.querySelectorAll('#batch-colors input[type="checkbox"]:checked').forEach(cb => {
+                colors.push(cb.value);
+            });
+
+            if (storages.length === 0 || colors.length === 0) {
+                showWarning('Vui lòng chọn ít nhất 1 dung lượng và 1 màu sắc!');
+                return;
+            }
+
+            const price = parseFloat(document.getElementById('batch-price').value) || 0;
+            const stock = parseInt(document.getElementById('batch-stock').value) || 30;
+
+            try {
+                const res = await fetch('/Admin/Product/BatchCreateVariants', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        productId: productId,
+                        storages: storages,
+                        colors: colors,
+                        price: price,
+                        stock: stock
+                    })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    setTimeout(() => window.location.reload(), 600);
+                } else {
+                    showError(data.message || 'Không thể tạo biến thể hàng loạt.');
+                }
+            } catch (err) {
+                showError('Có lỗi kết nối đến máy chủ.');
+            }
+        }
+
+        // Helpers
+        function setQuickColor(name, hex) {
+            document.getElementById('var-colorName').value = name;
+            document.getElementById('var-colorHex').value = hex;
+            document.getElementById('var-colorPicker').value = hex;
+        }
+
+        function updatePricePreview(val) {
+            const num = parseFloat(val) || 0;
+            document.getElementById('var-price-formatted').innerText = 'Giá hiển thị: ' + num.toLocaleString('vi-VN') + '₫';
+        }
+
+        function previewVariantImage() {
+            const url = document.getElementById('var-imageUrl').value.trim();
+            document.getElementById('var-image-preview').src = url || defaultProductImage;
+        }
+
+        function useProductImage() {
+            document.getElementById('var-imageUrl').value = defaultProductImage;
+            document.getElementById('var-image-preview').src = defaultProductImage;
+        }
+    </script>
+}

@@ -1,0 +1,229 @@
+@model WebsiteBanDienThoai.Models.RepairBooking
+@{
+    ViewData["Title"] = "Phiếu Hẹn Sửa Chữa & Bảo Hành - " + Model.BookingCode;
+}
+
+<div class="container py-4">
+    <!-- BREADCRUMB -->
+    <nav aria-label="breadcrumb" class="mb-3 d-print-none">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+            <li class="breadcrumb-item"><a asp-controller="Repair" asp-action="Booking" class="text-decoration-none text-muted">Đặt lịch sửa chữa</a></li>
+            <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Phiếu Xác Nhận Lịch Hẹn</li>
+        </ol>
+    </nav>
+
+    <!-- SUCCESS ALERT -->
+    <div class="alert alert-success border-0 shadow-sm rounded-4 p-4 mb-4 d-print-none bg-success bg-opacity-10 d-flex flex-wrap align-items-center justify-content-between gap-3">
+        <div class="d-flex align-items-center gap-3">
+            <div class="rounded-circle bg-success text-white d-flex align-items-center justify-content-center" style="width: 52px; height: 52px; font-size: 26px;">
+                <i class="bi bi-check-lg"></i>
+            </div>
+            <div>
+                <h4 class="fw-bolder text-success mb-1">ĐẶT LỊCH SỬA CHỮA THÀNH CÔNG!</h4>
+                <p class="text-muted small m-0">
+                    Cảm ơn quý khách <strong>@Model.CustomerName</strong>. Hệ thống Điện Thoại Vui & CellphoneS đã ghi nhận lịch hẹn của quý khách.
+                </p>
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <button onclick="window.print()" class="btn btn-outline-secondary fw-semibold btn-sm px-3">
+                <i class="bi bi-printer me-1"></i> In Phiếu Hẹn
+            </button>
+            <a asp-action="Tracking" asp-route-code="@Model.BookingCode" class="btn btn-danger fw-bold btn-sm px-3 shadow-sm">
+                <i class="bi bi-search me-1"></i> Theo Dõi Tiến Độ
+            </a>
+        </div>
+    </div>
+
+    <!-- TỜ PHIẾU HẸN (PRINTABLE TICKET) -->
+    <div class="card border-0 shadow rounded-4 overflow-hidden mb-4 mx-auto" style="max-width: 820px;" id="printableTicket">
+        <!-- HEADER PHIẾU HẸN -->
+        <div class="p-4 text-white text-center" style="background: linear-gradient(135deg, #d70018 0%, #b91c1c 100%);">
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <span class="fs-4 fw-bolder">cellphone<span class="text-warning">S</span> <span class="fw-normal">|</span> <span class="fs-5 text-warning fw-bold">Điện Thoại Vui</span></span>
+                <span class="badge bg-white text-danger px-3 py-2 fw-bolder font-monospace fs-6">@Model.BookingCode</span>
+            </div>
+            <h4 class="fw-bolder text-uppercase m-0 mt-2">PHIẾU HẸN TIẾP NHẬN SỬA CHỮA & BẢO HÀNH</h4>
+            <small class="text-white-50">Hệ thống tiếp nhận bảo hành chính hãng và sửa chữa thiết bị công nghệ</small>
+        </div>
+
+        <div class="card-body p-4 p-md-5 bg-white">
+            <!-- MÃ VẠCH MÔ PHỎNG -->
+            <div class="text-center p-3 bg-light rounded-3 border mb-4">
+                <small class="text-muted fw-bold d-block mb-1" style="font-size: 11px;">MÃ QUÉT TẠI QUẦY TIẾP NHẬN</small>
+                <div class="font-monospace fs-3 fw-bolder text-dark" style="letter-spacing: 5px;">
+                    |||| || ||||| || |||| ||||| ||
+                </div>
+                <div class="font-monospace fw-bold text-danger">@Model.BookingCode</div>
+                <small class="text-muted d-block mt-1" style="font-size: 11px;">(Đưa mã này hoặc số điện thoại cho kỹ thuật viên khi đến chi nhánh)</small>
+            </div>
+
+            <!-- BẢNG THÔNG TIN CHI TIẾT -->
+            <div class="row g-4 mb-4">
+                <!-- Cột thông tin khách hàng & chi nhánh -->
+                <div class="col-md-6 border-end-md">
+                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                        <i class="bi bi-person-fill text-danger me-1"></i> Thông Tin Khách Hàng
+                    </h6>
+                    <table class="table table-sm table-borderless small m-0">
+                        <tr>
+                            <td class="text-muted" style="width: 40%;">Khách hàng:</td>
+                            <td class="fw-bold text-dark">@Model.CustomerName</td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Số điện thoại:</td>
+                            <td class="fw-bold text-danger font-monospace">@Model.PhoneNumber</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.Email))
+                        {
+                            <tr>
+                                <td class="text-muted">Email:</td>
+                                <td class="text-dark">@Model.Email</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td class="text-muted">Thời gian đặt:</td>
+                            <td class="text-dark">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    </table>
+
+                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 mt-4">
+                        <i class="bi bi-geo-alt-fill text-danger me-1"></i> Điểm Hẹn Tiếp Nhận
+                    </h6>
+                    <div class="p-3 bg-light rounded-3 border">
+                        <strong class="text-danger d-block mb-1">@Model.StoreBranch</strong>
+                        <div class="small text-muted mb-2"><i class="bi bi-clock me-1"></i>Giờ mở cửa: 08h00 - 21h00 (Cả T7 & CN)</div>
+                        <div class="small text-muted"><i class="bi bi-telephone-fill me-1"></i>Hotline trung tâm: <strong class="text-dark">1800.2064</strong></div>
+                    </div>
+                </div>
+
+                <!-- Cột thông tin thiết bị & dịch vụ -->
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3">
+                        <i class="bi bi-phone-fill text-danger me-1"></i> Thiết Bị & Dịch Vụ Sửa Chữa
+                    </h6>
+                    <table class="table table-sm table-borderless small m-0">
+                        <tr>
+                            <td class="text-muted" style="width: 40%;">Loại máy:</td>
+                            <td><span class="badge bg-secondary-subtle text-dark border">@Model.DeviceType</span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Model máy:</td>
+                            <td class="fw-bold text-dark">@Model.DeviceName</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.SerialNumber))
+                        {
+                            <tr>
+                                <td class="text-muted">IMEI / Serial:</td>
+                                <td class="font-monospace text-dark fw-semibold">@Model.SerialNumber</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td class="text-muted">Bảo hành hãng:</td>
+                            <td>
+                                @if (Model.HasWarranty)
+                                {
+                                    <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Còn hạn bảo hành CellphoneS</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-light text-secondary border">Sửa chữa dịch vụ ngoài bảo hành</span>
+                                }
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Dịch vụ yêu cầu:</td>
+                            <td class="fw-bold text-danger">@Model.ServiceType</td>
+                        </tr>
+                        @if (!string.IsNullOrEmpty(Model.IssueDescription))
+                        {
+                            <tr>
+                                <td class="text-muted">Mô tả lỗi:</td>
+                                <td class="fst-italic text-dark">@Model.IssueDescription</td>
+                            </tr>
+                        }
+                    </table>
+
+                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3 mt-4">
+                        <i class="bi bi-calendar2-event-fill text-danger me-1"></i> Thời Gian Hẹn
+                    </h6>
+                    <div class="p-3 bg-danger bg-opacity-10 rounded-3 border border-danger border-opacity-25">
+                        <div class="d-flex justify-content-between align-items-center mb-1">
+                            <span class="small text-muted">Ngày mang máy đến:</span>
+                            <strong class="text-dark fs-6">@Model.BookingDate.ToString("dd/MM/yyyy")</strong>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <span class="small text-muted">Khung giờ tiếp nhận:</span>
+                            <span class="badge bg-danger fs-6">@Model.TimeSlot</span>
+                        </div>
+                        <div class="border-top pt-2 d-flex justify-content-between align-items-center">
+                            <span class="small text-muted fw-bold">Chi phí ước tính:</span>
+                            <strong class="fs-5 text-danger">
+                                @(Model.HasWarranty ? "0₫ (Bảo hành)" : (Model.EstimatedCost > 0 ? $"{Model.EstimatedCost:N0}₫" : "Miễn phí"))
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- HƯỚNG DẪN CHUẨN BỊ THIẾT BỊ -->
+            <div class="p-3 rounded-3 bg-light border mb-4">
+                <h6 class="fw-bold text-dark small mb-2"><i class="bi bi-info-circle-fill text-primary me-1"></i> Quý khách lưu ý trước khi mang máy đến:</h6>
+                <div class="row g-2 small text-muted" style="font-size: 12px;">
+                    <div class="col-sm-6">
+                        <i class="bi bi-check2 text-success me-1 fw-bold"></i> Sao lưu (Backup) dữ liệu cá nhân quan trọng.
+                    </div>
+                    <div class="col-sm-6">
+                        <i class="bi bi-check2 text-success me-1 fw-bold"></i> Tháo SIM, thẻ nhớ microSD và phụ kiện ốp lưng.
+                    </div>
+                    <div class="col-sm-6">
+                        <i class="bi bi-check2 text-success me-1 fw-bold"></i> Tắt hoặc ghi nhớ mật khẩu màn hình / iCloud / Google.
+                    </div>
+                    <div class="col-sm-6">
+                        <i class="bi bi-check2 text-success me-1 fw-bold"></i> Đến đúng khung giờ hẹn để được ưu tiên xử lý ngay.
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHỮ KÝ XÁC NHẬN (KHI IN PHIẾU) -->
+            <div class="row text-center mt-4 pt-3 d-none d-print-flex">
+                <div class="col-6">
+                    <div class="fw-bold text-uppercase small">Khách Hàng Đặt Lịch</div>
+                    <div class="fst-italic text-muted" style="font-size: 11px;">(Ký và ghi rõ họ tên)</div>
+                    <div style="height: 60px;"></div>
+                    <div class="fw-bold small">@Model.CustomerName</div>
+                </div>
+                <div class="col-6">
+                    <div class="fw-bold text-uppercase small">Bộ Phận Tiếp Nhận Kỹ Thuật</div>
+                    <div class="fst-italic text-muted" style="font-size: 11px;">(Xác nhận hệ thống)</div>
+                    <div style="height: 60px;"></div>
+                    <div class="fw-bold small">Điện Thoại Vui - CellphoneS</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FOOTER ACTIONS (D-PRINT-NONE) -->
+        <div class="card-footer bg-light p-3 d-flex flex-wrap justify-content-between align-items-center gap-2 d-print-none">
+            <div class="d-flex gap-2">
+                <a asp-controller="Account" asp-action="Profile" class="btn btn-outline-secondary btn-sm fw-semibold">
+                    <i class="bi bi-person-fill me-1"></i> Trang Cá Nhân Của Bạn
+                </a>
+                <a asp-action="Booking" class="btn btn-outline-danger btn-sm fw-semibold">
+                    <i class="bi bi-plus-circle me-1"></i> Đặt Lịch Máy Khác
+                </a>
+            </div>
+
+            @if (Model.Status == WebsiteBanDienThoai.Models.RepairStatus.Pending || Model.Status == WebsiteBanDienThoai.Models.RepairStatus.Received)
+            {
+                <form asp-action="Cancel" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy lịch hẹn sửa chữa này?');" class="m-0">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <button type="submit" class="btn btn-sm btn-link text-danger text-decoration-none">
+                        <i class="bi bi-x-circle me-1"></i> Hủy lịch hẹn này
+                    </button>
+                </form>
+            }
+        </div>
+    </div>
+</div>

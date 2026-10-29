@@ -1,0 +1,173 @@
+@model List<WebsiteBanDienThoai.Models.CartItem>
+
+@{
+    ViewData["Title"] = "Giỏ Hàng Của Bạn - CellphoneS";
+    var totalAmount = Model.Sum(i => i.TotalPrice);
+}
+
+<div class="container my-4" style="max-width: 900px;">
+    <!-- Header -->
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h4 class="fw-bold mb-0">
+            <i class="bi bi-cart3 text-danger me-2"></i> Giỏ hàng của bạn (@Model.Sum(i => i.Quantity) sản phẩm)
+        </h4>
+        <a asp-controller="Home" asp-action="Index" class="text-danger small fw-semibold text-decoration-none">
+            <i class="bi bi-arrow-left me-1"></i> Tiếp tục mua hàng
+        </a>
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="bg-white p-5 rounded-3 shadow-sm border text-center my-4">
+            <i class="bi bi-cart-x text-muted" style="font-size: 64px;"></i>
+            <h5 class="fw-bold mt-3">Giỏ hàng của bạn đang trống!</h5>
+            <p class="text-muted small">Hãy khám phá thêm hàng nghìn sản phẩm công nghệ chính hãng giá tốt tại CellphoneS.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-danger px-4 py-2 fw-bold rounded-pill">
+                MUA SẮM NGAY
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <!-- Items List -->
+            <div class="col-lg-8">
+                <div class="bg-white rounded-3 shadow-sm border p-3">
+                    @foreach (var item in Model)
+                    {
+                        <div class="d-flex align-items-center gap-3 py-3 border-bottom position-relative">
+                            <!-- Image -->
+                            <img src="@item.ImageUrl" alt="@item.ProductName" style="width: 75px; height: 75px; object-fit: contain;" class="rounded border p-1" />
+
+                            <!-- Info -->
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1 fw-bold" style="font-size: 14px;">
+                                    <a asp-controller="Product" asp-action="Details" asp-route-id="@item.ProductId" class="text-dark text-decoration-none">
+                                        @item.ProductName
+                                    </a>
+                                </h6>
+                                @if (!string.IsNullOrEmpty(item.VariantInfo))
+                                {
+                                    <span class="badge bg-light text-muted border small mb-1">@item.VariantInfo</span>
+                                }
+                                <div class="text-danger fw-bold" style="font-size: 14px;">
+                                    @item.Price.ToString("N0")₫
+                                </div>
+                            </div>
+
+                            <!-- Quantity controls -->
+                            <form asp-action="UpdateQuantity" method="post" class="d-flex align-items-center gap-1">
+                                <input type="hidden" name="productId" value="@item.ProductId" />
+                                <button type="submit" name="quantity" value="@(item.Quantity - 1)" class="btn btn-sm btn-outline-secondary px-2 py-0 fw-bold">-</button>
+                                <span class="px-2 fw-bold small">@item.Quantity</span>
+                                <button type="submit" name="quantity" value="@(item.Quantity + 1)" class="btn btn-sm btn-outline-secondary px-2 py-0 fw-bold">+</button>
+                            </form>
+
+                            <!-- Remove Button -->
+                            <a asp-action="Remove" asp-route-productId="@item.ProductId" class="text-muted ms-2 p-1" title="Xóa khỏi giỏ hàng" onclick="confirmRemoveCart(event, this, '@Html.Raw(item.ProductName.Replace("'", "\\'"))')">
+                                <i class="bi bi-trash3-fill text-danger"></i>
+                            </a>
+                        </div>
+                    }
+
+
+
+                    <div class="d-flex justify-content-between align-items-center pt-2 small text-muted">
+                        <span><i class="bi bi-truck text-success me-1"></i> Miễn phí giao hàng tiêu chuẩn</span>
+                        <span><i class="bi bi-shield-check text-primary me-1"></i> Bảo hành chính hãng 100%</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary & Checkout -->
+            <div class="col-lg-4">
+                <div class="bg-white rounded-3 shadow-sm border p-3">
+                    <h6 class="fw-bold mb-3 border-bottom pb-2">THÔNG TIN ĐƠN HÀNG</h6>
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Tổng tiền tạm tính:</span>
+                        <span class="fw-bold">@totalAmount.ToString("N0")₫</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2 small">
+                        <span class="text-muted">Phí vận chuyển:</span>
+                        <span class="text-success fw-bold">MIỄN PHÍ</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3 border-top pt-2">
+                        <span class="fw-bold">Tổng thanh toán:</span>
+                        <span class="text-danger fw-bolder fs-5">@totalAmount.ToString("N0")₫</span>
+                    </div>
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        <div class="alert alert-success border-0 bg-success bg-opacity-10 py-2 px-3 small mb-3 rounded-3 d-flex align-items-center justify-content-between">
+                            <div>
+                                <i class="bi bi-person-check-fill text-success me-1"></i>
+                                <span>Xin chào, <strong>@User.Identity.Name</strong></span>
+                            </div>
+                            <span class="badge bg-warning text-dark"><i class="bi bi-coin me-1"></i>@(User.FindFirst("SmemberPoints")?.Value ?? "0") PTS</span>
+                        </div>
+
+                        <a asp-action="Checkout" class="btn btn-danger w-100 py-2 fw-bold text-uppercase fs-6 shadow-sm">
+                            <i class="bi bi-credit-card me-1"></i> TIẾN HÀNH ĐẶT HÀNG
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger border-0 bg-danger bg-opacity-10 py-2 px-3 small mb-3 rounded-3">
+                            <div class="fw-bold text-danger d-flex align-items-center gap-1 mb-1">
+                                <i class="bi bi-shield-lock-fill"></i> Yêu cầu đăng nhập tài khoản
+                            </div>
+                            <div class="text-muted" style="font-size: 12px; line-height: 1.4;">
+                                Quý khách vui lòng đăng nhập tài khoản <strong>Smember</strong> để tiến hành thanh toán, bảo lưu quyền lợi bảo hành và tích luỹ điểm thưởng.
+                            </div>
+                        </div>
+
+                        <a asp-controller="Account" asp-action="Login" asp-route-returnUrl="/Cart/Checkout" class="btn btn-danger w-100 py-2 fw-bold text-uppercase fs-6 shadow-sm mb-2">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> ĐĂNG NHẬP ĐỂ THANH TOÁN
+                        </a>
+
+                        <div class="text-center small">
+                            <span class="text-muted">Chưa có tài khoản?</span>
+                            <a asp-controller="Account" asp-action="Register" asp-route-returnUrl="/Cart/Checkout" class="text-danger fw-bold text-decoration-none ms-1">
+                                Đăng ký ngay <i class="bi bi-arrow-right-short"></i>
+                            </a>
+                        </div>
+                    }
+
+                    <div class="mt-3 text-center small text-muted">
+                        <i class="bi bi-shield-fill-check text-success me-1"></i> Thanh toán an toàn & bảo mật qua CellphoneS
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function confirmRemoveCart(e, el, productName) {
+            e.preventDefault();
+            const url = el.getAttribute('href');
+            Swal.fire({
+                title: 'Xóa khỏi giỏ hàng?',
+                html: `Bạn có chắc chắn muốn bỏ sản phẩm <strong>"${productName}"</strong> ra khỏi giỏ hàng không?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d70018',
+                cancelButtonColor: '#64748b',
+                confirmButtonText: '<i class="bi bi-trash me-1"></i> Đồng ý xóa',
+                cancelButtonText: 'Giữ lại',
+                customClass: {
+                    popup: 'rounded-4'
+                }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = url;
+                }
+            });
+            return false;
+        }
+    </script>
+}

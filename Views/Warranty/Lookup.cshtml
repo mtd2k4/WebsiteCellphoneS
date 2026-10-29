@@ -1,0 +1,239 @@
+@model List<WebsiteBanDienThoai.Models.WarrantyCard>
+@{
+    ViewData["Title"] = "Tra Cứu Phiếu Bảo Hành Điện Tử - CellphoneS Care";
+    string? keyword = ViewBag.Keyword as string;
+}
+
+<div class="container py-4">
+    <!-- BREADCRUMB -->
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb small">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index" class="text-decoration-none text-muted">Trang chủ</a></li>
+            <li class="breadcrumb-item active text-danger fw-bold" aria-current="page">Tra Cứu Bảo Hành Điện Tử</li>
+        </ol>
+    </nav>
+
+    <!-- BANNER CELLPHONES CARE -->
+    <div class="card border-0 rounded-4 p-4 text-white mb-4 shadow" style="background: linear-gradient(135deg, #d70018 0%, #b91c1c 50%, #7f1d1d 100%);">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="d-inline-flex align-items-center gap-2 px-3 py-1 bg-white rounded-pill small fw-bold mb-2 shadow-sm" style="color: #d70018;">
+                    <i class="bi bi-patch-check-fill text-danger"></i>
+                    <span class="text-danger fw-bold">HỆ THỐNG BẢO HÀNH CHÍNH HÃNG CELLPHONES CARE</span>
+                </div>
+                <h3 class="fw-bolder text-white mb-2">TRA CỨU PHIẾU BẢO HÀNH ĐIỆN TỬ</h3>
+                <p class="m-0" style="max-width: 650px; color: rgba(255, 255, 255, 0.92);">
+                    Kiểm tra thời hạn bảo hành, tình trạng hiệu lực gói bảo hành rơi vỡ, vào nước và dịch vụ sửa chữa chính hãng tại hệ thống CellphoneS & Điện Thoại Vui toàn quốc.
+                </p>
+            </div>
+            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                <a asp-controller="Repair" asp-action="Booking" class="btn btn-warning text-dark fw-bold px-3 py-2 shadow-sm d-inline-flex align-items-center gap-2">
+                    <i class="bi bi-wrench-adjustable-circle-fill"></i>
+                    <span>Đặt Lịch Sửa Chữa Ngay</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show rounded-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>@TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- KHUNG TÌM KIẾM TRA CỨU -->
+    <div class="card border-0 shadow-sm rounded-4 p-4 mb-4">
+        <form asp-action="Lookup" method="get">
+            <label class="form-label fw-bold text-dark fs-6 mb-2">
+                <i class="bi bi-search text-danger me-1"></i> Nhập thông tin tra cứu bảo hành:
+            </label>
+            <div class="input-group input-group-lg shadow-xs">
+                <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-upc-scan fs-5"></i></span>
+                <input type="text" name="keyword" value="@keyword" class="form-control border-start-0" 
+                       placeholder="Nhập số IMEI (15 số), Số Serial, Mã phiếu BH-..., hoặc Số điện thoại mua hàng..." autofocus required />
+                <button type="submit" class="btn btn-danger fw-bold px-4">
+                    <i class="bi bi-search me-1"></i> Tra Cứu Ngay
+                </button>
+            </div>
+            <div class="d-flex flex-wrap align-items-center justify-content-between mt-2 small text-muted">
+                <span><i class="bi bi-info-circle me-1"></i> Mẹo: Bấm <code>*#06#</code> trên điện thoại để xem nhanh mã số IMEI.</span>
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <a asp-controller="Account" asp-action="Profile" class="text-decoration-none text-danger fw-bold">
+                        <i class="bi bi-person-circle me-1"></i> Xem tất cả phiếu bảo hành trong Hồ sơ của bạn &rarr;
+                    </a>
+                }
+            </div>
+        </form>
+    </div>
+
+    <!-- KẾT QUẢ TRA CỨU -->
+    @if (!string.IsNullOrWhiteSpace(keyword))
+    {
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold text-dark m-0">
+                Kết quả tra cứu cho từ khóa: <span class="text-danger">"@keyword"</span>
+                <span class="badge bg-secondary fs-6 ms-2">@Model.Count phiếu tìm thấy</span>
+            </h5>
+            @if (Model.Any())
+            {
+                <a asp-action="Lookup" class="btn btn-sm btn-outline-secondary">Xóa bộ lọc</a>
+            }
+        </div>
+
+        @if (!Model.Any())
+        {
+            <div class="card border-0 shadow-sm rounded-4 text-center py-5 px-3">
+                <div class="rounded-circle bg-danger bg-opacity-10 text-danger mx-auto d-flex align-items-center justify-content-center mb-3" style="width: 72px; height: 72px; font-size: 32px;">
+                    <i class="bi bi-shield-x"></i>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Không tìm thấy thông tin bảo hành</h5>
+                <p class="text-muted small mx-auto mb-3" style="max-width: 500px;">
+                    Hệ thống không tìm thấy Phiếu bảo hành nào khớp với từ khóa <strong>"@keyword"</strong>. Quý khách vui lòng kiểm tra lại số IMEI / Serial hoặc liên hệ hotline để được hỗ trợ.
+                </p>
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="tel:18002064" class="btn btn-outline-danger fw-bold btn-sm px-3">
+                        <i class="bi bi-telephone-fill me-1"></i> Tổng đài bảo hành: 1800.2064
+                    </a>
+                    <a asp-controller="Repair" asp-action="Booking" class="btn btn-danger fw-bold btn-sm px-3">
+                        <i class="bi bi-wrench-adjustable me-1"></i> Đặt lịch sửa chữa ngoài bảo hành
+                    </a>
+                </div>
+            </div>
+        }
+    }
+
+    <!-- DANH SÁCH THẺ BẢO HÀNH -->
+    @if (Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var item in Model)
+            {
+                var effectiveStatus = item.EffectiveStatus;
+                string badgeClass = effectiveStatus switch
+                {
+                    WebsiteBanDienThoai.Models.WarrantyCardStatus.Active => "bg-success",
+                    WebsiteBanDienThoai.Models.WarrantyCardStatus.ExpiringSoon => "bg-warning text-dark",
+                    WebsiteBanDienThoai.Models.WarrantyCardStatus.Expired => "bg-secondary",
+                    WebsiteBanDienThoai.Models.WarrantyCardStatus.Void => "bg-danger",
+                    _ => "bg-secondary"
+                };
+
+                string statusText = effectiveStatus switch
+                {
+                    WebsiteBanDienThoai.Models.WarrantyCardStatus.Active => "Còn hạn bảo hành",
+                    WebsiteBanDienThoai.Models.WarrantyCardStatus.ExpiringSoon => "Sắp hết hạn (dưới 30 ngày)",
+                    WebsiteBanDienThoai.Models.WarrantyCardStatus.Expired => "Đã hết hạn bảo hành",
+                    WebsiteBanDienThoai.Models.WarrantyCardStatus.Void => "Đã bị hủy / Từ chối",
+                    _ => "Không xác định"
+                };
+
+                <div class="col-12">
+                    <div class="card border-0 shadow-sm rounded-4 overflow-hidden h-100 transition-all hover-shadow">
+                        <div class="card-header bg-white py-3 px-4 border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <span class="badge bg-danger text-white font-monospace px-3 py-2 fs-6">
+                                    <i class="bi bi-qr-code me-1"></i>@item.WarrantyCode
+                                </span>
+                                @if (!string.IsNullOrEmpty(item.OrderCode))
+                                {
+                                    <span class="text-muted small">Đơn hàng: <strong class="text-dark">#@item.OrderCode</strong></span>
+                                }
+                            </div>
+                            <div>
+                                <span class="badge @badgeClass px-3 py-2 fs-6 rounded-pill">
+                                    <i class="bi bi-shield-fill-check me-1"></i>@statusText
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="card-body p-4">
+                            <div class="row g-4 align-items-center">
+                                <!-- ẢNH VÀ TÊN SẢN PHẨM -->
+                                <div class="col-md-2 text-center">
+                                    <img src="@(item.ProductImageUrl ?? "https://via.placeholder.com/120")" alt="@item.ProductName" 
+                                         class="img-fluid rounded-3 border p-2 bg-white" style="max-height: 120px; object-fit: contain;" />
+                                </div>
+
+                                <div class="col-md-6">
+                                    <h5 class="fw-bold text-dark mb-1">@item.ProductName</h5>
+                                    @if (!string.IsNullOrEmpty(item.VariantInfo))
+                                    {
+                                        <span class="badge bg-light text-dark border mb-2">@item.VariantInfo</span>
+                                    }
+
+                                    <div class="mb-2">
+                                        <span class="text-muted small">Số IMEI / Serial Number:</span>
+                                        <span class="fw-bold font-monospace text-danger fs-6 ms-1">@item.SerialNumber</span>
+                                    </div>
+
+                                    <div class="p-2 bg-light rounded-3 border small mb-2">
+                                        <div class="text-dark fw-semibold"><i class="bi bi-award-fill text-warning me-1"></i> Gói bảo hành: <span class="text-danger">@item.WarrantyPackage</span></div>
+                                        <div class="text-muted"><i class="bi bi-geo-alt-fill text-danger me-1"></i> Trung tâm ủy quyền: @item.ServiceCenter</div>
+                                    </div>
+
+                                    <!-- THANH TIẾN TRÌNH THỜI HẠN -->
+                                    <div class="mt-2">
+                                        <div class="d-flex justify-content-between align-items-center small mb-1">
+                                            <span class="text-muted">Tiến độ thời hạn bảo hành:</span>
+                                            @if (item.IsActiveNow)
+                                            {
+                                                <strong class="text-success"><i class="bi bi-clock-history me-1"></i>Còn @item.RemainingDays ngày</strong>
+                                            }
+                                            else
+                                            {
+                                                <strong class="text-muted">Đã hết hạn</strong>
+                                            }
+                                        </div>
+                                        <div class="progress" style="height: 8px;">
+                                            <div class="progress-bar @(item.IsActiveNow ? "bg-success" : "bg-secondary")" 
+                                                 role="progressbar" style="width: @item.UsedPercent%;" aria-valuenow="@item.UsedPercent" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- THỜI GIAN VÀ NÚT THAO TÁC -->
+                                <div class="col-md-4 border-start-md ps-md-4">
+                                    <div class="small mb-3">
+                                        <div class="d-flex justify-content-between py-1 border-bottom">
+                                            <span class="text-muted">Khách hàng:</span>
+                                            <strong class="text-dark">@item.CustomerName</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between py-1 border-bottom">
+                                            <span class="text-muted">Số điện thoại:</span>
+                                            <strong class="text-dark font-monospace">@item.PhoneNumber</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between py-1 border-bottom">
+                                            <span class="text-muted">Ngày kích hoạt:</span>
+                                            <strong class="text-dark">@item.StartDate.ToString("dd/MM/yyyy")</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between py-1">
+                                            <span class="text-muted">Ngày hết hạn:</span>
+                                            <strong class="@(item.IsActiveNow ? "text-danger" : "text-muted")">@item.EndDate.ToString("dd/MM/yyyy")</strong>
+                                        </div>
+                                    </div>
+
+                                    <div class="d-grid gap-2">
+                                        <a asp-action="Certificate" asp-route-code="@item.WarrantyCode" target="_blank" class="btn btn-outline-danger fw-bold btn-sm shadow-xs">
+                                            <i class="bi bi-file-earmark-check-fill me-1"></i> Xem Phiếu Bảo Hành Điện Tử
+                                        </a>
+                                        <a asp-controller="Repair" asp-action="Booking" 
+                                           asp-route-imei="@item.SerialNumber" 
+                                           asp-route-productName="@item.ProductName" 
+                                           asp-route-orderCode="@item.OrderCode" 
+                                           asp-route-isWarranty="@(item.IsActiveNow ? "true" : "false")" 
+                                           class="btn btn-danger fw-bold btn-sm shadow-sm">
+                                            <i class="bi bi-calendar2-plus-fill me-1"></i> Đặt Lịch Sửa Chữa Thiết Bị Này
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
